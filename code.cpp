@@ -4,6 +4,8 @@
  * Data: Listopad 2016r.
 */
 
+#define TEST
+
 #include <iostream> // I/O stream
 #include <vector> // Vector table
 #include <time.h>
