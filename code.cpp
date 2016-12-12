@@ -121,21 +121,25 @@ void GeneratorInstancji(vector<Task*> &lista, int n, int lowerTimeLimit, int upp
 }
 
 // Zapis instancji do pliku
-void ZapiszInstancjeDoPliku(vector<Task*> &lista, int numer_instancji_problemu) {
+void ZapiszInstancjeDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, int numerInstancjiProblemu) {
 	ofstream file;
 	file.open("instancje.txt");	
 	
 	if(file.is_open()) {
-		file << "**** " << numer_instancji_problemu << "  ****" << endl;
+		file << "**** " << numerInstancjiProblemu << "  ****" << endl;
 		
 		// Uzupe³nienie pliku o wygenerowane czasy pracy
-			int ilosc_zadan = lista.size();
-			for(int i = 0; i< ilosc_zadan; i++) {
-				file << lista[i]->durationFirstPart << ":" << lista[i]->durationSecondPart << ":"
-				<< lista[i]->assigment << ":" << 1 - lista[i]->assigment << ";" << endl;
+			int iloscZadan = listaZadan.size();
+			for(int i = 0; i < iloscZadan; i++) {
+				file << listaZadan[i]->durationFirstPart << ":" << listaZadan[i]->durationSecondPart << ":"
+				<< listaZadan[i]->assigment << ":" << 1 - listaZadan[i]->assigment << ";" << endl;
 			}
 		
 		// Uzupe³nienie pliku o czasy przestojów maszyn
+			int iloscPrzestojow = listaPrzerwan.size();
+			for(int i = 0; i < iloscPrzestojow; i++) {
+				file << i << ":" << listaPrzerwan[i]->assigment << ":" << listaPrzerwan[i]->duration << ":" << listaPrzerwan[i]->readyTime << ";" << endl;
+			}
 	}	
 	
 	file.close();
@@ -149,24 +153,24 @@ void OdczytPrzerwan(vector<Maintenance*> &listaPrzerwan) {
 }
 
 int main() {
-	int rozmiar_instancji = 50;
-	int numer_instancji_problemu = 1;
+	int rozmiarInstancji = 50;
+	int numerInstancjiProblemu = 1;
 	
 	// Utworzenie wektora na n zadañ
-		vector<Task*> lista_zadan;
+		vector<Task*> listaZadan;
 	
 	// Wektor przerwañ pracy na maszynach
 		vector<Maintenance*> listaPrzerwan; 
 	
 	// Wygenerowanie zadañ
-		GeneratorInstancji(lista_zadan, rozmiar_instancji, 5, 15);
+		GeneratorInstancji(listaZadan, rozmiarInstancji, 5, 15);
 		
 	// Wygenerowanie przerwañ	
-		GeneratorPrzestojow(listaPrzerwan, 2, 2, 0, 10, 0, 25);
+		GeneratorPrzestojow(listaPrzerwan, 2, 2, 0, 10, 0, 50);
 		OdczytPrzerwan(listaPrzerwan);
 		
 	// Zapis danych do pliku
-		ZapiszInstancjeDoPliku(lista_zadan, numer_instancji_problemu);
+		ZapiszInstancjeDoPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu);
 
 	return 0;
 }
