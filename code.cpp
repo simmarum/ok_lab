@@ -126,10 +126,12 @@ void ZapiszInstancjeDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &lis
 	file.open("instancje.txt");	
 	
 	if(file.is_open()) {
-		file << "**** " << numerInstancjiProblemu << "  ****" << endl;
+		file << "**** " << numerInstancjiProblemu << " ****" << endl;
 		
 		// Uzupe³nienie pliku o wygenerowane czasy pracy
 			int iloscZadan = listaZadan.size();
+			file << iloscZadan << endl;
+			
 			for(int i = 0; i < iloscZadan; i++) {
 				file << listaZadan[i]->durationFirstPart << ":" << listaZadan[i]->durationSecondPart << ":"
 				<< listaZadan[i]->assigment << ":" << 1 - listaZadan[i]->assigment << ";" << endl;
@@ -140,9 +142,64 @@ void ZapiszInstancjeDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &lis
 			for(int i = 0; i < iloscPrzestojow; i++) {
 				file << i << ":" << listaPrzerwan[i]->assigment << ":" << listaPrzerwan[i]->duration << ":" << listaPrzerwan[i]->readyTime << ";" << endl;
 			}
+			
+			file << "**** EOF ****" << endl;
 	}	
 	
 	file.close();
+}
+
+// Wczytywanie instancji z pliku do pamiêci
+void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, int &numerInstancjiProblemu) {
+	FILE *file;
+	file = fopen("instancje.txt", "r");
+	
+	if(file != NULL) {
+		// Pobranie numeru instancji problemu
+			fscanf(file, "**** %d ****", &numerInstancjiProblemu);
+			
+		// Pobranie liczby zadañ
+			int liczbaZadan = 0;
+			fscanf(file, "%d", &liczbaZadan);
+		
+		// Zmienne pomocnicze w tworzeniu zadania
+			int assigmentFirstPart, assigmentSecondPart, durationFirstPart, durationSecondPart;
+		
+		// Pobranie wartoœci zadania z pliku instancji
+			for(int i = 0; i < liczbaZadan; i++) {
+				// Odczyt wpisu
+					fscanf(file, "%d:%d:%d:%d;", &durationFirstPart, &durationSecondPart, &assigmentFirstPart, &assigmentSecondPart);		
+				
+				// Utworzenie zadania
+					Task * zadanie = new Task;
+					
+				// Ustawienie wartoœci zadania
+					zadanie->assigment = assigmentFirstPart;
+					zadanie->durationFirstPart = durationFirstPart;
+					zadanie->durationSecondPart = durationSecondPart;
+					zadanie->timeEndFirstPart = 0;
+					zadanie->timeEndSecondPart = 0;
+					
+				// Dodanie zadania do wektora zadañ
+					listaZadan.push_back(zadanie);
+			}
+			
+			int assigment, duration, readyTime, numer;
+			
+		// Pobranie wartoœci dotycz¹cych przerwañ
+			while(fscanf(file, "%d:%d:%d:%d;", &numer, &assigment, &duration, &readyTime) != EOF) {
+				// Utworzenie przerwy
+					Maintenance * przerwa = new Maintenance;
+					
+				// Ustawienie wartoœci zadania
+					przerwa->assigment = assigment;
+					przerwa->duration = duration;
+					przerwa->readyTime = readyTime;
+					
+				// Dodanie zadania do wektora zadañ
+					listaPrzerwan.push_back(przerwa);
+			}
+	}
 }
 
 void OdczytPrzerwan(vector<Maintenance*> &listaPrzerwan) {
@@ -154,7 +211,7 @@ void OdczytPrzerwan(vector<Maintenance*> &listaPrzerwan) {
 
 int main() {
 	int rozmiarInstancji = 50;
-	int numerInstancjiProblemu = 1;
+	int numerInstancjiProblemu = 0;
 	
 	// Utworzenie wektora na n zadañ
 		vector<Task*> listaZadan;
@@ -163,14 +220,17 @@ int main() {
 		vector<Maintenance*> listaPrzerwan; 
 	
 	// Wygenerowanie zadañ
-		GeneratorInstancji(listaZadan, rozmiarInstancji, 5, 15);
+		// GeneratorInstancji(listaZadan, rozmiarInstancji, 5, 15);
 		
 	// Wygenerowanie przerwañ	
-		GeneratorPrzestojow(listaPrzerwan, 2, 2, 0, 10, 0, 50);
-		OdczytPrzerwan(listaPrzerwan);
+		// GeneratorPrzestojow(listaPrzerwan, 2, 2, 1, 10, 0, 50);
+		// OdczytPrzerwan(listaPrzerwan);
 		
 	// Zapis danych do pliku
-		ZapiszInstancjeDoPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu);
+		// ZapiszInstancjeDoPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu);
 
+	// Wczytanie danych z pliku
+		WczytajDaneZPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu);
+		
 	return 0;
 }
