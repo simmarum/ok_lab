@@ -1,7 +1,7 @@
 /* OPTYMALIZACJA KOMBINATORYCZNA
  * Temat: Metaheurystyki w problemie szeregowania zadañ
  * Autor: Bartosz Górka, Mateusz Kruszyna
- * Data: Listopad 2016r.
+ * Data: Grudzieñ 2016r.
 */
 
 // Biblioteki u¿ywane w programie
@@ -11,9 +11,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fstream> 
+#include <algorithm> // Sortowanie przerwañ
 
 using namespace std;
-
 // Struktura danych w pamiêci
 struct Task {
 	int assigment; // PrzydziaÅ‚ zadania pierwszego do maszyny x = [0, 1]
@@ -27,7 +27,10 @@ struct Maintenance {
 	int assigment; // Numer maszyny
 	int readyTime; // Czas gotowoœci (pojawienia siê)
 	int duration; // Czas trwania przerwania
-};
+} maintenance;
+
+// Funkcja pomocnicza u¿ywana w sortowaniu przerwañ
+bool sortMaintenance(Maintenance * i, Maintenance * j) {return (i->readyTime < j->readyTime); }
 
 // Generator przestojóww na maszynie
 void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstProcessor, int liczbaPrzerwanSecondProcessor, int lowerTimeLimit, int upperTimeLimit, int lowerReadyTime, int upperReadyTime) {
@@ -184,10 +187,16 @@ void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrz
 					listaZadan.push_back(zadanie);
 			}
 			
+		// Zestaw zmiennych u¿ywanych przy odczycie przerwañ na maszynach
 			int assigment, duration, readyTime, numer;
+			int oldNumber = -1;
 			
 		// Pobranie wartoœci dotycz¹cych przerwañ
-			while(fscanf(file, "%d:%d:%d:%d;", &numer, &assigment, &duration, &readyTime) != EOF) {
+			while(fscanf(file, "%d:%d:%d:%d;", &numer, &assigment, &duration, &readyTime)) {
+				// Sprawdzenie czy nie mamy zapêtlenia
+					if(oldNumber == numer)
+						break;
+						
 				// Utworzenie przerwy
 					Maintenance * przerwa = new Maintenance;
 					
@@ -198,6 +207,9 @@ void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrz
 					
 				// Dodanie zadania do wektora zadañ
 					listaPrzerwan.push_back(przerwa);
+					
+				// Zmienna pomocnicza do eliminacji zapêtleñ przy odczycie
+					oldNumber = numer;
 			}
 	}
 }
@@ -209,8 +221,37 @@ void OdczytPrzerwan(vector<Maintenance*> &listaPrzerwan) {
 	}
 }
 
+vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, int iloscZadan) {
+	// Utworzenie kopii zadañ aby móc tworzyæ swoje rozwi¹zanie
+		vector<Task*> zadaniaLokalne(listaZadan);
+	
+	// Pêtla operacyjna tworzenia losowego rozwi¹zania	
+		
+		return zadaniaLokalne;
+}
+
+void PodzielPrzerwyNaMaszyny(vector<Maintenance*> &listaPrzerwan, vector<Maintenance*> &przerwaniaFirstProcessor, vector<Maintenance*> &przerwaniaSecondProcessor) {
+	// Zmienna pomocnicza by skróciæ czas pracy (nie trzeba x razy liczyæ)
+		int size = listaPrzerwan.size();
+
+	//Sprawdzamy do jakiej maszyny przypisane mamy przerwanie	
+		for(int i = 0; i < size; i++) {
+			Maintenance * przerwa = listaPrzerwan[i];
+			if(przerwa->assigment == 0) {
+				przerwaniaFirstProcessor.push_back(przerwa);
+			} else {
+				przerwaniaSecondProcessor.push_back(przerwa);
+			}
+		}	
+}
+
+void SortujPrzerwania(vector<Maintenance*> &listaPrzerwan) {
+	// U¿ywamy algorytmicznej funkcji sort z ustawionym trybem sortowania aby przyspieszyæ pracê
+		sort(listaPrzerwan.begin(), listaPrzerwan.end(), sortMaintenance);
+}
+
 int main() {
-	int rozmiarInstancji = 50;
+	int rozmiarInstancji = 5;
 	int numerInstancjiProblemu = 0;
 	
 	// Utworzenie wektora na n zadañ
@@ -231,6 +272,15 @@ int main() {
 
 	// Wczytanie danych z pliku
 		WczytajDaneZPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu);
+		OdczytPrzerwan(listaPrzerwan);
+		
+		vector<Maintenance*> przerwaniaFirstProcessor;
+		vector<Maintenance*> przerwaniaSecondProcessor;
+		PodzielPrzerwyNaMaszyny(listaPrzerwan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
+		SortujPrzerwania(listaPrzerwan);
+		OdczytPrzerwan(listaPrzerwan);
+		
+		GeneratorLosowy(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, rozmiarInstancji);
 		
 	return 0;
 }
