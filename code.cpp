@@ -16,11 +16,11 @@ using namespace std;
 
 // Struktura danych w pamiêci
 struct Task {
-	int part_1_assign; // PrzydziaÅ‚ zadania pierwszego do maszyny x = [0, 1]
-	int time_part_1; // Czas czêœci 1 zadania
-	int time_part_2; // Czas czêœci 2 zadania
-	int end_time_1; // Moment zakoñczenia czêœci 1
-	int end_time_2; // Moment zakoñczenia czêœci 2
+	int assigment; // PrzydziaÅ‚ zadania pierwszego do maszyny x = [0, 1]
+	int durationFirstPart; // Czas czêœci 1 zadania
+	int durationSecondPart; // Czas czêœci 2 zadania
+	int timeEndFirstPart; // Moment zakoñczenia czêœci 1
+	int timeEndSecondPart; // Moment zakoñczenia czêœci 2
 };
 
 struct Maintenance {
@@ -34,8 +34,7 @@ void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstPro
 	srand(time(NULL));
 	
 	int size = (upperReadyTime - lowerReadyTime) + (upperTimeLimit - lowerTimeLimit);
-	bool * maintenanceTimeTableFirstProcessor = new bool[size] {}; 
-	bool * maintenanceTimeTableSecondProcessor = new bool[size] {};
+	bool * maintenanceTimeTable = new bool[size] {}; // Jedna tablica bo przerwania na maszynach nie mog¹ siê nak³adaæ na siebie 
 	
 	int liczbaPrzerwan = liczbaPrzerwanFirstProcessor + liczbaPrzerwanSecondProcessor;
 	
@@ -70,27 +69,23 @@ void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstPro
 				
 				startTimeCheck = readyTime - lowerReadyTime;
 				stopTimeCheck = startTimeCheck + duration;
-				// Sprawdzenie
+				// Sprawdzenie czy mo¿na daæ przerwanie od readyTime
 					bool repeatCheck = false;
 					for(int j = startTimeCheck; j < stopTimeCheck; j++) {
-						if(maintenanceTimeTableSecondProcessor[j] == true || maintenanceTimeTableFirstProcessor[j] == true) {
-								repeatCheck = true;
-								break;
+						if(maintenanceTimeTable[j]) {
+							repeatCheck = true;
+							break; // Konieczne jest ponowne losowanie czasu rozpoczêcia
 						}
 					}
 					
-					if(repeatCheck == false) {
-						break;
+					if(!repeatCheck) {
+						break; // Mo¿na opuœciæ pêtle while - znaleziono konfiguracjê dla przerwania
 					}
-				
 			}
 			
 			// Zapis przerwania w tablicy pomocniczej
 				for(int j = startTimeCheck; j < stopTimeCheck; j++) {
-					if(przerwa->assigment == 0)
-						maintenanceTimeTableFirstProcessor[j] = true;
-					else
-						maintenanceTimeTableSecondProcessor[j] = true;
+					maintenanceTimeTable[j] = true;
 				}
 			
 			// Uzupe³nienie danych o przerwaniu
@@ -103,22 +98,22 @@ void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstPro
 }
 
 // Generator instancji problemu
-void GeneratorInstancji(vector<Task*> &lista, int n, int lower_limit, int upper_limit) {
+void GeneratorInstancji(vector<Task*> &lista, int n, int lowerTimeLimit, int upperTimeLimit) {
 	srand(time(NULL));
 	
 	for(int i = 0; i < n; i++) {
 		Task * zadanie = new Task;
 		
 		// Przydzia³ maszyny do czêœci 1 zadania
-			zadanie->part_1_assign = rand() % 2;
+			zadanie->assigment = rand() % 2;
 		
 		// Randomy na czas trwania zadania
-			zadanie->time_part_1 = lower_limit + (int)(rand() / (RAND_MAX + 1.0) * upper_limit);
-			zadanie->time_part_2 = lower_limit + (int)(rand() / (RAND_MAX + 1.0) * upper_limit);
+			zadanie->durationFirstPart = lowerTimeLimit + (int)(rand() / (RAND_MAX + 1.0) * upperTimeLimit);
+			zadanie->durationSecondPart = lowerTimeLimit + (int)(rand() / (RAND_MAX + 1.0) * upperTimeLimit);
 			
 		// Czas zakoñczenia póki co ustawiony na 0 = zadanie nie by³o u¿ywane
-			zadanie->end_time_1 = 0;
-			zadanie->end_time_2 = 0;
+			zadanie->timeEndFirstPart = 0;
+			zadanie->timeEndSecondPart = 0;
 		
 		// Dodanie zadania do listy
 			lista.push_back(zadanie);	
@@ -136,14 +131,8 @@ void ZapiszInstancjeDoPliku(vector<Task*> &lista, int numer_instancji_problemu) 
 		// Uzupe³nienie pliku o wygenerowane czasy pracy
 			int ilosc_zadan = lista.size();
 			for(int i = 0; i< ilosc_zadan; i++) {
-				file << lista[i]->time_part_1 << ":" << lista[i]->time_part_2 << ":"
-				<< lista[i]->part_1_assign << ":";
-				
-				if(lista[i]->part_1_assign == 0) {
-					file << "1;" << endl;
-				} else {
-					file << "0;" << endl;
-				}
+				file << lista[i]->durationFirstPart << ":" << lista[i]->durationSecondPart << ":"
+				<< lista[i]->assigment << ":" << 1 - lista[i]->assigment << ";" << endl;
 			}
 		
 		// Uzupe³nienie pliku o czasy przestojów maszyn
