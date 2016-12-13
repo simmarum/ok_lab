@@ -27,7 +27,7 @@ struct Maintenance {
 	int assigment; // Numer maszyny
 	int readyTime; // Czas gotowoœci (pojawienia siê)
 	int duration; // Czas trwania przerwania
-} maintenance;
+};
 
 // Funkcja pomocnicza u¿ywana w sortowaniu przerwañ
 bool sortMaintenance(Maintenance * i, Maintenance * j) {return (i->readyTime < j->readyTime); }
@@ -226,6 +226,67 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 		vector<Task*> zadaniaLokalne(listaZadan);
 	
 	// Pêtla operacyjna tworzenia losowego rozwi¹zania	
+		int numerPrzerwaniaFirstProcessor = 0;
+		int numerPrzerwaniaSecondProcessor = 0;
+		int count = 0;
+		int numerZadania = 0;
+		int najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
+		int najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime;
+		int timeFirstProcessor = 0;
+		int timeSecondProcessor = 0;
+		
+	// Tworzymy dwie tablice pomocnicze do sprawdzania czy zadanie by³o ju¿ uwzglêdnione
+		bool * firstPart = new bool[iloscZadan] {};
+		bool * secondPart = new bool[iloscZadan] {};
+		
+		while(count < iloscZadan) {
+			// Losujemy numer zadania
+				numerZadania = rand() % iloscZadan;
+			
+			// Sprawdzamy czy nie by³o ju¿ przypadkiem u¿yte ca³e - w takim przypadku robimy kolejn¹ iteracjê pêtli i losujemy na nowo numer zadania
+				if(firstPart[numerZadania] && secondPart[numerZadania])
+					break;
+				
+			// Zadanie nie by³o jeszcze u¿ywane
+				if(!firstPart[numerZadania]) {
+					// Sprawdzamy typ zadania
+					if(zadaniaLokalne[numerZadania]->assigment == 0) { // Przydzia³ na pierwsz¹ maszynê
+						// Sprawdzamy czy zadanie mo¿na umieœciæ przed maintenance najbli¿szym (je¿eli -1 to nie wyst¹pi)
+						if((timeFirstProcessor + zadaniaLokalne[numerZadania]->durationFirstPart) <= najblizszyMaintenanceFirstProcessor || (najblizszyMaintenanceFirstProcessor == -1)) {
+							// Ustawiamy czas na maszynie pierwszej
+								timeFirstProcessor += zadaniaLokalne[numerZadania]->durationFirstPart;
+							
+							// Ustawiamy czas zakoñczenia zadania
+								zadaniaLokalne[numerZadania]->timeEndFirstPart = timeFirstProcessor;
+								
+							// Ustawiamy ¿e zadanie zosta³o u¿yte (part I)
+								firstPart[numerZadania] = true;	
+							
+						} else { // Nie umieœciliœmy zadania przed przerw¹
+							// Ustawiamy zadanie po przerwaniu
+								zadaniaLokalne[numerZadania]->timeEndFirstPart = zadaniaLokalne[numerZadania]->durationFirstPart + najblizszyMaintenanceFirstProcessor + listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->duration;
+							
+							// Ustawiamy czas nastêpnego przerwania
+								numerPrzerwaniaFirstProcessor++;
+								if(numerPrzerwaniaFirstProcessor < listaPrzerwanFirstProcessor.size())
+									najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
+								else
+									najblizszyMaintenanceFirstProcessor = -1;
+									
+							// Ustawiamy zmienn¹ czasow¹ na prawid³ow¹ wartoœæ
+								timeFirstProcessor = zadaniaLokalne[numerZadania]->timeEndFirstPart;
+							
+							// Zaznaczamy w tablicy pomocniczej ¿e czêœæ pierwsza zadania by³a u¿yta
+								firstPart[numerZadania] = true;									
+						}
+						
+						// Zwiêkszamy iloœæ zadañ jakie przerobiliœmy
+							count++;
+					}
+				} else { // Czêœæ pierwsza by³a u¿yta, trzeba wstawiæ czêœæ drug¹
+					
+				}
+		}
 		
 		return zadaniaLokalne;
 }
@@ -253,20 +314,20 @@ void SortujPrzerwania(vector<Maintenance*> &listaPrzerwan) {
 int main() {
 	int rozmiarInstancji = 5;
 	int numerInstancjiProblemu = 0;
-	
+
 	// Utworzenie wektora na n zadañ
 		vector<Task*> listaZadan;
-	
+
 	// Wektor przerwañ pracy na maszynach
 		vector<Maintenance*> listaPrzerwan; 
-	
+
 	// Wygenerowanie zadañ
 		// GeneratorInstancji(listaZadan, rozmiarInstancji, 5, 15);
-		
+
 	// Wygenerowanie przerwañ	
 		// GeneratorPrzestojow(listaPrzerwan, 2, 2, 1, 10, 0, 50);
 		// OdczytPrzerwan(listaPrzerwan);
-		
+
 	// Zapis danych do pliku
 		// ZapiszInstancjeDoPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu);
 
@@ -276,9 +337,8 @@ int main() {
 		
 		vector<Maintenance*> przerwaniaFirstProcessor;
 		vector<Maintenance*> przerwaniaSecondProcessor;
-		PodzielPrzerwyNaMaszyny(listaPrzerwan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 		SortujPrzerwania(listaPrzerwan);
-		OdczytPrzerwan(listaPrzerwan);
+		PodzielPrzerwyNaMaszyny(listaPrzerwan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 		
 		GeneratorLosowy(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, rozmiarInstancji);
 		
