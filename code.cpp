@@ -106,6 +106,9 @@ void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstPro
 			// Dodanie przestoju do listy
 				lista.push_back(przerwa);
 	}
+	
+	// Czyszczenie pamiêci - zwalnianie niepotrzebnych zasobów
+		delete maintenanceTimeTable;
 }
 
 // Generator instancji problemu
@@ -158,6 +161,23 @@ void ZapiszInstancjeDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &lis
 	}	
 	
 	file.close();
+}
+
+void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, int numerInstancjiProblemu) {
+	ofstream file;
+	file.open("wynik.txt");	
+	
+	if(file.is_open()) {
+		file << "**** WYNIKI DLA " << numerInstancjiProblemu << " ****" << endl;
+		
+		// Uzupe³nienie pliku o rozwi¹zanie
+			int iloscZadan = listaZadan.size();			
+			for(int i = 0; i < iloscZadan; i++) {
+				file << listaZadan[i]->durationFirstPart << ":" << listaZadan[i]->durationSecondPart << ":"
+				<< listaZadan[i]->assigment << ":" << 1 - listaZadan[i]->assigment << ":" 
+				<< listaZadan[i]->timeEndFirstPart << ":" << listaZadan[i]->timeEndSecondPart << ";" << endl;
+			}
+	}
 }
 
 // Wczytywanie instancji z pliku do pamiêci
@@ -233,22 +253,25 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 	// Utworzenie kopii zadañ aby móc tworzyæ swoje rozwi¹zanie
 		vector<Task*> zadaniaLokalne(listaZadan);
 	
-	// Pêtla operacyjna tworzenia losowego rozwi¹zania	
-		int numerPrzerwaniaFirstProcessor = 0;
-		int numerPrzerwaniaSecondProcessor = 0;
-		int count = 0;
-		int numerZadania = 0;
-		int najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
-		int najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime;
-		int timeFirstProcessor = 0;
-		int timeSecondProcessor = 0;
+	// Zmienne u¿ywane w przebiegu pracy GeneratoraLosowego	
+		int numerPrzerwaniaFirstProcessor = 0; // Numer aktualnego przerwania na procesorze pierwszym
+		int numerPrzerwaniaSecondProcessor = 0; // Numer aktualnego przerwania na procesorze drugim
+		int count = 0; // Licznik przeliczonych ju¿ zadañ
+		int numerZadania = 0; // Numer aktualnie rozpatrywanego zadania (losowe)
+		int najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime; // Czas momentu ROZPOCZÊCIA przerwania na procesorze pierwszym
+		int najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime; // Czas momentu ROZPOCZÊCIA przerwania na procesorze drugim 
+		int timeFirstProcessor = 0; // Zmienna czasowa - procesor pierwszy
+		int timeSecondProcessor = 0; // Zmienna czasowa - procesor drugi
+		int maxCount = 2 * iloscZadan; // Iloœæ koniecznych edycji w zadaniach (part I + part II w ka¿dym zadaniu)
+		int listaPrzerwanFirstProcessorSize = listaPrzerwanFirstProcessor.size(); // Iloœæ przerwañ dla pierwszego procesora - aby nie liczyæ za ka¿dym razem tej wartoœci
+		int listaPrzerwanSecondProcessorSize = listaPrzerwanSecondProcessor.size(); // Iloœæ przerwañ dla drugiej maszyny - podonie jak wy¿ej, unikamy niepotrzebnego, wielokrotnego liczenia tej wartoœci
 		
 	// Tworzymy dwie tablice pomocnicze do sprawdzania czy zadanie by³o ju¿ uwzglêdnione
-		bool * firstPart = new bool[iloscZadan];
-		bool * secondPart = new bool[iloscZadan];
+		bool * firstPart = new bool[iloscZadan]; // Czêœæ I zadania - czy by³a uwzglêdniona (jeœli tak to true)
+		bool * secondPart = new bool[iloscZadan]; // Czêœæ II zadania - czy by³a uwzglêdniona (jeœli tak to true)
 	
 	// Licznik odwiedzin w ka¿dym z zadañ
-		int * licznikOdwiedzonych = new int[iloscZadan];
+		int * licznikOdwiedzonych = new int[iloscZadan]; // Licznik odwiedzeñ w danym zadaniu aby unikaæ pêtli
 		
 	// Pêtla startowa zeruj¹ca tablice
 		for(int i = 0; i < iloscZadan; i++) {
@@ -257,10 +280,11 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 			licznikOdwiedzonych[i] = 0;
 		}
 		
+	// Dane pomocnicze do DEBUG MODE by posiadaæ zapis do pliku
 		ofstream file;
-		file.open("wynik.txt");	
+		file.open("debug.txt");	
 	
-		while(count < 2*iloscZadan) {
+		while(count < maxCount) {
 			// Losujemy numer zadania
 				numerZadania = rand() % iloscZadan;
 			
@@ -302,7 +326,7 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 								
 								// Ustawiamy czas nastêpnego przerwania
 									numerPrzerwaniaFirstProcessor++;
-									if(numerPrzerwaniaFirstProcessor < listaPrzerwanFirstProcessor.size())
+									if(numerPrzerwaniaFirstProcessor < listaPrzerwanFirstProcessorSize)
 										najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
 									else
 										najblizszyMaintenanceFirstProcessor = -1;
@@ -353,7 +377,7 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 								
 								// Ustawiamy czas nastêpnego przerwania
 									numerPrzerwaniaSecondProcessor++;
-									if(numerPrzerwaniaSecondProcessor < listaPrzerwanSecondProcessor.size())
+									if(numerPrzerwaniaSecondProcessor < listaPrzerwanSecondProcessorSize)
 										najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime;
 									else
 										najblizszyMaintenanceSecondProcessor = -1;
@@ -396,20 +420,18 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 							if(licznikOdwiedzonych[numerZadania] >= MIN_TASK_COUNTER) {
 								if(DEBUG)
 									cout << "Przestawiono czas! M1" << endl;
-								// Tworzymy pomocnicz¹ tabelê odleg³oœci
-									int * timeToStart = new int[iloscZadan];
+								// Tworzymy pomocnicz¹ zmienn¹ odleg³oœci
 									int minTime = 99999999;
+									int tempTime = 0;
 									
 								// Resetujemy liczniki i patrzymy na odleg³oœci
 									for(int i = 0; i < iloscZadan; i++) {
 										licznikOdwiedzonych[i] = 0;
 										
-										if(secondPart[i]) {
-											timeToStart[i] = -1;
-										} else {
-											timeToStart[i] = zadaniaLokalne[i]->timeEndFirstPart - timeSecondProcessor;
-											if(timeToStart[i] < minTime)
-												minTime = timeToStart[i];
+										if(!secondPart[i]) {
+											int tempTime = zadaniaLokalne[i]->timeEndFirstPart - timeSecondProcessor;
+											if(tempTime < minTime)
+												minTime = tempTime;
 										}
 									}
 									
@@ -440,7 +462,7 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 									
 									// Ustawiamy czas nastêpnego przerwania
 										numerPrzerwaniaSecondProcessor++;
-										if(numerPrzerwaniaSecondProcessor < listaPrzerwanSecondProcessor.size())
+										if(numerPrzerwaniaSecondProcessor < listaPrzerwanSecondProcessorSize)
 											najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime;
 										else
 											najblizszyMaintenanceSecondProcessor = -1;
@@ -471,20 +493,18 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 								if(DEBUG)
 									cout << "Przestawiono czas! M0" << endl;
 									
-								// Tworzymy pomocnicz¹ tabelê odleg³oœci
-									int * timeToStart = new int[iloscZadan];
+								// Tworzymy pomocnicz¹ zmienn¹ odleg³oœci
 									int minTime = 99999999;
+									int tempTime = 0;
 									
 								// Resetujemy liczniki i patrzymy na odleg³oœci
 									for(int i = 0; i < iloscZadan; i++) {
 										licznikOdwiedzonych[i] = 0;
 										
-										if(secondPart[i]) {
-											timeToStart[i] = -1;
-										} else {
-											timeToStart[i] = zadaniaLokalne[i]->timeEndFirstPart - timeFirstProcessor;
-											if(timeToStart[i] < minTime)
-												minTime = timeToStart[i];
+										if(!secondPart[i]) {
+											tempTime = zadaniaLokalne[i]->timeEndFirstPart - timeFirstProcessor;
+											if(tempTime < minTime)
+												minTime = tempTime;
 										}
 									}
 									
@@ -515,7 +535,7 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 									
 									// Ustawiamy czas nastêpnego przerwania
 										numerPrzerwaniaFirstProcessor++;
-										if(numerPrzerwaniaFirstProcessor < listaPrzerwanFirstProcessor.size())
+										if(numerPrzerwaniaFirstProcessor < listaPrzerwanFirstProcessorSize)
 											najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
 										else
 											najblizszyMaintenanceFirstProcessor = -1;
@@ -541,6 +561,11 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 					}
 				}
 		}
+		
+		// Czyszczenie pamiêci - zwalnianie niepotrzebnych zasobów
+			delete firstPart;
+			delete secondPart;
+			delete licznikOdwiedzonych;
 		
 		return zadaniaLokalne;
 }
@@ -575,7 +600,7 @@ void SortujPrzerwania(vector<Maintenance*> &listaPrzerwan) {
 
 int main() {
 	int rozmiarInstancji = 15;
-	int numerInstancjiProblemu = 0;
+	int numerInstancjiProblemu = 1;
 
 	// Utworzenie wektora na n zadañ
 		vector<Task*> listaZadan;
@@ -604,6 +629,15 @@ int main() {
 		
 		GeneratorLosowy(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, rozmiarInstancji);
 		
-		OdczytDanychZadan(listaZadan);
+//		OdczytDanychZadan(listaZadan);
+		
+		ZapiszWynikiDoPliku(listaZadan, numerInstancjiProblemu);
+	
+	// Czyszczenie pamiêci - zwalnianie niepotrzebnych zasobów
+		przerwaniaFirstProcessor.clear();
+		przerwaniaSecondProcessor.clear();
+		listaPrzerwan.clear();
+		listaZadan.clear();
+	
 	return 0;
 }
