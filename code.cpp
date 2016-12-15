@@ -625,60 +625,27 @@ void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan) 
 	int iloscPrzerwan = listaPrzerwan.size(); // Iloœæ okresów przestojów na maszynach
 	
 	ofstream file;
-	file.open("index.php");
+	file.open("index.html");
 	file << "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
 	file << "<title>OK - Wyniki pracy generatora</title></head><body><script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>";
 	file << "<script type=\"text/javascript\">google.charts.load(\"current\", {packages:[\"timeline\"]});google.charts.setOnLoadCallback(drawChart);function drawChart() {";
 	file << "var container = document.getElementById('example4.2');var chart = new google.visualization.Timeline(container);var dataTable = new google.visualization.DataTable();";
-	file << "dataTable.addColumn({ type: 'string', id: 'Role' });dataTable.addColumn({ type: 'string', id: 'Name' });dataTable.addColumn({ type: 'date', id: 'Start' });dataTable.addColumn({ type: 'date', id: 'End' });dataTable.addRows([";
+	file << "dataTable.addColumn({ type: 'string', id: 'Role' });dataTable.addColumn({ type: 'string', id: 'Name' });dataTable.addColumn({ type: 'number', id: 'Start' });dataTable.addColumn({ type: 'number', id: 'End' });dataTable.addRows([";
 	
 	int timeStart = 0;
-	int secondsStart = 0;
-	int minutesStart = 0;
-	int hoursStart = 0;
-	
 	int timeStop = 0;
-	int secondsStop = 0;
-	int minutesStop = 0;
-	int hoursStop = 0;
-	
+
 	// Zapisujemy do pliku nasze zadania
 		for(int i = 0; i < iloscZadan; i++) {
 			timeStop = listaZadan[i]->timeEndFirstPart;
 			timeStart = timeStop - listaZadan[i]->durationFirstPart;
-			
-			hoursStop = timeStop / 3600;
-			timeStop = timeStop % 3600;
-			minutesStop = timeStop / 60;
-			timeStop = timeStop % 60;
-			secondsStop = timeStop;
-			
-			hoursStart = timeStart / 3600;
-			timeStart = timeStart % 3600;
-			minutesStart = timeStart / 60;
-			timeStart = timeStart % 60;
-			secondsStart = timeStart;
-			
-			file << "[ 'M" << listaZadan[i]->assigment + 1 << "', 'Zadanie " << i + 1 << "', new Date(0,0,0," << hoursStart << "," << minutesStart 
-				 << "," << secondsStart << "), new Date(0,0,0," << hoursStop << "," << minutesStop << "," << secondsStop << ") ]," << endl;
+
+			file << "[ 'M" << listaZadan[i]->assigment + 1 << "', 'Zadanie " << i + 1 << "', " << timeStart << "," << timeStop << "]," << endl;
 			
 			timeStop = listaZadan[i]->timeEndSecondPart;
 			timeStart = timeStop - listaZadan[i]->durationSecondPart;
-			
-			hoursStop = timeStop / 3600;
-			timeStop = timeStop % 3600;
-			minutesStop = timeStop / 60;
-			timeStop = timeStop % 60;
-			secondsStop = timeStop;
-			
-			hoursStart = timeStart / 3600;
-			timeStart = timeStart % 3600;
-			minutesStart = timeStart / 60;
-			timeStart = timeStart % 60;
-			secondsStart = timeStart;
-		
-			file << "[ 'M" << 2 - listaZadan[i]->assigment << "', 'Zadanie " << i + 1 << "', new Date(0,0,0," << hoursStart << "," << minutesStart 
-				 << "," << secondsStart << "), new Date(0,0,0," << hoursStop << "," << minutesStop << "," << secondsStop << ") ]," << endl;
+
+			file << "[ 'M" << 2 - listaZadan[i]->assigment << "', 'Zadanie " << i + 1 << "', " << timeStart << ", " << timeStop << " ]," << endl;
 		}
 		
 	// Zapis przerwañ
@@ -686,25 +653,11 @@ void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan) 
 			timeStart = listaPrzerwan[i]->readyTime;
 			timeStop = timeStart + listaPrzerwan[i]->duration;
 			
-			hoursStop = timeStop / 3600;
-			timeStop = timeStop % 3600;
-			minutesStop = timeStop / 60;
-			timeStop = timeStop % 60;
-			secondsStop = timeStop;
-			
-			hoursStart = timeStart / 3600;
-			timeStart = timeStart % 3600;
-			minutesStart = timeStart / 60;
-			timeStart = timeStart % 60;
-			secondsStart = timeStart;
-			
 			if(i + 1 == iloscPrzerwan) { // Ostatnia iteracja
-				file << "[ 'M" << listaPrzerwan[i]->assigment + 1 << "', 'PRZERWANIE " << i + 1 << "', new Date(0,0,0," << hoursStart << "," << minutesStart 
-					 << "," << secondsStart << "), new Date(0,0,0," << hoursStop << "," << minutesStop << "," << secondsStop << ") ]]);" << endl;
+				file << "[ 'M" << listaPrzerwan[i]->assigment + 1 << "', 'PRZERWANIE " << i + 1 << "', " << timeStart << ", " << timeStop << " ]]);" << endl;
 				file << "var options = {timeline: { groupByRowLabel: true }};chart.draw(dataTable, options);}</script><div id=\"example4.2\" style=\"height: 200px;\"></div></body></html>" << endl;
 			} else {
-				file << "[ 'M" << listaPrzerwan[i]->assigment + 1 << "', 'PRZERWANIE " << i + 1 << "', new Date(0,0,0," << hoursStart << "," << minutesStart 
-					 << "," << secondsStart << "), new Date(0,0,0," << hoursStop << "," << minutesStop << "," << secondsStop << ") ]," << endl;
+				file << "[ 'M" << listaPrzerwan[i]->assigment + 1 << "', 'PRZERWANIE " << i + 1 << "', " << timeStart << ", " << timeStop << " ]," << endl;
 			}
 		}
 }
