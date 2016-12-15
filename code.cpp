@@ -620,13 +620,13 @@ void SortujPrzerwania(vector<Maintenance*> &listaPrzerwan) {
 }
 
 // Tworzenie timeline dla obserwacji wyników pracy
-void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan) {
+void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, long int wynik) {
 	int iloscZadan = listaZadan.size(); // Iloœæ zadañ w systemie
 	int iloscPrzerwan = listaPrzerwan.size(); // Iloœæ okresów przestojów na maszynach
 	
 	ofstream file;
 	file.open("index.html");
-	file << "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
+	file << "<!DOCTYPE html><html lang=\"en\"><head><meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" /><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
 	file << "<title>OK - Wyniki pracy generatora</title></head><body><script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>";
 	file << "<script type=\"text/javascript\">google.charts.load(\"current\", {packages:[\"timeline\"]});google.charts.setOnLoadCallback(drawChart);function drawChart() {";
 	file << "var container = document.getElementById('example4.2');var chart = new google.visualization.Timeline(container);var dataTable = new google.visualization.DataTable();";
@@ -655,11 +655,23 @@ void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan) 
 			
 			if(i + 1 == iloscPrzerwan) { // Ostatnia iteracja
 				file << "[ 'M" << listaPrzerwan[i]->assigment + 1 << "', 'PRZERWANIE " << i + 1 << "', " << timeStart << ", " << timeStop << " ]]);" << endl;
-				file << "var options = {timeline: { groupByRowLabel: true }};chart.draw(dataTable, options);}</script><div id=\"example4.2\" style=\"height: 200px;\"></div></body></html>" << endl;
+				file << "var options = {timeline: { groupByRowLabel: true }};chart.draw(dataTable, options);}</script><div id=\"example4.2\" style=\"height: 200px;\"></div><br><div><span>Wartosc funkcji celu: " << wynik << "</span></div></body></html>" << endl;
 			} else {
 				file << "[ 'M" << listaPrzerwan[i]->assigment + 1 << "', 'PRZERWANIE " << i + 1 << "', " << timeStart << ", " << timeStop << " ]," << endl;
 			}
 		}
+}
+
+// Obliczanie wartoœci funkcji celu
+long int ObliczFunkcjeCelu(vector<Task*> &listaZadan) {
+	int size = listaZadan.size();
+	long int sum = 0;
+	
+	for(int i = 0; i < size; i++) {
+		sum += listaZadan[i]->timeEndFirstPart + listaZadan[i]->timeEndSecondPart;
+	}
+	
+	return sum;
 }
 
 int main() {
@@ -698,7 +710,8 @@ int main() {
 		
 		ZapiszWynikiDoPliku(listaZadan, numerInstancjiProblemu);
 		
-		UtworzGraf(listaZadan, listaPrzerwan);
+		long int wynik = ObliczFunkcjeCelu(listaZadan);
+		UtworzGraf(listaZadan, listaPrzerwan, wynik);		
 	
 	// Czyszczenie pamiêci - zwalnianie niepotrzebnych zasobów
 		przerwaniaFirstProcessor.clear();
