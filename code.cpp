@@ -35,15 +35,18 @@ using namespace std;
 #define INSTANCE_SIZE 15 // Rozmiar instancji problemu
 #define INSTANCE_NUMBER 1 // Numer instancji problemu (mo¿e byæ zmieniana przy odczycie danych z pliku)
 
+#define MAX_DURATION_PROGRAM_TIME 1000 // Maksymalna d³ugoœæ trwania programu
+
 ofstream debugFile; // Zmienna globalna u¿ywana przy DEBUG mode
 
 // Struktura danych w pamiêci
-struct Task {
-	int assigment; // PrzydziaÅ‚ zadania pierwszego do maszyny x = [0, 1]
-	int durationFirstPart; // Czas czêœci 1 zadania
-	int durationSecondPart; // Czas czêœci 2 zadania
-	int timeEndFirstPart; // Moment zakoñczenia czêœci 1
-	int timeEndSecondPart; // Moment zakoñczenia czêœci 2
+struct Task{
+	int id; // ID zadania
+	int part; // Numer czêœci zadania [0, 1]
+	int assigment; // Przydzia³ zadania do maszyny [0, 1]
+	int duration; // D³ugoœæ zadania
+	int endTime; // Moment zakoñczenia
+	Struct *anotherPart; // WskaŸnik na komplementarne zadanie
 };
 
 struct Maintenance {
@@ -54,6 +57,9 @@ struct Maintenance {
 
 // Funkcja pomocnicza u¿ywana w sortowaniu przerwañ
 bool sortMaintenance(Maintenance * i, Maintenance * j) {return (i->readyTime < j->readyTime); }
+
+// Pomocnicza funkcja u¿ywana przy sortowaniu zadañ
+bool sortTask(Task *i, Task *j) { return (i->endTime < j->endTime); }
 
 // Generator przestojóww na maszynie
 void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstProcessor, int liczbaPrzerwanSecondProcessor, int lowerTimeLimit, int upperTimeLimit, int lowerReadyTime, int upperReadyTime) {
@@ -131,25 +137,36 @@ void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstPro
 }
 
 // Generator instancji problemu
-void GeneratorInstancji(vector<Task*> &lista, int n, int lowerTimeLimit, int upperTimeLimit) {
+void GeneratorInstancji(vector<Task*> &lista, int maxTask, int lowerTimeLimit, int upperTimeLimit) {
 	srand(time(NULL));
+	int assigment = 0;
 	
-	for(int i = 0; i < n; i++) {
-		Task * zadanie = new Task;
+	for(int i = 0; i < maxTask; i++) {
+		Task * taskFirst = new Task;
+		Task * taskSecond = new Task;
 		
-		// Przydzia³ maszyny do czêœci 1 zadania
-			zadanie->assigment = rand() % 2;
+		// Przypisujemy ID zadania
+			taskFirst->ID = i + 1;
+			taskSecond->ID = i + 1;
 		
-		// Randomy na czas trwania zadania
-			zadanie->durationFirstPart = lowerTimeLimit + (int)(rand() / (RAND_MAX + 1.0) * upperTimeLimit);
-			zadanie->durationSecondPart = lowerTimeLimit + (int)(rand() / (RAND_MAX + 1.0) * upperTimeLimit);
+		// Losujemy przydzia³ czêœci pierwszej zadania na maszynê
+			assigment = rand() % 2;
+		
+		// Uzupe³niamy dane przydzia³ów
+			taskFirst->assigment = assigment;
+			taskSecond->assigment = 1 - assigment;
+		
+		// Randomy na czas trwania zadañ
+			taskFirst->duration = lowerTimeLimit + (int)(rand() / (RAND_MAX + 1.0) * upperTimeLimit);
+			taskSecond->duration = lowerTimeLimit + (int)(rand() / (RAND_MAX + 1.0) * upperTimeLimit);
 			
-		// Czas zakoñczenia póki co ustawiony na 0 = zadanie nie by³o u¿ywane
-			zadanie->timeEndFirstPart = 0;
-			zadanie->timeEndSecondPart = 0;
+		// Czas zakoñczenia póki co ustawiony na 0 = zadania nie by³y jeszcze zakolejkowane
+			taskFirst->endTime = 0;
+			taskSecond->endTime = 0;
 		
-		// Dodanie zadania do listy
-			lista.push_back(zadanie);	
+		// Dodanie zadañ do listy
+			lista.push_back(taskFirst);
+			lista.push_back(taskSecond);	
 	}
 }
 
