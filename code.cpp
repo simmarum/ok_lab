@@ -151,6 +151,11 @@ void SortujZadaniaPoID(vector<Task*> &listaZadan) {
 	sort(listaZadan.begin(), listaZadan.end(), sortTaskByID);
 }
 
+// Sortowanie zadañ wed³ug rosn¹cego czasu zakoñczenia pracy
+void SortujZadaniaPoEndTime(vector<Task*> &listaZadan) {
+	sort(listaZadan.begin(), listaZadan.end(), sortTask);
+}
+
 // Generator instancji problemu
 void GeneratorInstancji(vector<Task*> &lista, int maxTask, int lowerTimeLimit, int upperTimeLimit) {
 	srand(time(NULL));
