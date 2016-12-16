@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <sstream>
 #include <fstream> 
 #include <climits> // INT_MAX do generatora losowego
 #include <algorithm> // Sortowanie przerwañ
@@ -18,7 +19,7 @@
 using namespace std;
 
 // DEFINICJE GLOBALNE
-#define DEBUG false // TRYB DEBUGOWANIA [true / false]
+#define DEBUG true // TRYB DEBUGOWANIA [true / false]
 #define MIN_TASK_COUNTER 30 // PO ilu iteracjach sprawdzaæ zapêtlenie [Wartoœæ liczbowa > 0]
 
 #define LOWER_TIME_TASK_LIMIT 5 // Dolne ograniczenie d³ugoœci zadania [Wartoœæ liczbowa > 0]
@@ -33,7 +34,7 @@ using namespace std;
 #define LOWER_READY_TIME_MAINTENANCE_LIMIT 0 // Dolne ograniczenie czasu gotowoœci przerwania [Wartoœæ liczbowa > 0]
 #define UPPER_READY_TIME_MAINTENANCE_LIMIT 200 // Górne ograniczenie czasu gotowoœci przerwania [Wartoœæ liczbowa > 0]
 
-#define INSTANCE_SIZE 4 // Rozmiar instancji problemu
+#define INSTANCE_SIZE 15 // Rozmiar instancji problemu
 #define INSTANCE_NUMBER 1 // Numer instancji problemu (mo¿e byæ zmieniana przy odczycie danych z pliku)
 
 #define MAX_DURATION_PROGRAM_TIME 1000 // Maksymalna d³ugoœæ trwania programu
@@ -158,6 +159,14 @@ void GeneratorInstancji(vector<Task*> &lista, int maxTask, int lowerTimeLimit, i
 		Task * taskFirst = new Task;
 		Task * taskSecond = new Task;
 		
+		// Powi¹zujemy miêdzy sob¹ zadania
+			taskFirst->anotherPart = taskSecond;
+			taskSecond->anotherPart = taskFirst;
+			
+		// Przypisujemy pararametr part
+			taskFirst->part = 0;
+			taskSecond->part = 1;
+		
 		// Przypisujemy ID zadania
 			taskFirst->ID = i + 1;
 			taskSecond->ID = i + 1;
@@ -189,9 +198,7 @@ void ZapiszInstancjeDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &lis
 		ofstream file;
 	
 	// Utworzenie zmiennej pomocniczej w postaci nazwy pliku aby móc parametryzowaæ zapis danych
-		string fileName = "instancje_";
-		fileName.append(nameParam);
-		fileName.append(".txt");
+		string fileName = "instancje_" + nameParam + ".txt";
 		file.open(fileName.c_str());	
 	
 	if(file.is_open()) {
@@ -242,17 +249,14 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, int numerInstancjiProblemu, 
 		// Uzupe³nienie pliku o rozwi¹zanie
 			int iloscZadan = listaZadan.size();	
 		
-		// TODO
-			// DODAÆ ZAPIS WYNIKU OPERACJI DO PLIKU
+		// TODO DODAÆ ZAPIS WYNIKU OPERACJI DO PLIKU
 	}
 }
 
 // Wczytywanie instancji z pliku do pamiêci
 void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, int &numerInstancjiProblemu, string nameParam) {
 	FILE *file;
-	string fileName = "instancje_";
-	fileName.append(nameParam);
-	fileName.append(".txt");
+	string fileName = "instancje_" + nameParam + ".txt";
 	file = fopen(fileName.c_str(), "r");
 	
 	if(file != NULL) {
@@ -274,6 +278,10 @@ void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrz
 				// Utworzenie zadania
 					Task * taskFirst = new Task;
 					Task * taskSecond = new Task;
+					
+				// Powi¹zanie zadañ
+					taskFirst->anotherPart = taskSecond;
+					taskSecond->anotherPart = taskFirst;
 					
 				// Ustawienie wartoœci zadañ
 					taskFirst->ID = i + 1;
@@ -330,6 +338,8 @@ void OdczytPrzerwan(vector<Maintenance*> &listaPrzerwan) {
 
 // Generator rozwi¹zañ losowych
 vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor) {
+	srand(time(NULL));
+	
 	// Utworzenie kopii zadañ aby móc tworzyæ swoje rozwi¹zanie
 		vector<Task*> zadaniaLokalne(listaZadan);
 	
@@ -373,7 +383,9 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 					continue; // Skok do kolejnej iteracji
 				
 				if(DEBUG) {
-					debugFile << "Wylosowano = " << pozycja << " Zadanie nr " << taskID << " (Part " << zadaniaLokalne[pozycja]->part + 1 << ") Maszyna = " << zadaniaLokalne[pozycja]->assigment
+					debugFile << "Wylosowano = " << pozycja << " Zadanie nr " << taskID << " (Part " << zadaniaLokalne[pozycja]->part + 1 << ")"
+					<< " Parametry zadania = " << zadaniaLokalne[pozycja]->assigment << "|" << zadaniaLokalne[pozycja]->duration << "|" << zadaniaLokalne[pozycja]->endTime
+					<< " Parametry komplementarnej czêœci = " << zadaniaLokalne[pozycja]->anotherPart->assigment << "|" << zadaniaLokalne[pozycja]->anotherPart->duration << "|" << zadaniaLokalne[pozycja]->anotherPart->endTime
 					<< " czasy: " << timeFirstProcessor << "|" << timeSecondProcessor << " przerwy: " << najblizszyMaintenanceFirstProcessor << "|" << najblizszyMaintenanceSecondProcessor << endl;
 				}
 
@@ -423,7 +435,7 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 										timeFirstProcessor += currentTask->duration;
 									
 										if(DEBUG)		
-											debugFile << "Czas FM " << timeFirstProcessor << endl;
+											debugFile << "I Czas FM " << timeFirstProcessor << endl;
 									
 									// Ustawiamy zmienn¹ czasow¹ zakoñczenia zadania
 										currentTask->endTime = timeFirstProcessor;
@@ -442,7 +454,7 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 										timeSecondProcessor += currentTask->duration;
 									
 										if(DEBUG)
-											debugFile << "Czas SM: " << timeSecondProcessor << endl;
+											debugFile << "I Czas SM: " << timeSecondProcessor << endl;
 									
 									// Ustawiamy czas zakoñczenia zadania
 										currentTask->endTime = timeSecondProcessor;
@@ -500,7 +512,7 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 						}
 					
 					// Sprawdzamy typ zadania
-						if(currentTask->assigment == 0) { // Przydzia³ na pierwsz¹ maszynê
+						if(currentTask->assigment == 1) { // Przydzia³ na drug¹ maszynê
 							// Sprawdzamy czy czas na maszynie nie jest mniejszy od zakoñczenia siê pierwszej czêœci
 							if(timeSecondProcessor < currentTask->anotherPart->endTime) {
 								// Sprawdzamy czy nie jesteœmy po raz x w pêtli
@@ -679,7 +691,7 @@ void OdczytDanychZadan(vector<Task*> &listaZadan) {
 	
 	// Pêtla odczytu wartoœci zadañ
 		for(int i = 0; i < size; i++) {
-			cout << "--- ID: " << listaZadan[i]->ID << " przydzial: M" << listaZadan[i]->assigment << " duration = " << listaZadan[i]->duration << " --- zakonczenie = " << listaZadan[i]->endTime << " --- " << endl;
+			cout << "--- ID: " << listaZadan[i]->ID << " (Part " << listaZadan[i]->part << ") przydzial: M" << listaZadan[i]->assigment << " duration = " << listaZadan[i]->duration << " --- zakonczenie = " << listaZadan[i]->endTime << " --- " << endl;
 		}
 }
 
@@ -701,15 +713,10 @@ void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, 
 
 	// Zapisujemy do pliku nasze zadania
 		for(int i = 0; i < iloscZadan; i++) {
-			timeStop = listaZadan[i]->timeEndFirstPart;
-			timeStart = timeStop - listaZadan[i]->durationFirstPart;
+			timeStop = listaZadan[i]->endTime;
+			timeStart = timeStop - listaZadan[i]->duration;
 
-			file << "[ 'M" << listaZadan[i]->assigment + 1 << "', 'Zadanie " << i + 1 << "', " << timeStart << "," << timeStop << "]," << endl;
-			
-			timeStop = listaZadan[i]->timeEndSecondPart;
-			timeStart = timeStop - listaZadan[i]->durationSecondPart;
-
-			file << "[ 'M" << 2 - listaZadan[i]->assigment << "', 'Zadanie " << i + 1 << "', " << timeStart << ", " << timeStop << " ]," << endl;
+			file << "[ 'M" << listaZadan[i]->assigment + 1 << "', 'Zadanie " << listaZadan[i]->ID << "', " << timeStart << "," << timeStop << "]," << endl;
 		}
 		
 	// Zapis przerwañ
@@ -732,7 +739,7 @@ long int ObliczFunkcjeCelu(vector<Task*> &listaZadan) {
 	long int sum = 0;
 	
 	for(int i = 0; i < size; i++) {
-		sum += listaZadan[i]->timeEndFirstPart + listaZadan[i]->timeEndSecondPart;
+		sum += listaZadan[i]->endTime;
 	}
 	
 	return sum;
@@ -754,28 +761,32 @@ int main() {
 
 	// Wygenerowanie przerwañ	
 		GeneratorPrzestojow(listaPrzerwan, MAINTENANCE_FIRST_PROCESSOR, MAINTENANCE_SECOND_PROCESSOR, LOWER_TIME_MAINTENANCE_LIMIT, UPPER_TIME_MAINTENANCE_LIMIT, LOWER_READY_TIME_MAINTENANCE_LIMIT, UPPER_READY_TIME_MAINTENANCE_LIMIT);
-		OdczytPrzerwan(listaPrzerwan);
+//		OdczytPrzerwan(listaPrzerwan);
 
 	// Zapis danych do pliku
-		ZapiszInstancjeDoPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu, INSTANCE_NUMBER);
+		string nameParam;
+		stringstream ss;
+    	ss << numerInstancjiProblemu;
+    	ss >> nameParam; // Parametr przez stringstream, funkcja to_string odmówi³a pos³uszeñstwa
+		ZapiszInstancjeDoPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu, nameParam);
 
 	// Wczytanie danych z pliku
-//		WczytajDaneZPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu);
+//		WczytajDaneZPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu, nameParam);
 //		OdczytPrzerwan(listaPrzerwan);
+//		OdczytDanychZadan(listaZadan);
 		
 		vector<Maintenance*> przerwaniaFirstProcessor;
 		vector<Maintenance*> przerwaniaSecondProcessor;
 		SortujPrzerwania(listaPrzerwan);
 		PodzielPrzerwyNaMaszyny(listaPrzerwan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 		
-		GeneratorLosowy(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, rozmiarInstancji);
-		
+		GeneratorLosowy(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 		OdczytDanychZadan(listaZadan);
 		
 //		ZapiszWynikiDoPliku(listaZadan, numerInstancjiProblemu);
 		
-	//	long int wynik = ObliczFunkcjeCelu(listaZadan);
-	//	UtworzGraf(listaZadan, listaPrzerwan, wynik);		
+		long int wynik = ObliczFunkcjeCelu(listaZadan);
+		UtworzGraf(listaZadan, listaPrzerwan, wynik);		
 	
 	// Czyszczenie pamiêci - zwalnianie niepotrzebnych zasobów
 		przerwaniaFirstProcessor.clear();
