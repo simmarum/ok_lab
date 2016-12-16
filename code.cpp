@@ -34,7 +34,7 @@ using namespace std;
 #define LOWER_READY_TIME_MAINTENANCE_LIMIT 0 // Dolne ograniczenie czasu gotowoœci przerwania [Wartoœæ liczbowa > 0]
 #define UPPER_READY_TIME_MAINTENANCE_LIMIT 200 // Górne ograniczenie czasu gotowoœci przerwania [Wartoœæ liczbowa > 0]
 
-#define INSTANCE_SIZE 15 // Rozmiar instancji problemu
+#define INSTANCE_SIZE 5 // Rozmiar instancji problemu
 #define INSTANCE_NUMBER 1 // Numer instancji problemu (mo¿e byæ zmieniana przy odczycie danych z pliku)
 
 #define MAX_DURATION_PROGRAM_TIME 1000 // Maksymalna d³ugoœæ trwania programu
@@ -688,7 +688,7 @@ void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, 
 			timeStop = listaZadan[i]->endTime;
 			timeStart = timeStop - listaZadan[i]->duration;
 
-			file << "[ 'M" << listaZadan[i]->assigment + 1 << "', 'Zadanie " << listaZadan[i]->ID << "', " << timeStart << "," << timeStop << "]," << endl;
+			file << "[ 'M" << listaZadan[i]->assigment + 1 << "', 'Zadanie " << listaZadan[i]->ID << "', " << timeStart << ", " << timeStop << " ]," << endl;
 		}
 		
 	// Zapis przerwañ
@@ -717,31 +717,6 @@ long int ObliczFunkcjeCelu(vector<Task*> &listaZadan) {
 	return sum;
 }
 
-// Zapis wyników do pliku tekstowego
-void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, long int firstSolutionValue, int numerInstancjiProblemu, string nameParam) {
-	ofstream file;
-	string fileName = "wyniki_" + nameParam + ".txt";
-	file.open(fileName.c_str());
-	
-	if(file.is_open()) {
-		long int optimalSolutionValue = ObliczFunkcjeCelu(listaZadan); // Wartoœæ funkcji celu dla rozwi¹zania optymalnego
-		
-		// Przypisanie numeru instancji
-			file << "**** " << numerInstancjiProblemu << " ****" << endl;
-		
-		// Przypisanie wartoœci optymalnej oraz wartoœci pocz¹tkowej wygenerowanej przez generator losowy
-			file << optimalSolutionValue << ", " << firstSolutionValue << endl;
-		
-		// Przypisanie do pliku utworzonej instancji
-			
-		
-		// Uzupe³nienie pliku o rozwi¹zanie
-			int iloscZadan = listaZadan.size();	
-		
-		// TODO DODAÆ ZAPIS WYNIKU OPERACJI DO PLIKU
-	}
-}
-
 // Podzia³ struktury T na maszyny
 template <class T>
 void PodzielStrukturyNaMaszyny(vector<T*> &listaWejsciowa, vector<T*> &firstProcessor, vector<T*> &secondProcessor) {
@@ -758,6 +733,206 @@ void PodzielStrukturyNaMaszyny(vector<T*> &listaWejsciowa, vector<T*> &firstProc
 				secondProcessor.push_back(operacja);
 			}
 		}	
+}
+
+// Obliczanie d³ugoœci Task / Maintenance list
+template <class T>
+long int ObliczDlugoscOperacji(vector<T*> &lista) {
+	int size = lista.size();
+	long int sum = 0;
+	
+	for(int i = 0; i < size; i++) {
+		sum += lista[i]->duration;
+	}
+	
+	return sum;
+}
+
+// Zapis wyników do pliku tekstowego
+void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, long int firstSolutionValue, int numerInstancjiProblemu, string nameParam) {
+	ofstream file;
+	string fileName = "wyniki_" + nameParam + ".txt";
+	file.open(fileName.c_str());
+	
+	if(file.is_open()) {
+			long int optimalSolutionValue = ObliczFunkcjeCelu(listaZadan); // Wartoœæ funkcji celu dla rozwi¹zania optymalnego
+			vector<Task*> taskFirstProcessor, taskSecondProcessor; // Wektory dla podzia³u zadañ na maszyny
+			int taskFirstProcessorSize; // Iloœæ zadañ na pierwszym procesorze
+			int taskSecondProcessorSize; // Iloœæ zadañ na drugim procesorze
+			int numerPrzerwania = 0; // Numer aktualnie rozpatrywanego przerwania
+			int najblizszyMaintenance = -1; // Czas momentu ROZPOCZÊCIA przerwania
+			int processorTime = 0; // Czas procesora
+			int count = 0; // Iloœæ operacji które zosta³y ju¿ umieszczone w pliku wynikowym
+			int maxCount; // Iloœæ operacji które trzeba umieœciæ (liczba operacji + przerwania)
+			int taskPoint = 0; // Zmienna wskazuj¹ca aktualnie rozpatrywane zadanie z listy operacji
+			int countIlde = 1; // Licznik okresów bezczynnoœci
+			int ildeTimeFirstProcessor = 0; // Ogólny czas bezczynnoœci na maszynie pierwszej
+			int ildeTimeSecondProcessor = 0; // Ogólny czas bezczynnoœci na maszynie drugiej
+			
+		// Podzielenie listy zadañ na maszyny i przypisanie iloœci do zmiennych pomocniczych
+			PodzielStrukturyNaMaszyny<Task>(listaZadan, taskFirstProcessor, taskSecondProcessor);
+			taskFirstProcessorSize = taskFirstProcessor.size();
+			taskSecondProcessorSize = taskSecondProcessor.size();
+		
+		// Sortowanie zadañ
+			SortujZadaniaPoEndTime(taskFirstProcessor);
+			SortujZadaniaPoEndTime(taskSecondProcessor);
+			
+		// Przypisanie numeru instancji
+			file << "**** " << numerInstancjiProblemu << " ****" << endl;
+		
+		// Przypisanie wartoœci optymalnej oraz wartoœci pocz¹tkowej wygenerowanej przez generator losowy
+			file << optimalSolutionValue << ", " << firstSolutionValue << endl;
+		
+		// Przypisanie do pliku utworzonej instancji
+			file << "M1:";
+			
+			if(listaPrzerwanFirstProcessor.size() > 0)
+				najblizszyMaintenance = listaPrzerwanFirstProcessor[0]->readyTime; 
+			maxCount = taskFirstProcessorSize + listaPrzerwanFirstProcessor.size(); // maxCount dla pierwszej maszyny
+			while(count < maxCount) {
+				if(taskPoint >= 0 && processorTime == (taskFirstProcessor[taskPoint]->endTime - taskFirstProcessor[taskPoint]->duration)) {
+					// Zapis do pliku
+						file << "op" << taskFirstProcessor[taskPoint]->part + 1 << "_" << taskFirstProcessor[taskPoint]->ID << ", " << taskFirstProcessor[taskPoint]->endTime - taskFirstProcessor[taskPoint]->duration
+							 << ", " << taskFirstProcessor[taskPoint]->duration << "; ";
+					
+					// Przestawienie czasu
+						processorTime = taskFirstProcessor[taskPoint]->endTime;
+					
+					// Skok do kolejnej wartoœci
+						taskPoint++;
+				
+					// Musimy sprawdziæ czy nie wychodzimy poza zakres
+						if(taskPoint >= taskFirstProcessorSize) {
+							taskPoint = -1;
+						}
+					
+					// Zwiêkszamy licznik odwiedzonych operacji
+						count++;
+				} else if (processorTime == najblizszyMaintenance) {
+					// Zapis do pliku
+						file << "maint" << numerPrzerwania + 1 << "_M1, " << listaPrzerwanFirstProcessor[numerPrzerwania]->readyTime << ", "
+							 << listaPrzerwanFirstProcessor[numerPrzerwania]->duration << "; ";
+					
+					// Przestawienie czasu
+						processorTime = listaPrzerwanFirstProcessor[numerPrzerwania]->readyTime + listaPrzerwanFirstProcessor[numerPrzerwania]->duration;
+					
+					// Konieczne jest sprawdzenie czy nie wychodzimi poza zakres
+						numerPrzerwania++;
+						if(numerPrzerwania >= listaPrzerwanFirstProcessor.size()) {
+							najblizszyMaintenance = -1;
+						} else {
+							najblizszyMaintenance = listaPrzerwanFirstProcessor[numerPrzerwania]->readyTime;
+						}
+					
+					// Zwiêkszamy licznik odwiedzonych operacji
+						count++;
+				} else { // Bezczynnoœæ
+				
+					// Sprawdzamy które zdarzenie bêdzie wczeœniej - wyst¹pienie zadania czy maintenance
+						int minTime = INT_MAX;
+						if(taskPoint >= 0) {
+							int temp =  taskFirstProcessor[taskPoint]->endTime - taskFirstProcessor[taskPoint]->duration - processorTime;
+							if(temp < minTime)
+								minTime = temp;
+						} 
+						if(((najblizszyMaintenance - processorTime) < minTime) && najblizszyMaintenance > -1) {
+							minTime = najblizszyMaintenance - processorTime;
+						}
+					
+					// Zapis do pliku danych o bezczynnoœci	
+						file << "ilde" << countIlde << "_M1, " << processorTime << ", " << minTime << "; ";
+						countIlde++;
+
+					// Dodanie do ogólnego licznika bezczynnoœci zapisanego czasu
+						ildeTimeFirstProcessor += minTime;
+					
+					// Przestawienie czasu maszyny
+						processorTime += minTime;					 
+				}				
+			}
+			
+			file << endl << "M2:";
+			
+			// Zerowanie zmiennych uniwersalnych
+			taskPoint = 0;
+			count = 0;
+			processorTime = 0;
+			countIlde = 1;
+			numerPrzerwania = 0;
+			if(listaPrzerwanSecondProcessor.size() > 0)
+				najblizszyMaintenance = listaPrzerwanSecondProcessor[0]->readyTime;
+			else
+				najblizszyMaintenance = -1;
+			maxCount = taskSecondProcessorSize + listaPrzerwanSecondProcessor.size(); // maxCount dla drugiej maszyny
+			while(count < maxCount) {
+				if(taskPoint >= 0 && processorTime == (taskSecondProcessor[taskPoint]->endTime - taskSecondProcessor[taskPoint]->duration)) {
+					// Zapis do pliku
+						file << "op" << taskSecondProcessor[taskPoint]->part + 1 << "_" << taskSecondProcessor[taskPoint]->ID << ", " << taskSecondProcessor[taskPoint]->endTime - taskSecondProcessor[taskPoint]->duration
+							 << ", " << taskSecondProcessor[taskPoint]->duration << "; ";
+					
+					// Przestawienie czasu
+						processorTime = taskSecondProcessor[taskPoint]->endTime;
+						
+					// Skok do kolejnej wartoœci
+						taskPoint++;
+				
+					// Musimy sprawdziæ czy nie wychodzimy poza zakres
+						if(taskPoint >= taskSecondProcessorSize) {
+							taskPoint = -1;
+						}
+					
+					// Zwiêkszamy licznik odwiedzonych operacji
+						count++;
+				} else if (processorTime == najblizszyMaintenance) {
+					// Zapis do pliku
+						file << "maint" << numerPrzerwania + 1 << "_M1, " << listaPrzerwanSecondProcessor[numerPrzerwania]->readyTime << ", "
+							 << listaPrzerwanSecondProcessor[numerPrzerwania]->duration << "; ";
+					
+					// Przestawienie czasu
+						processorTime = listaPrzerwanSecondProcessor[numerPrzerwania]->readyTime + listaPrzerwanSecondProcessor[numerPrzerwania]->duration;
+					
+					// Konieczne jest sprawdzenie czy nie wychodzimi poza zakres
+						numerPrzerwania++;
+						if(numerPrzerwania >= listaPrzerwanSecondProcessor.size()) {
+							najblizszyMaintenance = -1;
+						} else {
+							najblizszyMaintenance = listaPrzerwanSecondProcessor[numerPrzerwania]->readyTime;
+						}
+					
+					// Zwiêkszamy licznik odwiedzonych operacji
+						count++;
+				} else { // Bezczynnoœæ
+					// Sprawdzamy które zdarzenie bêdzie wczeœniej - wyst¹pienie zadania czy maintenance
+						int minTime = INT_MAX;
+						if(taskPoint >= 0) {
+							int temp =  taskSecondProcessor[taskPoint]->endTime - taskSecondProcessor[taskPoint]->duration - processorTime;
+							if(temp < minTime)
+								minTime = temp;
+						}
+						if(((najblizszyMaintenance - processorTime) < minTime) && najblizszyMaintenance > -1) {
+							minTime = najblizszyMaintenance - processorTime;
+						}
+					
+					// Zapis do pliku danych o bezczynnoœci	
+						file << "ilde" << countIlde << "_M2, " << processorTime << ", " << minTime << "; ";
+						
+					// Inkrementacja numeru przerwania
+						countIlde++;
+
+					// Dodanie do ogólnego licznika bezczynnoœci zapisanego czasu
+						ildeTimeSecondProcessor += minTime;
+					
+					// Przestawienie czasu maszyny
+						processorTime += minTime;					 
+				}				
+			}
+			
+			// Dopisanie wartoœci sum
+				file << endl << ObliczDlugoscOperacji<Maintenance>(listaPrzerwanFirstProcessor) << endl 
+					 << ObliczDlugoscOperacji<Maintenance>(listaPrzerwanSecondProcessor) << endl
+					 << ildeTimeFirstProcessor << endl << ildeTimeSecondProcessor << endl << "*** EOF ***";
+	}
 }
 
 int main() {
@@ -787,8 +962,6 @@ int main() {
 
 	// Wczytanie danych z pliku
 //		WczytajDaneZPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu, nameParam);
-//		OdczytPrzerwan(listaPrzerwan);
-//		OdczytDanychZadan(listaZadan);
 		
 		vector<Maintenance*> przerwaniaFirstProcessor;
 		vector<Maintenance*> przerwaniaSecondProcessor;
@@ -801,6 +974,8 @@ int main() {
 		ZapiszWynikiDoPliku(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, firstSolutionValue, numerInstancjiProblemu, nameParam);
 		
 		long int wynik = ObliczFunkcjeCelu(listaZadan);
+		OdczytPrzerwan(listaPrzerwan);
+		OdczytDanychZadan(listaZadan);
 		UtworzGraf(listaZadan, listaPrzerwan, wynik);		
 	
 	// Czyszczenie pamiêci - zwalnianie niepotrzebnych zasobów
