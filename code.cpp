@@ -40,6 +40,7 @@ using namespace std;
 #define MAX_DURATION_PROGRAM_TIME 1000 // Maksymalna d³ugoœæ trwania programu
 
 ofstream debugFile; // Zmienna globalna u¿ywana przy DEBUG mode
+long int firstSolutionValue; // Zmienna globalna najlepszego rozwi¹zania wygenerowanego przez generator losowy
 
 // Struktura danych w pamiêci
 struct Task{
@@ -233,24 +234,6 @@ void ZapiszInstancjeDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &lis
 	}	
 	
 	file.close();
-}
-
-// Zapis wyników do pliku tekstowego
-void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, int numerInstancjiProblemu, string nameParam) {
-	ofstream file;
-	string fileName = "wyniki_";
-	fileName.append(nameParam);
-	fileName.append(".txt");
-	file.open(fileName.c_str());
-	
-	if(file.is_open()) {
-		file << "**** " << numerInstancjiProblemu << " ****" << endl;
-		
-		// Uzupe³nienie pliku o rozwi¹zanie
-			int iloscZadan = listaZadan.size();	
-		
-		// TODO DODAÆ ZAPIS WYNIKU OPERACJI DO PLIKU
-	}
 }
 
 // Wczytywanie instancji z pliku do pamiêci
@@ -665,22 +648,6 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 	return zadaniaLokalne;
 }
 
-// Podzia³ przerwañ na dwie listy - ka¿da maszyna osobno
-void PodzielPrzerwyNaMaszyny(vector<Maintenance*> &listaPrzerwan, vector<Maintenance*> &przerwaniaFirstProcessor, vector<Maintenance*> &przerwaniaSecondProcessor) {
-	// Zmienna pomocnicza by skróciæ czas pracy (nie trzeba x razy liczyæ)
-		int size = listaPrzerwan.size();
-
-	//Sprawdzamy do jakiej maszyny przypisane mamy przerwanie	
-		for(int i = 0; i < size; i++) {
-			Maintenance * przerwa = listaPrzerwan[i];
-			if(przerwa->assigment == 0) {
-				przerwaniaFirstProcessor.push_back(przerwa);
-			} else {
-				przerwaniaSecondProcessor.push_back(przerwa);
-			}
-		}	
-}
-
 // Odczyt danych zadañ na ekran
 void OdczytDanychZadan(vector<Task*> &listaZadan) {
 	// Przeliczenie iloœci operacji do zmienne pomocniczej aby nie liczyæ operacji w ka¿dej iteracji
@@ -745,6 +712,49 @@ long int ObliczFunkcjeCelu(vector<Task*> &listaZadan) {
 	return sum;
 }
 
+// Zapis wyników do pliku tekstowego
+void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, long int firstSolutionValue, int numerInstancjiProblemu, string nameParam) {
+	ofstream file;
+	string fileName = "wyniki_" + nameParam + ".txt";
+	file.open(fileName.c_str());
+	
+	if(file.is_open()) {
+		long int optimalSolutionValue = ObliczFunkcjeCelu(listaZadan); // Wartoœæ funkcji celu dla rozwi¹zania optymalnego
+		
+		// Przypisanie numeru instancji
+			file << "**** " << numerInstancjiProblemu << " ****" << endl;
+		
+		// Przypisanie wartoœci optymalnej oraz wartoœci pocz¹tkowej wygenerowanej przez generator losowy
+			file << optimalSolutionValue << ", " << firstSolutionValue << endl;
+		
+		// Przypisanie do pliku utworzonej instancji
+			
+		
+		// Uzupe³nienie pliku o rozwi¹zanie
+			int iloscZadan = listaZadan.size();	
+		
+		// TODO DODAÆ ZAPIS WYNIKU OPERACJI DO PLIKU
+	}
+}
+
+// Podzia³ struktury T na maszyny
+template <class T>
+void PodzielStrukturyNaMaszyny(vector<T*> &listaWejsciowa, vector<T*> &firstProcessor, vector<T*> &secondProcessor) {
+	// Zmienna pomocnicza by skróciæ czas pracy (nie trzeba x razy liczyæ)
+		int size = listaWejsciowa.size();
+
+	//Sprawdzamy do jakiej maszyny przypisana jest struktura	
+		for(int i = 0; i < size; i++) {
+			T * operacja = listaWejsciowa[i];
+			
+			if(operacja->assigment == 0) {
+				firstProcessor.push_back(operacja);
+			} else {
+				secondProcessor.push_back(operacja);
+			}
+		}	
+}
+
 int main() {
 	debugFile.open("debug.txt");
 	int rozmiarInstancji = INSTANCE_SIZE;
@@ -778,12 +788,12 @@ int main() {
 		vector<Maintenance*> przerwaniaFirstProcessor;
 		vector<Maintenance*> przerwaniaSecondProcessor;
 		SortujPrzerwania(listaPrzerwan);
-		PodzielPrzerwyNaMaszyny(listaPrzerwan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
+		PodzielStrukturyNaMaszyny<Maintenance>(listaPrzerwan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 		
 		GeneratorLosowy(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 		OdczytDanychZadan(listaZadan);
 		
-//		ZapiszWynikiDoPliku(listaZadan, numerInstancjiProblemu);
+		ZapiszWynikiDoPliku(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, firstSolutionValue, numerInstancjiProblemu, nameParam);
 		
 		long int wynik = ObliczFunkcjeCelu(listaZadan);
 		UtworzGraf(listaZadan, listaPrzerwan, wynik);		
