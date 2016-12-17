@@ -329,11 +329,11 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 	srand(time(NULL));
 	
 	// Utworzenie kopii zadañ aby móc tworzyæ swoje rozwi¹zanie
-		vector<Task*> zadaniaLokalne(listaZadan);
+		vector<Task*> zadaniaLokalne = listaZadan;
 	
 	// Zmienne u¿ywane w przebiegu pracy Generatora Losowego
+		int iloscZadan = listaZadan.size() / 2;	// Iloœæ zadañ (iloœæ operacji / 2)
 		Task * currentTask = NULL; // Zmmienna operacyjna aby uproœciæ zapis
-		int iloscZadan = zadaniaLokalne.size() / 2;	// Iloœæ zadañ (iloœæ operacji / 2)
 		int numerPrzerwaniaFirstProcessor = 0; // Numer aktualnego przerwania na procesorze pierwszym
 		int numerPrzerwaniaSecondProcessor = 0; // Numer aktualnego przerwania na procesorze drugim
 		int count = 0; // Licznik przeliczonych ju¿ zadañ
@@ -707,12 +707,12 @@ void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, 
 }
 
 // Obliczanie wartoœci funkcji celu
-long int ObliczFunkcjeCelu(vector<Task*> &listaZadan) {
-	int size = listaZadan.size();
+long int ObliczFunkcjeCelu(vector<Task*> &lista) {
+	int size = lista.size();
 	long int sum = 0;
 	
 	for(int i = 0; i < size; i++) {
-		sum += listaZadan[i]->endTime;
+		sum += lista[i]->endTime;
 	}
 	
 	return sum;
@@ -941,7 +941,7 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 }
 
 // Mutacja jednego rozwi¹zania z za³o¿eniem podzielenia operacji na dwie maszyny
-void Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor) {
+vector<Task*> Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor) {
 	// Zmienne operacyjne
 		srand(time(NULL)); // Odœwie¿enie randoma
 		vector<Task*> taskListFirstProcessor, taskListSecondProcessor; // Wektory dla podzia³u zadañ na maszyny
@@ -1312,23 +1312,65 @@ void Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirst
 					}
 			}
 		}
-		
-	// Wyczyszczenie zadañ wejœciowych
-		listaZadan.clear();
 	
 	// Dopisanie zadañ ze zmienionymi wartoœciami
 		for(int i = 0; i < iloscZadan; i++) {
-			listaZadan.push_back(taskListFirstProcessor[i]);
-			listaZadan.push_back(taskListSecondProcessor[i]);
+			taskListFirstProcessor.push_back(taskListSecondProcessor[i]);
 		}
 		
 	// Czyszczenie pamiêci
 		delete firstPart;
 		delete secondPart;
 		delete licznikOdwiedzonych;
-		taskListFirstProcessor.clear();
-		taskListSecondProcessor.clear();
 	
+	return taskListFirstProcessor;
+}
+
+void Turniej(vector< vector<Task*> > &solutionsList) {
+	srand(time(NULL));
+	// Przeliczenie rozmiaru otrzymanej struktury listy rozwi¹zañ
+		int size = solutionsList.size();
+	
+	// Utworzenie struktry pomocniczej = tabeli przegranych oraz tabeli z wartoœciami funkcji celu
+		int *solutionsValue = new int[size];
+		bool *looserSolution = new bool[size];
+		
+	// Uzupe³niami wartoœci w tabelach
+		for(int i = 0; i < size; i++) {
+			looserSolution[i] = false;
+			solutionsValue[i] = ObliczFunkcjeCelu(solutionsList[i]);
+		}
+	
+	// Turniej - wracamy do iloœci wejœciowego rozmiaru instancji
+		int toKill = size - INSTANCE_SIZE;
+		int first, second;
+		
+		cout << "Kill = " << toKill << endl;
+		toKill = 1;
+		
+	// Pêtla operacyjna
+		while(toKill > 0) {
+			first = (int)(rand() / (RAND_MAX + 1.0) * size);
+			second = (int)(rand() / (RAND_MAX + 1.0) * size);
+			
+			cout << "First = " << first << " second =" << second << endl;
+			
+			if(first != second && !looserSolution[first] && !looserSolution[second]) {
+				// Sprawdzamy które z rozwi¹zañ ma mniejsz¹ wartoœæ funkcji celu
+				if(solutionsValue[first] < solutionsValue[second])
+					looserSolution[second] = true;
+				else
+					looserSolution[first] = true;
+				cout << "Warunek" << endl;
+				toKill--;
+			} else
+				continue; // Ponawiamy iteracjê - albo to samo zadanie, albo wylosowano rozwi¹zanie które odpad³o
+		}
+	
+	// Usuniêcie wykluczonych rozwi¹zañ
+		for(int i = 0; i < size; i++) {
+			cout << solutionsValue[i] << " = " << looserSolution[i] << " ";
+		}
 }
 
 int main() {
@@ -1373,10 +1415,37 @@ int main() {
 //		OdczytPrzerwan(listaPrzerwan);
 		OdczytDanychZadan(listaZadan);
 		UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
-		nameParam += "w";
-		Mutacja(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);		
+//		nameParam += "w";
+		
+		vector<Task*> nowe = listaZadan; 
+		cout << "S1 " << ObliczFunkcjeCelu(nowe) << endl;
+		OdczytDanychZadan(nowe);
+		cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
 		OdczytDanychZadan(listaZadan);
-		UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
+		for(int i = 0; i < nowe.size(); i++) {
+			nowe[i]->endTime = 0;
+		}
+		cout << "S1 " << ObliczFunkcjeCelu(nowe) << endl;
+		OdczytDanychZadan(nowe);
+		cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
+		OdczytDanychZadan(listaZadan);
+		GeneratorLosowy(nowe, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
+//		Mutacja(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);		
+//		OdczytDanychZadan(listaZadan);
+		vector< vector<Task*> > solution;
+		
+		solution.push_back(nowe);
+		solution.push_back(listaZadan);
+		cout << "S1 " << ObliczFunkcjeCelu(nowe) << endl;
+		OdczytDanychZadan(nowe);
+		cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
+		OdczytDanychZadan(listaZadan);
+		
+		Turniej(solution);
+		
+//		UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
+		
+		
 		
 	// Czyszczenie pamiêci - zwalnianie niepotrzebnych zasobów
 		przerwaniaFirstProcessor.clear();
