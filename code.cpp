@@ -668,12 +668,13 @@ void OdczytDanychZadan(vector<Task*> &listaZadan) {
 }
 
 // Tworzenie timeline dla obserwacji wyników pracy
-void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, long int wynik) {
+void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, long int wynik, string nameParam) {
 	int iloscZadan = listaZadan.size(); // Iloœæ zadañ w systemie
 	int iloscPrzerwan = listaPrzerwan.size(); // Iloœæ okresów przestojów na maszynach
 	
 	ofstream file;
-	file.open("index.html");
+	string fileName = "index_" + nameParam + ".html";
+	file.open(fileName.c_str());
 	file << "<!DOCTYPE html><html lang=\"en\"><head><meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" /><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
 	file << "<title>OK - Wyniki pracy generatora</title></head><body><script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>";
 	file << "<script type=\"text/javascript\">google.charts.load(\"current\", {packages:[\"timeline\"]});google.charts.setOnLoadCallback(drawChart);function drawChart() {";
@@ -993,8 +994,13 @@ void Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirst
 			licznikOdwiedzonych[i] = 0;
 		}
 		
+		cout << "Przed mutacj¹:" << endl;
+		for(int i = 0; i < iloscZadan; i++) {
+			cout << taskOrderFirstProcessor[i] << " | " << taskOrderSecondProcessor[i] << endl;
+		}
+		
 	// Pêtla losowania i zmiany kolejnoœci zadañ
-		while(countTask < iloscZadan*2) {
+		while(true) {
 			// Losujemy wartoœci
 				firstTaskPosition = (int)(rand() / (RAND_MAX + 1.0) * iloscZadan);
 				secondTaskPosition = (int)(rand() / (RAND_MAX + 1.0) * iloscZadan);	
@@ -1025,12 +1031,17 @@ void Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirst
 			}
 		}
 		
+		cout << "PO mutacji:" << endl;
+		for(int i = 0; i < iloscZadan; i++) {
+			cout << taskOrderFirstProcessor[i] << " | " << taskOrderSecondProcessor[i] << endl;
+		}
+		
 		// Posortowanie zadañ wed³ug ID - aby ³atwo odwo³ywaæ siê poprzez wartoœæ z tablicy kolejnoœci zadañ
 			SortujZadaniaPoID(taskListFirstProcessor);
 			SortujZadaniaPoID(taskListSecondProcessor);
 	
 	// Pêtla ustawiaj¹ca nowe czasy zakoñczenia dla naszych operacji
-		while(true) {
+		while(countTask < iloscZadan*2) {
 			// Sprawdzamy czy nie wyskoczyliœmy na maszynie pierwszej poza zakres vektora
 			if(iteratorFP < iloscZadan) {
 				// Przypisujemy zadanie do zmiennej pomocniczej
@@ -1296,6 +1307,22 @@ void Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirst
 					}
 			}
 		}
+		
+	// Wyczyszczenie zadañ wejœciowych
+		listaZadan.clear();
+	
+	// Dopisanie zadañ ze zmienionymi wartoœciami
+		for(int i = 0; i < iloscZadan; i++) {
+			listaZadan.push_back(taskListFirstProcessor[i]);
+			listaZadan.push_back(taskListSecondProcessor[i]);
+		}
+		
+	// Czyszczenie pamiêci
+		delete firstPart;
+		delete secondPart;
+		delete licznikOdwiedzonych;
+		taskListFirstProcessor.clear();
+		taskListSecondProcessor.clear();
 	
 }
 
@@ -1340,9 +1367,12 @@ int main() {
 		long int wynik = ObliczFunkcjeCelu(listaZadan);
 //		OdczytPrzerwan(listaPrzerwan);
 		OdczytDanychZadan(listaZadan);
-		UtworzGraf(listaZadan, listaPrzerwan, wynik);
+		UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
+		nameParam += "w";
 		Mutacja(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);		
-	
+		OdczytDanychZadan(listaZadan);
+		UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
+		
 	// Czyszczenie pamiêci - zwalnianie niepotrzebnych zasobów
 		przerwaniaFirstProcessor.clear();
 		przerwaniaSecondProcessor.clear();
