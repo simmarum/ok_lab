@@ -65,6 +65,8 @@ bool sortMaintenance(Maintenance * i, Maintenance * j) {return (i->readyTime < j
 bool sortTask(Task *i, Task *j) { return (i->endTime < j->endTime); }
 bool sortTaskByID(Task *i, Task *j) { return (i->ID < j->ID); } // Po wartoœci ID
 
+void KopiujDaneOperacji(vector<Task*> &listaWejsciowa, vector<Task*> &listaWyjsciowa);
+
 // Generator przestojóww na maszynie
 void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstProcessor, int liczbaPrzerwanSecondProcessor, int lowerTimeLimit, int upperTimeLimit, int lowerReadyTime, int upperReadyTime) {
 	srand(time(NULL));
@@ -329,7 +331,8 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 	srand(time(NULL));
 	
 	// Utworzenie kopii zadañ aby móc tworzyæ swoje rozwi¹zanie
-		vector<Task*> zadaniaLokalne = listaZadan;
+		vector<Task*> zadaniaLokalne;
+		KopiujDaneOperacji(listaZadan, zadaniaLokalne);
 	
 	// Zmienne u¿ywane w przebiegu pracy Generatora Losowego
 		int iloscZadan = listaZadan.size() / 2;	// Iloœæ zadañ (iloœæ operacji / 2)
@@ -1373,19 +1376,48 @@ void Turniej(vector< vector<Task*> > &solutionsList) {
 		}
 }
 
+void KopiujDaneOperacji(vector<Task*> &listaWejsciowa, vector<Task*> &listaWyjsciowa) {
+	// Zmienna pomocnicza by skróciæ czas pracy (nie trzeba x razy liczyæ)
+		int size = listaWejsciowa.size();
+		
+		SortujZadaniaPoID(listaWejsciowa);
+
+	//Sprawdzamy do jakiej maszyny przypisana jest struktura	
+		for(int i = 0; i < size; i += 2) {
+			Task *operacja = new Task;
+			Task *operacjaDruga = new Task;
+			operacja->ID = listaWejsciowa[i]->ID;
+			operacja->assigment = listaWejsciowa[i]->assigment;
+			operacja->duration = listaWejsciowa[i]->duration;
+			operacja->endTime = listaWejsciowa[i]->endTime;
+			operacja->part = listaWejsciowa[i]->part;
+			operacja->anotherPart = operacjaDruga;
+			
+			operacjaDruga->anotherPart = operacja;
+			operacjaDruga->ID = listaWejsciowa[i]->anotherPart->ID;
+			operacjaDruga->assigment = listaWejsciowa[i]->anotherPart->assigment;
+			operacjaDruga->duration = listaWejsciowa[i]->anotherPart->duration;
+			operacjaDruga->endTime = listaWejsciowa[i]->anotherPart->endTime;
+			operacjaDruga->part = listaWejsciowa[i]->anotherPart->part;
+			
+			listaWyjsciowa.push_back(operacja);
+			listaWyjsciowa.push_back(operacjaDruga);
+		}	
+}
+
 int main() {
 	debugFile.open("debug.txt");
 	int rozmiarInstancji = INSTANCE_SIZE;
 	int numerInstancjiProblemu = INSTANCE_NUMBER;
 
 	// Utworzenie wektora na n zadañ
-		vector<Task*> listaZadan;
+		vector<Task*> zadania;
 
 	// Wektor przerwañ pracy na maszynach
 		vector<Maintenance*> listaPrzerwan; 
 
 	// Wygenerowanie zadañ
-		GeneratorInstancji(listaZadan, rozmiarInstancji, LOWER_TIME_TASK_LIMIT, UPPER_TIME_TASK_LIMIT);
+		GeneratorInstancji(zadania, rozmiarInstancji, LOWER_TIME_TASK_LIMIT, UPPER_TIME_TASK_LIMIT);
 
 	// Wygenerowanie przerwañ	
 		GeneratorPrzestojow(listaPrzerwan, MAINTENANCE_FIRST_PROCESSOR, MAINTENANCE_SECOND_PROCESSOR, LOWER_TIME_MAINTENANCE_LIMIT, UPPER_TIME_MAINTENANCE_LIMIT, LOWER_READY_TIME_MAINTENANCE_LIMIT, UPPER_READY_TIME_MAINTENANCE_LIMIT);
@@ -1396,7 +1428,7 @@ int main() {
 		stringstream ss;
     	ss << numerInstancjiProblemu;
     	ss >> nameParam; // Parametr przez stringstream, funkcja to_string odmówi³a pos³uszeñstwa
-		ZapiszInstancjeDoPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu, nameParam);
+		ZapiszInstancjeDoPliku(zadania, listaPrzerwan, numerInstancjiProblemu, nameParam);
 
 	// Wczytanie danych z pliku
 //		WczytajDaneZPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu, nameParam);
@@ -1406,33 +1438,22 @@ int main() {
 		SortujPrzerwania(listaPrzerwan);
 		PodzielStrukturyNaMaszyny<Maintenance>(listaPrzerwan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 		
-		GeneratorLosowy(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
+		vector<Task*> listaZadan = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 //		OdczytDanychZadan(listaZadan);
 		
 		ZapiszWynikiDoPliku(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, firstSolutionValue, numerInstancjiProblemu, nameParam);
 		
 		long int wynik = ObliczFunkcjeCelu(listaZadan);
 //		OdczytPrzerwan(listaPrzerwan);
-		OdczytDanychZadan(listaZadan);
+//		OdczytDanychZadan(listaZadan);
 		UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
 //		nameParam += "w";
 		
-		vector<Task*> nowe = listaZadan; 
-		cout << "S1 " << ObliczFunkcjeCelu(nowe) << endl;
-		OdczytDanychZadan(nowe);
-		cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
-		OdczytDanychZadan(listaZadan);
-		for(int i = 0; i < nowe.size(); i++) {
-			nowe[i]->endTime = 0;
-		}
-		cout << "S1 " << ObliczFunkcjeCelu(nowe) << endl;
-		OdczytDanychZadan(nowe);
-		cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
-		OdczytDanychZadan(listaZadan);
-		GeneratorLosowy(nowe, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
+		vector<Task*> nowe = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 //		Mutacja(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);		
 //		OdczytDanychZadan(listaZadan);
 		vector< vector<Task*> > solution;
+		
 		
 		solution.push_back(nowe);
 		solution.push_back(listaZadan);
