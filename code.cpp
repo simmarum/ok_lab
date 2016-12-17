@@ -953,15 +953,14 @@ void Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirst
 		int firstTaskPosition = 0; // Random - pozycja pierwszego zadania
 		int secondTaskPosition = 0;  // Random - pozycja drugiego zadania
 		
-		int processor = rand() % 2; // Random - wybór maszyny
+		int processor = rand() % 2; // Random - wybór maszyny któr¹ dotyczyæ bêdzie mutacja
 		int timeFirstProcessor = 0; // Czas na maszynie pierwszej
 		int timeSecondProcessor = 0; // Czas na maszynie drugiej
-		
-		Task * currentTaskFirstProcessor = NULL;
-		Task * currentTaskSecondProcessor = NULL;
+		Task * currentTaskFirstProcessor = NULL; // Zadanie na maszynie pierwszej
+		Task * currentTaskSecondProcessor = NULL; // Zadanie na maszynie drugiej
 		int numerPrzerwaniaFirstProcessor = 0; // Numer aktualnego przerwania na procesorze pierwszym
 		int numerPrzerwaniaSecondProcessor = 0; // Numer aktualnego przerwania na procesorze drugim
-		int countTask = 0; // Licznik przeliczonych ju¿ zadañ
+		int countTask = 0; // Licznik sprawdzionych ju¿ zadañ
 		int najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime; // Czas momentu ROZPOCZÊCIA przerwania na procesorze pierwszym
 		int najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime; // Czas momentu ROZPOCZÊCIA przerwania na procesorze drugim 
 		int listaPrzerwanFirstProcessorSize = listaPrzerwanFirstProcessor.size(); // Iloœæ przerwañ dla pierwszego procesora - aby nie liczyæ za ka¿dym razem tej wartoœci
@@ -975,6 +974,8 @@ void Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirst
 	// Wektory kolejnoœci zadañ (ID)
 		int *taskOrderFirstProcessor = new int[iloscZadan];
 		int *taskOrderSecondProcessor = new int[iloscZadan];
+	
+	// Licznik odwiedzonych aby nie zapêtliæ siê w czasach bezczynnoœci
 		int *licznikOdwiedzonych = new int[iloscZadan];
 	
 	// Pomocnicze tablice part I & part II aby przyspieszyæ proces sprawdzania
@@ -994,9 +995,11 @@ void Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirst
 			licznikOdwiedzonych[i] = 0;
 		}
 		
-		cout << "Przed mutacj¹:" << endl;
-		for(int i = 0; i < iloscZadan; i++) {
-			cout << taskOrderFirstProcessor[i] << " | " << taskOrderSecondProcessor[i] << endl;
+		if(DEBUG) {
+			debugFile << "Przed mutacj¹:" << endl;
+			for(int i = 0; i < iloscZadan; i++) {
+				debugFile << taskOrderFirstProcessor[i] << " | " << taskOrderSecondProcessor[i] << endl;
+			}
 		}
 		
 	// Pêtla losowania i zmiany kolejnoœci zadañ
@@ -1031,9 +1034,11 @@ void Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirst
 			}
 		}
 		
-		cout << "PO mutacji:" << endl;
-		for(int i = 0; i < iloscZadan; i++) {
-			cout << taskOrderFirstProcessor[i] << " | " << taskOrderSecondProcessor[i] << endl;
+		if(DEBUG) {
+			debugFile << "PO mutacji:" << endl;
+			for(int i = 0; i < iloscZadan; i++) {
+				debugFile << taskOrderFirstProcessor[i] << " | " << taskOrderSecondProcessor[i] << endl;
+			}
 		}
 		
 		// Posortowanie zadañ wed³ug ID - aby ³atwo odwo³ywaæ siê poprzez wartoœæ z tablicy kolejnoœci zadañ
