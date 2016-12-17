@@ -343,7 +343,7 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 		int timeSecondProcessor = 0; // Zmienna czasowa - procesor drugi
 		int maxCount = 2 * iloscZadan; // Iloœæ koniecznych edycji w zadaniach (part I + part II w ka¿dym zadaniu)
 		int listaPrzerwanFirstProcessorSize = listaPrzerwanFirstProcessor.size(); // Iloœæ przerwañ dla pierwszego procesora - aby nie liczyæ za ka¿dym razem tej wartoœci
-		int listaPrzerwanSecondProcessorSize = listaPrzerwanSecondProcessor.size(); // Iloœæ przerwañ dla drugiej maszyny - podonie jak wy¿ej, unikamy niepotrzebnego, wielokrotnego liczenia tej wartoœci
+		int listaPrzerwanSecondProcessorSize = listaPrzerwanSecondProcessor.size(); // Iloœæ przerwañ dla drugiej maszyny - podobnie jak wy¿ej, unikamy niepotrzebnego, wielokrotnego liczenia tej wartoœci
 		int taskID = 0; // Numer zadania
 		int pozycja = 0; // Numer aktualnie rozpatrywanego zadania (losowa wartoœæ z z przedzia³u 0 - ilosc zadan*2)
 		
@@ -939,6 +939,366 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 	}
 }
 
+// Mutacja jednego rozwi¹zania z za³o¿eniem podzielenia operacji na dwie maszyny
+void Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor) {
+	// Zmienne operacyjne
+		srand(time(NULL)); // Odœwie¿enie randoma
+		vector<Task*> taskListFirstProcessor, taskListSecondProcessor; // Wektory dla podzia³u zadañ na maszyny
+			
+	// Podzielenie listy zadañ na maszyny i przypisanie iloœci do zmiennych pomocniczych
+			PodzielStrukturyNaMaszyny<Task>(listaZadan, taskListFirstProcessor, taskListSecondProcessor);
+		
+		int iloscZadan = taskListFirstProcessor.size();
+		int firstTaskPosition = 0; // Random - pozycja pierwszego zadania
+		int secondTaskPosition = 0;  // Random - pozycja drugiego zadania
+		
+		int processor = rand() % 2; // Random - wybór maszyny
+		int timeFirstProcessor = 0; // Czas na maszynie pierwszej
+		int timeSecondProcessor = 0; // Czas na maszynie drugiej
+		
+		Task * currentTaskFirstProcessor = NULL;
+		Task * currentTaskSecondProcessor = NULL;
+		int numerPrzerwaniaFirstProcessor = 0; // Numer aktualnego przerwania na procesorze pierwszym
+		int numerPrzerwaniaSecondProcessor = 0; // Numer aktualnego przerwania na procesorze drugim
+		int countTask = 0; // Licznik przeliczonych ju¿ zadañ
+		int najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime; // Czas momentu ROZPOCZÊCIA przerwania na procesorze pierwszym
+		int najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime; // Czas momentu ROZPOCZÊCIA przerwania na procesorze drugim 
+		int listaPrzerwanFirstProcessorSize = listaPrzerwanFirstProcessor.size(); // Iloœæ przerwañ dla pierwszego procesora - aby nie liczyæ za ka¿dym razem tej wartoœci
+		int listaPrzerwanSecondProcessorSize = listaPrzerwanSecondProcessor.size(); // Iloœæ przerwañ dla drugiej maszyny - podobnie jak wy¿ej, unikamy niepotrzebnego, wielokrotnego liczenia tej wartoœci
+		int taskIDFirstProcessor = 0; // Numer zadania na maszynie pierwszej
+		int taskIDSecondProcessor = 0; // Numer zadania na maszynie drugiej
+		
+		int iteratorFP = 0; // Numer rozpatrywanego zadania na maszynie pierwszej
+		int iteratorSP = 0; // Numer aktualnie rozpatrywanego zadania na maszynie drugiej
+		
+	// Wektory kolejnoœci zadañ (ID)
+		int *taskOrderFirstProcessor = new int[iloscZadan];
+		int *taskOrderSecondProcessor = new int[iloscZadan];
+		int *licznikOdwiedzonych = new int[iloscZadan];
+	
+	// Pomocnicze tablice part I & part II aby przyspieszyæ proces sprawdzania
+		bool *firstPart = new bool[iloscZadan];
+		bool *secondPart = new bool[iloscZadan];
+	
+	// Sortowanie zadañ w listach
+		SortujZadaniaPoEndTime(taskListFirstProcessor);
+		SortujZadaniaPoEndTime(taskListSecondProcessor);	
+		
+	// Tworzymy wektor kolejnoœci zadañ i zerujemy tablice pomocnicze
+		for(int i = 0; i < iloscZadan; i++) {
+			taskOrderFirstProcessor[i] = taskListFirstProcessor[i]->ID - 1;
+			taskOrderSecondProcessor[i] = taskListSecondProcessor[i]->ID - 1;
+			firstPart[i] = false;
+			secondPart[i] = false;
+			licznikOdwiedzonych[i] = 0;
+		}
+		
+	// Pêtla losowania i zmiany kolejnoœci zadañ
+		while(countTask < iloscZadan*2) {
+			// Losujemy wartoœci
+				firstTaskPosition = (int)(rand() / (RAND_MAX + 1.0) * iloscZadan);
+				secondTaskPosition = (int)(rand() / (RAND_MAX + 1.0) * iloscZadan);	
+			
+			if(processor == 0) { // Przestawienie kolejnoœci zadañ dotyczy maszyny pierwszej
+				// Sprawdzamy czy te zadania mo¿emy mutowaæ (za³o¿enie - przestawiamy tylko zadania z tym samym wskaŸnikiem czêœci Part)
+					if(secondTaskPosition != firstTaskPosition && taskListFirstProcessor[firstTaskPosition]->part == taskListFirstProcessor[secondTaskPosition]->part) {						
+					// Zamiana kolejnoœci zadañ w liœcie
+						int temp = taskOrderFirstProcessor[firstTaskPosition];
+						taskOrderFirstProcessor[firstTaskPosition] = taskOrderFirstProcessor[secondTaskPosition];
+						taskOrderFirstProcessor[secondTaskPosition] = temp;
+											
+						break;
+					} else {
+						continue; // Skok do kolejnej iteracji i nowego losowania
+					}
+			} else { // Zmiany kolejnoœci dla maszynie nr 2
+				if(secondTaskPosition != firstTaskPosition && taskListSecondProcessor[firstTaskPosition]->part == taskListSecondProcessor[secondTaskPosition]->part) {						
+					// Zamiana kolejnoœci zadañ w liœcie
+						int temp = taskOrderSecondProcessor[firstTaskPosition];
+						taskOrderSecondProcessor[firstTaskPosition] = taskOrderSecondProcessor[secondTaskPosition];
+						taskOrderSecondProcessor[secondTaskPosition] = temp;
+							
+						break;
+					} else {
+						continue; // Skok do kolejnej iteracji i nowego losowania
+					}
+			}
+		}
+		
+		// Posortowanie zadañ wed³ug ID - aby ³atwo odwo³ywaæ siê poprzez wartoœæ z tablicy kolejnoœci zadañ
+			SortujZadaniaPoID(taskListFirstProcessor);
+			SortujZadaniaPoID(taskListSecondProcessor);
+	
+	// Pêtla ustawiaj¹ca nowe czasy zakoñczenia dla naszych operacji
+		while(true) {
+			// Sprawdzamy czy nie wyskoczyliœmy na maszynie pierwszej poza zakres vektora
+			if(iteratorFP < iloscZadan) {
+				// Przypisujemy zadanie do zmiennej pomocniczej
+					taskIDFirstProcessor = taskOrderFirstProcessor[iteratorFP];
+					currentTaskFirstProcessor = taskListFirstProcessor[taskIDFirstProcessor];
+					
+				// Sprawdzamy part zadania - je¿eli jest to I to mo¿na wstawiaæ od razu, je¿eli II trzeba poczekaæ a¿ zostanie wstawiona czêœæ I na maszynie drugiej
+					if(currentTaskFirstProcessor->part == 0) {
+						// Sprawdzamy czy zadanie uda siê ustawiæ przed najblizszym maintenance na maszynie 
+							if((timeFirstProcessor + currentTaskFirstProcessor->duration) <= najblizszyMaintenanceFirstProcessor || (najblizszyMaintenanceFirstProcessor == -1)) {
+								// Ustawiamy czas na maszynie pierwszej
+									timeFirstProcessor += currentTaskFirstProcessor->duration;
+						
+								if(DEBUG) 
+									debugFile << "Czas FM: " << timeFirstProcessor << endl;
+							
+								// Ustawiamy czas zakoñczenia Part I
+									currentTaskFirstProcessor->endTime = timeFirstProcessor;
+									
+								// Ustawiamy ¿e zadanie zosta³o u¿yte (Part I)
+									firstPart[taskIDFirstProcessor] = true;	
+									
+							} else { // Nie uda³o siê umieœciæ zadania przed przerw¹
+								while(true) {
+									// Przesuwamy siê na chwilê po przerwaniu
+										timeFirstProcessor = najblizszyMaintenanceFirstProcessor + listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->duration;
+						
+									// Ustawiamy czas nastêpnego przerwania
+										numerPrzerwaniaFirstProcessor++;
+										if(numerPrzerwaniaFirstProcessor < listaPrzerwanFirstProcessorSize)
+												najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
+											else
+												najblizszyMaintenanceFirstProcessor = -1;
+												
+										// Musismy sprawdziæ czy uda siê nam wcisn¹æ nasze zadanie
+											if((timeFirstProcessor + currentTaskFirstProcessor->duration) <= najblizszyMaintenanceFirstProcessor || (najblizszyMaintenanceFirstProcessor == -1))
+												break;
+									}
+							
+									// Po opuszczeniu pêtli mamy poprawn¹ wartoœæ w zmiennej timeFirstProcessor (wystarczy zwiêkszyæ j¹ o d³ugoœæ zadania)
+										timeFirstProcessor += currentTaskFirstProcessor->duration;
+									
+										if(DEBUG)		
+											debugFile << "I Czas FM " << timeFirstProcessor << endl;
+									
+									// Ustawiamy zmienn¹ czasow¹ zakoñczenia zadania
+										currentTaskFirstProcessor->endTime = timeFirstProcessor;
+										
+									// Zaznaczamy w tablicy pomocniczej ¿e czêœæ pierwsza zadania by³a u¿yta
+										firstPart[taskIDFirstProcessor] = true;									
+							}
+							
+							// Zwiêkszamy iloœæ poprawionych zadañ
+								countTask++;
+							
+							// Przestawiamy iterator na pierwszej maszynie
+								iteratorFP++;
+								
+					} else if(firstPart[taskIDFirstProcessor]) { // Sprawdzamy czy zosta³a wstawiona czêœæ I zadania (ma ono part == 1)
+						// Mog¹ wyst¹piæ problemy z zapêtleniami = dlatego jest dodatkowe zabezpieczenie w postaci liczenia ile razy odwiedzamy wartoœæ
+							licznikOdwiedzonych[taskIDFirstProcessor]++;
+							
+							if(timeFirstProcessor < currentTaskFirstProcessor->anotherPart->endTime) {
+								// Sprawdzamy czy nie jesteœmy po raz x w pêtli
+								if(licznikOdwiedzonych[taskIDFirstProcessor] >= MIN_TASK_COUNTER) {
+									// Tworzymy pomocnicz¹ zmienn¹ odleg³oœci
+										int minTime = INT_MAX;
+										int tempTime = 0;
+										
+									// Resetujemy liczniki i patrzymy na odleg³oœci
+										for(int i = 0; i < iloscZadan; i++) {
+											licznikOdwiedzonych[i] = 0;
+											
+											if(!secondPart[i]) {
+												tempTime = currentTaskFirstProcessor->anotherPart->endTime - timeFirstProcessor;
+												if(tempTime < minTime)
+													minTime = tempTime;
+											}
+										}
+										
+									// Przestawiamy czas na maszynie
+										timeFirstProcessor += minTime;
+										
+								}
+							} else {
+								// Zadanie mo¿na umieœciæ
+								// Sprawdzamy czy zadanie mo¿na umieœciæ przed maintenance najbli¿szym (je¿eli jest  on -1 to ju¿ nie wyst¹pi)
+									if((timeFirstProcessor + currentTaskFirstProcessor->duration) <= najblizszyMaintenanceFirstProcessor || (najblizszyMaintenanceFirstProcessor == -1)) {
+										// Ustawiamy czas na maszynie pierwszej
+											timeFirstProcessor += currentTaskFirstProcessor->duration;
+										
+										// Ustawiamy czas zakoñczenia zadania
+											currentTaskFirstProcessor->endTime = timeFirstProcessor;
+											
+										// Przestawiamy iterator oraz iloœæ zedytowanych zadañ
+											iteratorFP++;
+											countTask++;
+											
+										// Zaznaczamy zadanie jako wykonane w pe³ni
+											secondPart[taskIDFirstProcessor] = true;	
+								
+									} else { // Nie umieœciliœmy zadania przed przerw¹
+										while(true) {
+											// Przesuwamy siê na chwilê po przerwaniu
+												timeFirstProcessor = najblizszyMaintenanceFirstProcessor + listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->duration;
+											
+											// Ustawiamy czas nastêpnego przerwania
+												numerPrzerwaniaFirstProcessor++;
+												if(numerPrzerwaniaFirstProcessor < listaPrzerwanFirstProcessorSize)
+													najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
+												else
+													najblizszyMaintenanceFirstProcessor = -1;
+													
+											// Musismy sprawdziæ czy uda siê nam wcisn¹æ nasze zadanie
+												if((timeFirstProcessor + currentTaskFirstProcessor->duration) <= najblizszyMaintenanceFirstProcessor || (najblizszyMaintenanceFirstProcessor == -1))
+													break;
+										}
+									
+										// Po opuszczeniu pêtli mamy poprawn¹ wartoœæ w zmiennej timeSecondProcessor (wystarczy zwiêkszyæ j¹ o d³ugoœæ zadania)
+											timeFirstProcessor += currentTaskFirstProcessor->duration;
+												
+										// Ustawiamy zmienn¹ czasow¹ zakoñczenia zadania
+											currentTaskFirstProcessor->endTime = timeFirstProcessor;
+											
+										// Przestawiamy iterator oraz licznik edycji
+											iteratorFP++;
+											countTask++;
+										
+										// Zaznaczamy zadanie jako wykonane w pe³ni
+											secondPart[taskIDFirstProcessor] = true;
+									}	
+							}
+					}
+			}
+			
+			// Zadania na drugim procesorze
+			
+			if(iteratorSP < iloscZadan) {
+				// Przypisujemy zadanie do zmiennej pomocniczej
+					taskIDSecondProcessor = taskOrderSecondProcessor[iteratorSP];
+					currentTaskSecondProcessor = taskListSecondProcessor[taskIDSecondProcessor];
+					
+				// Sprawdzamy part zadania - je¿eli jest to I to mo¿na wstawiaæ od razu, je¿eli II trzeba poczekaæ a¿ zostanie wstawiona czêœæ I na maszynie pierwszej
+					if(currentTaskSecondProcessor->part == 0) {
+						// Sprawdzamy czy zadanie uda siê ustawiæ przed najblizszym maintenance na maszynie 
+							if((timeSecondProcessor + currentTaskSecondProcessor->duration) <= najblizszyMaintenanceSecondProcessor || (najblizszyMaintenanceSecondProcessor == -1)) {
+								// Ustawiamy czas na maszynie pierwszej
+									timeSecondProcessor += currentTaskSecondProcessor->duration;
+						
+								// Ustawiamy czas zakoñczenia Part I
+									currentTaskSecondProcessor->endTime = timeSecondProcessor;
+									
+								// Ustawiamy ¿e zadanie zosta³o u¿yte (Part I)
+									firstPart[taskIDSecondProcessor] = true;	
+									
+							} else { // Nie uda³o siê umieœciæ zadania przed przerw¹
+								while(true) {
+									// Przesuwamy siê na chwilê po przerwaniu
+										timeSecondProcessor = najblizszyMaintenanceSecondProcessor + listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->duration;
+						
+									// Ustawiamy czas nastêpnego przerwania
+										numerPrzerwaniaSecondProcessor++;
+										if(numerPrzerwaniaSecondProcessor < listaPrzerwanSecondProcessorSize)
+												najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime;
+											else
+												najblizszyMaintenanceSecondProcessor = -1;
+												
+										// Musismy sprawdziæ czy uda siê nam wcisn¹æ nasze zadanie
+											if((timeSecondProcessor + currentTaskSecondProcessor->duration) <= najblizszyMaintenanceSecondProcessor || (najblizszyMaintenanceSecondProcessor == -1))
+												break;
+									}
+							
+									// Po opuszczeniu pêtli mamy poprawn¹ wartoœæ w zmiennej timeSecondProcessor (wystarczy zwiêkszyæ j¹ o d³ugoœæ zadania)
+										timeSecondProcessor += currentTaskSecondProcessor->duration;
+									
+									// Ustawiamy zmienn¹ czasow¹ zakoñczenia zadania
+										currentTaskSecondProcessor->endTime = timeSecondProcessor;
+										
+									// Zaznaczamy w tablicy pomocniczej ¿e czêœæ pierwsza zadania by³a u¿yta
+										firstPart[taskIDSecondProcessor] = true;									
+							}
+							
+							// Zwiêkszamy iloœæ poprawionych zadañ
+								countTask++;
+							
+							// Przestawiamy iterator na pierwszej maszynie
+								iteratorSP++;
+								
+					} else if(firstPart[taskIDSecondProcessor]) { // Sprawdzamy czy zosta³a wstawiona czêœæ I zadania (ma ono part == 1)
+						// Mog¹ wyst¹piæ problemy z zapêtleniami = dlatego jest dodatkowe zabezpieczenie w postaci liczenia ile razy odwiedzamy wartoœæ
+							licznikOdwiedzonych[taskIDSecondProcessor]++;
+							
+							if(timeSecondProcessor < currentTaskSecondProcessor->anotherPart->endTime) {
+								// Sprawdzamy czy nie jesteœmy po raz x w pêtli
+								if(licznikOdwiedzonych[taskIDSecondProcessor] >= MIN_TASK_COUNTER) {
+									// Tworzymy pomocnicz¹ zmienn¹ odleg³oœci
+										int minTime = INT_MAX;
+										int tempTime = 0;
+										
+									// Resetujemy liczniki i patrzymy na odleg³oœci
+										for(int i = 0; i < iloscZadan; i++) {
+											licznikOdwiedzonych[i] = 0;
+											
+											if(!secondPart[i]) {
+												tempTime = currentTaskSecondProcessor->anotherPart->endTime - timeSecondProcessor;
+												if(tempTime < minTime)
+													minTime = tempTime;
+											}
+										}
+										
+									// Przestawiamy czas na maszynie
+										timeSecondProcessor += minTime;
+										
+								}
+							} else {
+								// Zadanie mo¿na umieœciæ
+								// Sprawdzamy czy zadanie mo¿na umieœciæ przed maintenance najbli¿szym (je¿eli jest  on -1 to ju¿ nie wyst¹pi)
+									if((timeSecondProcessor + currentTaskSecondProcessor->duration) <= najblizszyMaintenanceSecondProcessor || (najblizszyMaintenanceSecondProcessor == -1)) {
+										// Ustawiamy czas na maszynie pierwszej
+											timeSecondProcessor += currentTaskSecondProcessor->duration;
+										
+										// Ustawiamy czas zakoñczenia zadania
+											currentTaskSecondProcessor->endTime = timeSecondProcessor;
+											
+										// Przestawiamy iterator oraz iloœæ zedytowanych zadañ
+											iteratorSP++;
+											countTask++;
+											
+										// Zaznaczamy zadanie jako wykonane w pe³ni
+											secondPart[taskIDSecondProcessor] = true;	
+								
+									} else { // Nie umieœciliœmy zadania przed przerw¹
+										while(true) {
+											// Przesuwamy siê na chwilê po przerwaniu
+												timeSecondProcessor = najblizszyMaintenanceSecondProcessor + listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->duration;
+											
+											// Ustawiamy czas nastêpnego przerwania
+												numerPrzerwaniaSecondProcessor++;
+												if(numerPrzerwaniaSecondProcessor < listaPrzerwanSecondProcessorSize)
+													najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime;
+												else
+													najblizszyMaintenanceSecondProcessor = -1;
+													
+											// Musismy sprawdziæ czy uda siê nam wcisn¹æ nasze zadanie
+												if((timeSecondProcessor + currentTaskSecondProcessor->duration) <= najblizszyMaintenanceSecondProcessor || (najblizszyMaintenanceSecondProcessor == -1))
+													break;
+										}
+									
+										// Po opuszczeniu pêtli mamy poprawn¹ wartoœæ w zmiennej timeSecondProcessor (wystarczy zwiêkszyæ j¹ o d³ugoœæ zadania)
+											timeSecondProcessor += currentTaskSecondProcessor->duration;
+												
+										// Ustawiamy zmienn¹ czasow¹ zakoñczenia zadania
+											currentTaskSecondProcessor->endTime = timeSecondProcessor;
+											
+										// Przestawiamy iterator oraz licznik edycji
+											iteratorSP++;
+											countTask++;
+										
+										// Zaznaczamy zadanie jako wykonane w pe³ni
+											secondPart[taskIDSecondProcessor] = true;
+									}	
+							}
+					}
+			}
+		}
+	
+}
+
 int main() {
 	debugFile.open("debug.txt");
 	int rozmiarInstancji = INSTANCE_SIZE;
@@ -980,7 +1340,8 @@ int main() {
 		long int wynik = ObliczFunkcjeCelu(listaZadan);
 //		OdczytPrzerwan(listaPrzerwan);
 		OdczytDanychZadan(listaZadan);
-		UtworzGraf(listaZadan, listaPrzerwan, wynik);		
+		UtworzGraf(listaZadan, listaPrzerwan, wynik);
+		Mutacja(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);		
 	
 	// Czyszczenie pamiêci - zwalnianie niepotrzebnych zasobów
 		przerwaniaFirstProcessor.clear();
