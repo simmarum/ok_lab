@@ -932,6 +932,10 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 				file << endl << ObliczDlugoscOperacji<Maintenance>(listaPrzerwanFirstProcessor) << endl 
 					 << ObliczDlugoscOperacji<Maintenance>(listaPrzerwanSecondProcessor) << endl
 					 << ildeTimeFirstProcessor << endl << ildeTimeSecondProcessor << endl << "*** EOF ***";
+					 
+			// Czyszczenie pamiêci operacyjnej
+				taskFirstProcessor.clear();
+				taskSecondProcessor.clear();
 	}
 }
 
@@ -969,12 +973,12 @@ int main() {
 		PodzielStrukturyNaMaszyny<Maintenance>(listaPrzerwan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 		
 		GeneratorLosowy(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
-		OdczytDanychZadan(listaZadan);
+//		OdczytDanychZadan(listaZadan);
 		
 		ZapiszWynikiDoPliku(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, firstSolutionValue, numerInstancjiProblemu, nameParam);
 		
 		long int wynik = ObliczFunkcjeCelu(listaZadan);
-		OdczytPrzerwan(listaPrzerwan);
+//		OdczytPrzerwan(listaPrzerwan);
 		OdczytDanychZadan(listaZadan);
 		UtworzGraf(listaZadan, listaPrzerwan, wynik);		
 	
