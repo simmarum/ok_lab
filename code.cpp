@@ -69,9 +69,7 @@ bool sortTaskByID(Task *i, Task *j) { return (i->ID < j->ID); } // Po wartoœci I
 void KopiujDaneOperacji(vector<Task*> &listaWejsciowa, vector<Task*> &listaWyjsciowa);
 
 // Generator przestojóww na maszynie
-void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstProcessor, int liczbaPrzerwanSecondProcessor, int lowerTimeLimit, int upperTimeLimit, int lowerReadyTime, int upperReadyTime) {
-	srand(time(NULL));
-	
+void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstProcessor, int liczbaPrzerwanSecondProcessor, int lowerTimeLimit, int upperTimeLimit, int lowerReadyTime, int upperReadyTime) {	
 	int size = (upperReadyTime - lowerReadyTime) + (upperTimeLimit - lowerTimeLimit);
 	bool * maintenanceTimeTable = new bool[size]; // Jedna tablica bo przerwania na maszynach nie mog¹ siê nak³adaæ na siebie 
 	
@@ -161,7 +159,6 @@ void SortujZadaniaPoEndTime(vector<Task*> &listaZadan) {
 
 // Generator instancji problemu
 void GeneratorInstancji(vector<Task*> &lista, int maxTask, int lowerTimeLimit, int upperTimeLimit) {
-	srand(time(NULL));
 	int assigment = 0;
 	
 	for(int i = 0; i < maxTask; i++) {
@@ -329,8 +326,6 @@ void OdczytPrzerwan(vector<Maintenance*> &listaPrzerwan) {
 
 // Generator rozwi¹zañ losowych
 vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor) {
-	srand(time(NULL));
-	
 	// Utworzenie kopii zadañ aby móc tworzyæ swoje rozwi¹zanie
 		vector<Task*> zadaniaLokalne;
 		KopiujDaneOperacji(listaZadan, zadaniaLokalne);
@@ -847,7 +842,7 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 						}
 					
 					// Zapis do pliku danych o bezczynnoœci	
-						file << "ilde" << countIldeFirstProcessor + 1 << "_M1, " << processorTime << ", " << minTime << "; ";
+						file << "idle" << countIldeFirstProcessor + 1 << "_M1, " << processorTime << ", " << minTime << "; ";
 						countIldeFirstProcessor++;
 
 					// Dodanie do ogólnego licznika bezczynnoœci zapisanego czasu
@@ -920,7 +915,7 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 						}
 					
 					// Zapis do pliku danych o bezczynnoœci	
-						file << "ilde" << countIldeSecondProcessor + 1 << "_M2, " << processorTime << ", " << minTime << "; ";
+						file << "idle" << countIldeSecondProcessor + 1 << "_M2, " << processorTime << ", " << minTime << "; ";
 						
 					// Inkrementacja numeru przerwania
 						countIldeSecondProcessor++;
@@ -948,7 +943,6 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 // Mutacja jednego rozwi¹zania z za³o¿eniem podzielenia operacji na dwie maszyny
 vector<Task*> Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor) {
 	// Zmienne operacyjne
-		srand(time(NULL)); // Odœwie¿enie randoma
 		vector<Task*> taskListFirstProcessor, taskListSecondProcessor; // Wektory dla podzia³u zadañ na maszyny
 			
 	// Podzielenie listy zadañ na maszyny i przypisanie iloœci do zmiennych pomocniczych
@@ -1332,7 +1326,6 @@ vector<Task*> Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrze
 }
 
 void Turniej(vector< vector<Task*> > &solutionsList) {
-	srand(time(NULL));
 	// Przeliczenie rozmiaru otrzymanej struktury listy rozwi¹zañ
 		int size = solutionsList.size();
 	
@@ -1414,6 +1407,7 @@ void KopiujDaneOperacji(vector<Task*> &listaWejsciowa, vector<Task*> &listaWyjsc
 }
 
 int main() {
+	srand(time(NULL));
 	debugFile.open("debug.txt");
 	int rozmiarInstancji = INSTANCE_SIZE;
 	int numerInstancjiProblemu = INSTANCE_NUMBER;
@@ -1456,7 +1450,6 @@ int main() {
 //		OdczytPrzerwan(listaPrzerwan);
 //		OdczytDanychZadan(listaZadan);
 		UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
-		nameParam += "w";
 		
 		vector<Task*> nowe = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 		nowe = Mutacja(nowe, przerwaniaFirstProcessor, przerwaniaSecondProcessor);		
@@ -1464,13 +1457,13 @@ int main() {
 		vector< vector<Task*> > solution;
 		
 		
-		solution.push_back(nowe);
-		solution.push_back(listaZadan);
-		cout << "S1 " << ObliczFunkcjeCelu(nowe) << endl;
-		OdczytDanychZadan(nowe);
-		cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
-		OdczytDanychZadan(listaZadan);
-		UtworzGraf(nowe, listaPrzerwan, wynik, nameParam);
+//		solution.push_back(nowe);
+//		solution.push_back(listaZadan);
+//		cout << "S1 " << ObliczFunkcjeCelu(nowe) << endl;
+//		OdczytDanychZadan(nowe);
+//		cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
+//		OdczytDanychZadan(listaZadan);
+//		UtworzGraf(nowe, listaPrzerwan, wynik, nameParam);
 		
 		Turniej(solution);
 		
