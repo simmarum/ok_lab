@@ -769,7 +769,8 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 			int count = 0; // Iloœæ operacji które zosta³y ju¿ umieszczone w pliku wynikowym
 			int maxCount; // Iloœæ operacji które trzeba umieœciæ (liczba operacji + przerwania)
 			int taskPoint = 0; // Zmienna wskazuj¹ca aktualnie rozpatrywane zadanie z listy operacji
-			int countIlde = 1; // Licznik okresów bezczynnoœci
+			int countIldeFirstProcessor = 0; // Licznik okresów bezczynnoœci dla maszyny pierwszej
+			int countIldeSecondProcessor = 0; // Licznik okresów bezczynnoœci dla maszyny drugiej
 			int ildeTimeFirstProcessor = 0; // Ogólny czas bezczynnoœci na maszynie pierwszej
 			int ildeTimeSecondProcessor = 0; // Ogólny czas bezczynnoœci na maszynie drugiej
 			
@@ -845,8 +846,8 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 						}
 					
 					// Zapis do pliku danych o bezczynnoœci	
-						file << "ilde" << countIlde << "_M1, " << processorTime << ", " << minTime << "; ";
-						countIlde++;
+						file << "ilde" << countIldeFirstProcessor + 1 << "_M1, " << processorTime << ", " << minTime << "; ";
+						countIldeFirstProcessor++;
 
 					// Dodanie do ogólnego licznika bezczynnoœci zapisanego czasu
 						ildeTimeFirstProcessor += minTime;
@@ -862,7 +863,6 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 			taskPoint = 0;
 			count = 0;
 			processorTime = 0;
-			countIlde = 1;
 			numerPrzerwania = 0;
 			if(listaPrzerwanSecondProcessor.size() > 0)
 				najblizszyMaintenance = listaPrzerwanSecondProcessor[0]->readyTime;
@@ -919,10 +919,10 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 						}
 					
 					// Zapis do pliku danych o bezczynnoœci	
-						file << "ilde" << countIlde << "_M2, " << processorTime << ", " << minTime << "; ";
+						file << "ilde" << countIldeSecondProcessor + 1 << "_M2, " << processorTime << ", " << minTime << "; ";
 						
 					// Inkrementacja numeru przerwania
-						countIlde++;
+						countIldeSecondProcessor++;
 
 					// Dodanie do ogólnego licznika bezczynnoœci zapisanego czasu
 						ildeTimeSecondProcessor += minTime;
@@ -933,9 +933,10 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 			}
 			
 			// Dopisanie wartoœci sum
-				file << endl << ObliczDlugoscOperacji<Maintenance>(listaPrzerwanFirstProcessor) << endl 
-					 << ObliczDlugoscOperacji<Maintenance>(listaPrzerwanSecondProcessor) << endl
-					 << ildeTimeFirstProcessor << endl << ildeTimeSecondProcessor << endl << "*** EOF ***";
+				file << endl << listaPrzerwanFirstProcessor.size() << ", " << ObliczDlugoscOperacji<Maintenance>(listaPrzerwanFirstProcessor) << endl 
+					 << listaPrzerwanSecondProcessor.size() << "," << ObliczDlugoscOperacji<Maintenance>(listaPrzerwanSecondProcessor) << endl
+					 << countIldeFirstProcessor << ", " << ildeTimeFirstProcessor << endl 
+					 << countIldeSecondProcessor << ", " << ildeTimeSecondProcessor << endl << "*** EOF ***";
 					 
 			// Czyszczenie pamiêci operacyjnej
 				taskFirstProcessor.clear();
