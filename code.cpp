@@ -1349,15 +1349,16 @@ void Turniej(vector< vector<Task*> > &solutionsList) {
 		int toKill = size - INSTANCE_SIZE;
 		int first, second;
 		
-		cout << "Kill = " << toKill << endl;
-		toKill = 1;
+		if(DEBUG)
+			debugFile << "Kill = " << toKill << endl;
 		
 	// Pêtla operacyjna
 		while(toKill > 0) {
 			first = (int)(rand() / (RAND_MAX + 1.0) * size);
 			second = (int)(rand() / (RAND_MAX + 1.0) * size);
 			
-			cout << "First = " << first << " second =" << second << endl;
+			if(DEBUG)
+				debugFile << "First = " << first << " second =" << second << endl;
 			
 			if(first != second && !looserSolution[first] && !looserSolution[second]) {
 				// Sprawdzamy które z rozwi¹zañ ma mniejsz¹ wartoœæ funkcji celu
@@ -1365,16 +1366,21 @@ void Turniej(vector< vector<Task*> > &solutionsList) {
 					looserSolution[second] = true;
 				else
 					looserSolution[first] = true;
-				cout << "Warunek" << endl;
 				toKill--;
 			} else
 				continue; // Ponawiamy iteracjê - albo to samo zadanie, albo wylosowano rozwi¹zanie które odpad³o
 		}
 	
 	// Usuniêcie wykluczonych rozwi¹zañ
-		for(int i = 0; i < size; i++) {
-			cout << solutionsValue[i] << " = " << looserSolution[i] << " ";
+		for(int i = size - 1; i >= 0; i--) {
+			if(looserSolution[i]) {
+				solutionsList.erase(solutionsList.begin() + i);
+			}
 		}
+	
+	// Czyszczenie pamiêci operacyjnej
+		delete looserSolution;
+		delete solutionsValue;
 }
 
 void KopiujDaneOperacji(vector<Task*> &listaWejsciowa, vector<Task*> &listaWyjsciowa) {
@@ -1463,12 +1469,19 @@ int main() {
 		OdczytDanychZadan(nowe);
 		cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
 		OdczytDanychZadan(listaZadan);
+		UtworzGraf(nowe, listaPrzerwan, wynik, nameParam);
 		
 		Turniej(solution);
 		
-		UtworzGraf(nowe, listaPrzerwan, wynik, nameParam);
-		
-		
+		for(int i = 0; i < solution.size(); i++) {
+			cout << "Zapis dla i = " << i << endl;
+			long int wyn = ObliczFunkcjeCelu(solution[i]);
+			string newNameParam;
+			stringstream ss;
+			ss << nameParam << "_" << i + 1;
+			ss >> newNameParam; 
+			UtworzGraf(solution[i], listaPrzerwan, wyn, newNameParam);
+		}		
 		
 	// Czyszczenie pamiêci - zwalnianie niepotrzebnych zasobów
 		przerwaniaFirstProcessor.clear();
