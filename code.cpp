@@ -1439,7 +1439,8 @@ int main() {
 		SortujPrzerwania(listaPrzerwan);
 		PodzielStrukturyNaMaszyny<Maintenance>(listaPrzerwan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 		
-		vector<Task*> listaZadan = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
+		vector<Task*> listaZadan;
+		listaZadan = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 //		OdczytDanychZadan(listaZadan);
 		
 		ZapiszWynikiDoPliku(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, firstSolutionValue, numerInstancjiProblemu, nameParam);
@@ -1448,10 +1449,10 @@ int main() {
 //		OdczytPrzerwan(listaPrzerwan);
 //		OdczytDanychZadan(listaZadan);
 		UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
-//		nameParam += "w";
+		nameParam += "w";
 		
 		vector<Task*> nowe = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
-//		Mutacja(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor);		
+		nowe = Mutacja(nowe, przerwaniaFirstProcessor, przerwaniaSecondProcessor);		
 //		OdczytDanychZadan(listaZadan);
 		vector< vector<Task*> > solution;
 		
@@ -1465,7 +1466,7 @@ int main() {
 		
 		Turniej(solution);
 		
-//		UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
+		UtworzGraf(nowe, listaPrzerwan, wynik, nameParam);
 		
 		
 		
