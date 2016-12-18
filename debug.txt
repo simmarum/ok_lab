@@ -1,143 +1,228 @@
-Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 0|10|0 Parametry komplementarnej czêœci = 1|19|0 czasy: 0|0 przerwy: 20|36
-I Czas SM: 19
-Wylosowano = 8 Zadanie nr 4 (Part 1) Parametry zadania = 0|14|0 Parametry komplementarnej czêœci = 1|18|0 czasy: 0|19 przerwy: 20|36
-Czas FM: 14
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|0 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|19 przerwy: 20|36
-I Czas SM: 32
-Wylosowano = 9 Zadanie nr 4 (Part 2) Parametry zadania = 1|18|0 Parametry komplementarnej czêœci = 0|14|14 czasy: 14|32 przerwy: 20|36
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|72 przerwy: 20|77
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|0 Parametry komplementarnej czêœci = 0|7|0 czasy: 14|72 przerwy: 20|77
-Druga = 101 oraz 174
-Czas SM 116
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 1|19|19 Parametry komplementarnej czêœci = 0|10|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 14|116 przerwy: 20|174
-Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 0|18|0 Parametry komplementarnej czêœci = 1|13|32 czasy: 14|116 przerwy: 20|174
-Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 1|19|19 Parametry komplementarnej czêœci = 0|10|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 0|18|0 Parametry komplementarnej czêœci = 1|13|32 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 14|116 przerwy: 20|174
-Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 0|10|0 Parametry komplementarnej czêœci = 1|19|19 czasy: 14|116 przerwy: 20|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 14|116 przerwy: 20|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 14|116 przerwy: 20|174
-Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 1|19|19 Parametry komplementarnej czêœci = 0|10|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 0|10|0 Parametry komplementarnej czêœci = 1|19|19 czasy: 14|116 przerwy: 20|174
-Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 0|18|0 Parametry komplementarnej czêœci = 1|13|32 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 1|19|19 Parametry komplementarnej czêœci = 0|10|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|6|0 Parametry komplementarnej czêœci = 0|5|0 czasy: 14|116 przerwy: 20|174
-Czas FM: 19
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 19|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 19|116 przerwy: 20|174
-Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 1|19|19 Parametry komplementarnej czêœci = 0|10|0 czasy: 19|116 przerwy: 20|174
-Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|6|0 Parametry komplementarnej czêœci = 0|5|19 czasy: 35|116 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 35|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Przestawiono czas! M0
-Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 0|10|0 Parametry komplementarnej czêœci = 1|19|0 czasy: 0|0 przerwy: 20|36
-I Czas SM: 19
-Wylosowano = 8 Zadanie nr 4 (Part 1) Parametry zadania = 0|14|0 Parametry komplementarnej czêœci = 1|18|0 czasy: 0|19 przerwy: 20|36
-Czas FM: 14
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|0 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|19 przerwy: 20|36
-I Czas SM: 32
-Wylosowano = 9 Zadanie nr 4 (Part 2) Parametry zadania = 1|18|0 Parametry komplementarnej czêœci = 0|14|14 czasy: 14|32 przerwy: 20|36
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|72 przerwy: 20|77
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|0 Parametry komplementarnej czêœci = 0|7|0 czasy: 14|72 przerwy: 20|77
-Druga = 101 oraz 174
-Czas SM 116
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 1|19|19 Parametry komplementarnej czêœci = 0|10|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 14|116 przerwy: 20|174
-Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 0|18|0 Parametry komplementarnej czêœci = 1|13|32 czasy: 14|116 przerwy: 20|174
-Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 1|19|19 Parametry komplementarnej czêœci = 0|10|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 0|18|0 Parametry komplementarnej czêœci = 1|13|32 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 14|116 przerwy: 20|174
-Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 0|10|0 Parametry komplementarnej czêœci = 1|19|19 czasy: 14|116 przerwy: 20|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 14|116 przerwy: 20|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 14|116 przerwy: 20|174
-Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 1|19|19 Parametry komplementarnej czêœci = 0|10|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 0|10|0 Parametry komplementarnej czêœci = 1|19|19 czasy: 14|116 przerwy: 20|174
-Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 0|18|0 Parametry komplementarnej czêœci = 1|13|32 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 1|19|19 Parametry komplementarnej czêœci = 0|10|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 14|116 przerwy: 20|174
-Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|6|0 Parametry komplementarnej czêœci = 0|5|0 czasy: 14|116 przerwy: 20|174
-Czas FM: 19
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 19|116 przerwy: 20|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 19|116 przerwy: 20|174
-Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 1|19|19 Parametry komplementarnej czêœci = 0|10|0 czasy: 19|116 przerwy: 20|174
-Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|6|0 Parametry komplementarnej czêœci = 0|5|19 czasy: 35|116 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 35|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 1|13|32 Parametry komplementarnej czêœci = 0|18|0 czasy: 35|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 1|15|116 Parametry komplementarnej czêœci = 0|7|0 czasy: 53|122 przerwy: 54|174
-Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|15|116 czasy: 53|122 przerwy: 54|174
-Przestawiono czas! M0
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|0 Parametry komplementarnej czêœci = 1|7|0 czasy: 0|0 przerwy: 63|11
+Czas FM: 13
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|0 czasy: 13|0 przerwy: 63|11
+Czas FM: 27
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 27|0 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|0 Parametry komplementarnej czêœci = 1|11|0 czasy: 27|0 przerwy: 63|11
+Czas FM: 38
+Wylosowano = 9 Zadanie nr 4 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|7|0 czasy: 38|0 przerwy: 63|11
+I Czas SM: 7
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|0 czasy: 38|7 przerwy: 63|11
+Czas FM: 55
+Wylosowano = 8 Zadanie nr 4 (Part 1) Parametry zadania = 1|7|7 Parametry komplementarnej czêœci = 0|7|0 czasy: 55|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Przestawiono czas! M1
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|60 przerwy: 63|185
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|67 przerwy: 63|185
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|78 przerwy: 63|185
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|0 Parametry komplementarnej czêœci = 1|7|0 czasy: 0|0 przerwy: 63|11
+Czas FM: 13
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|0 czasy: 13|0 przerwy: 63|11
+Czas FM: 27
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 27|0 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|0 Parametry komplementarnej czêœci = 1|11|0 czasy: 27|0 przerwy: 63|11
+Czas FM: 38
+Wylosowano = 9 Zadanie nr 4 (Part 2) Parametry zadania = 0|7|0 Parametry komplementarnej czêœci = 1|7|0 czasy: 38|0 przerwy: 63|11
+I Czas SM: 7
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|0 czasy: 38|7 przerwy: 63|11
+Czas FM: 55
+Wylosowano = 8 Zadanie nr 4 (Part 1) Parametry zadania = 1|7|7 Parametry komplementarnej czêœci = 0|7|0 czasy: 55|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 0 Zadanie nr 0 (Part 1) Parametry zadania = 0|17|55 Parametry komplementarnej czêœci = 1|16|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|7 przerwy: 63|11
+Wylosowano = 6 Zadanie nr 3 (Part 1) Parametry zadania = 0|13|13 Parametry komplementarnej czêœci = 1|7|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 5 Zadanie nr 2 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|11|38 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 2 Zadanie nr 1 (Part 1) Parametry zadania = 0|14|27 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|7 przerwy: 63|11
+Wylosowano = 4 Zadanie nr 2 (Part 1) Parametry zadania = 0|11|38 Parametry komplementarnej czêœci = 1|11|0 czasy: 62|7 przerwy: 63|11
+Przestawiono czas! M1
+Wylosowano = 7 Zadanie nr 3 (Part 2) Parametry zadania = 1|7|0 Parametry komplementarnej czêœci = 0|13|13 czasy: 62|60 przerwy: 63|185
+Wylosowano = 3 Zadanie nr 1 (Part 2) Parametry zadania = 1|11|0 Parametry komplementarnej czêœci = 0|14|27 czasy: 62|67 przerwy: 63|185
+Wylosowano = 1 Zadanie nr 0 (Part 2) Parametry zadania = 1|16|0 Parametry komplementarnej czêœci = 0|17|55 czasy: 62|78 przerwy: 63|185
 Przed mutacj¹:
+3 | 4
+1 | 2
+2 | 3
+0 | 1
 4 | 0
-2 | 3
-0 | 4
-3 | 1
-1 | 2
 PO mutacji:
-4 | 1
-2 | 3
-0 | 4
-3 | 0
-1 | 2
-Czas FM: 14
-Czas FM: 19
-Kill = -3
+3 | 4
+2 | 2
+1 | 3
+0 | 1
+4 | 0
+Czas FM: 13
+Czas FM: 24
+Czas FM: 38
+Czas FM: 55
+Kill = 1
+First = 0 second =1

@@ -36,6 +36,7 @@ using namespace std;
 
 #define INSTANCE_SIZE 5 // Rozmiar instancji problemu
 #define INSTANCE_NUMBER 1 // Numer instancji problemu (mo¿e byæ zmieniana przy odczycie danych z pliku)
+#define MAX_SOLUTIONS 1 // Iloœæ rozwi¹zañ jakie chcemy wygenerowaæ
 
 #define MAX_DURATION_PROGRAM_TIME 1000 // Maksymalna d³ugoœæ trwania programu
 
@@ -1345,8 +1346,8 @@ void Turniej(vector< vector<Task*> > &solutionsList) {
 			solutionsValue[i] = ObliczFunkcjeCelu(solutionsList[i]);
 		}
 	
-	// Turniej - wracamy do iloœci wejœciowego rozmiaru instancji
-		int toKill = size - INSTANCE_SIZE;
+	// Turniej - wracamy do iloœci rozwi¹zañ jakie chcemy wygenerowaæ
+		int toKill = size - MAX_SOLUTIONS;
 		int first, second;
 		
 		if(DEBUG)
