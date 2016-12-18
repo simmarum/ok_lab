@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>OK - Wyniki pracy generatora</title>
+		<style>table{font-size : 14px} </style>
+	</head>
+	<body>
+		<form>
+			<input type="file" id="upload" multiple>
+		</form>
+		
+
+		<div style="display: none" class="template">
+			<div class="result">
+				<table border>
+					<tr>
+						<td> Numer wyniku </td> 
+						<td> Wartosc funkcji celu</td>
+						<td> Liczba przerw na M1</td>
+						<td> Czas trwania przerw na M1</td>
+						<td> Liczba przerw na M2</td>
+						<td> Czas trwania przerw na M2</td>
+						<td> Liczba idle na M1</td>
+						<td> Czas trwania idle na M1</td>
+						<td> Liczba idle na M2</td>
+						<td> Czas trwania idle na M2</td>
+					</tr>
+					<tr>
+						<td class="tytulGrafu"> </td> 
+						<td class="wartoscFCelu"></td>
+						<td class="lPrzerwM1"></td>
+						<td class="cPrzerwM1"></td>
+						<td class="lPrzerwM2"></td>
+						<td class="cPrzerwM2"></td>
+						<td class="lIdleM1"></td>
+						<td class="cIdleM1"></td>
+						<td class="lIdleM2"></td>
+						<td class="cIdleM2"></td>
+					</tr>
+				</table>
+				<div class="poleWykresu" height=200>
+				</div>
+			</div>
+		</div>
+		
+		<div id="results">
+		</div>
+		
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js">
+		</script>
+		<script type="text/javascript" src="wykres.js"></script>
+		
+	</body>
+</html>
