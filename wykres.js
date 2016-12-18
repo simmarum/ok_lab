@@ -21,7 +21,7 @@ function createDiv() {
 
 var resultsDiv = document.getElementById('results');
 
-function process(e){
+function process(e, fileName){
 	var text = e.target.result;
 	
 	var div = createDiv();
@@ -39,6 +39,7 @@ function process(e){
 	var idleM2count = parseInt(lines[7].split(",")[0]);
 	var idleM2duration = parseInt(lines[7].split(",")[1]);
 	
+	div.querySelector(".nazwaPliku").innerHTML = fileName;
 	div.querySelector(".wartoscFCelu").innerHTML = goalValue;
 	div.querySelector(".tytulGrafu").innerHTML = graphTitle;
 	div.querySelector(".lPrzerwM1").innerHTML = maintM1count;
@@ -81,11 +82,18 @@ function process(e){
 	
 }
 
+function makeProcess(fileName){
+	return function(e) {
+		process(e, fileName);
+	}
+};
+
 document.getElementById('upload').addEventListener('change', function(e) {
+	resultsDiv.innerHTML = '';
 	for(var i=0;i<this.files.length;i++) {
 		var file=this.files[i];
 		var reader = new FileReader();
-		reader.onloadend = process;
+		reader.onloadend = makeProcess(file.name);
 		reader.readAsText(file);
 	}
 });		
