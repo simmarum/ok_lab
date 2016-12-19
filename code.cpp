@@ -21,6 +21,7 @@ using namespace std;
 
 // DEFINICJE GLOBALNE
 #define DEBUG true // TRYB DEBUGOWANIA [true / false]
+
 #define MIN_TASK_COUNTER 30 // PO ilu iteracjach sprawdzać zapętlenie [Wartość liczbowa > 0]
 
 #define LOWER_TIME_TASK_LIMIT 5 // Dolne ograniczenie długości zadania [Wartość liczbowa > 0]
@@ -35,8 +36,10 @@ using namespace std;
 #define LOWER_READY_TIME_MAINTENANCE_LIMIT 0 // Dolne ograniczenie czasu gotowości przerwania [Wartość liczbowa >= 0]
 #define UPPER_READY_TIME_MAINTENANCE_LIMIT 200 // Górne ograniczenie czasu gotowości przerwania [Wartość liczbowa > 0]
 
+#define NUMBER_OF_INSTANCES 10 // dla ilu roznych instancji bedzie dziala metaheurysttyka
+
 #define INSTANCE_SIZE 5 // Rozmiar instancji problemu
-#define INSTANCE_NUMBER 1 // Numer instancji problemu (może być zmieniana przy odczycie danych z pliku)
+
 #define MAX_SOLUTIONS 3 // Ilość rozwiązań jakie chcemy wygenerować
 #define MAX_SOLUTION_AFTER_MUTATION 9 // Ilość rozwiązań po mutacji (ile ta mutacja ma stworzyc rozwiazan w sumie)
 
@@ -47,6 +50,9 @@ using namespace std;
 #define WYKLADNIK_POTEGI 3.5 // Potrzebne do funkcji spłaszczającej
 #define CO_ILE_ITERACJI_WIERSZ 2 // Co ile iteracji przeskakujemy do kolejnego wiersza [>=1 - gdy 1 to cyklicznie przechodzimy]
 #define WSPOLCZYNNIK_WYGLADZANIA_MACIERZY 5 // Współczynnik wygładzania macierzy feromonowej
+
+#define ROZMIAR_HISTORII_ROZWIAZAN 15 // z ilu ostatnim wynikow porownywac bedziemy wyniki (do skonczenia przed czasem jak po 10 iteracjach nie bedzie lepszego rozwiazania niz EPSILON_WYNIKU
+#define EPSILON_WYNIKU 2
 
 ofstream debugFile; // Zmienna globalna używana przy DEBUG mode
 long int firstSolutionValue; // Zmienna globalna najlepszego rozwiązania wygenerowanego przez generator losowy
@@ -147,7 +153,7 @@ void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstPro
 	}
 
 	// Czyszczenie pamięci - zwalnianie niepotrzebnych zasobów
-		delete maintenanceTimeTable;
+		delete[] maintenanceTimeTable;
 }
 
 // Sortowanie przerwań według rosnącego czasu rozpoczęcia
@@ -174,7 +180,7 @@ void SortujListeZadanPoEndTime(vector< vector<Task*> > &listaRozwiazan){
 }
 // Generator instancji problemu
 void GeneratorInstancji(vector<Task*> &lista, int maxTask, int lowerTimeLimit, int upperTimeLimit) {
-	int assigment = 0;
+	int assigment =0;
 
 	for(int i = 0; i < maxTask; i++) {
 		Task * taskFirst = new Task;
@@ -214,7 +220,7 @@ void GeneratorInstancji(vector<Task*> &lista, int maxTask, int lowerTimeLimit, i
 }
 
 // Zapis instancji do pliku
-void ZapiszInstancjeDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, int numerInstancjiProblemu, string nameParam) {
+void ZapiszInstancjeDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, int numerInstancjiProblemu, string &nameParam) {
 	// Zmienna pliku docelowego
 		ofstream file;
 
@@ -257,7 +263,7 @@ void ZapiszInstancjeDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &lis
 }
 
 // Wczytywanie instancji z pliku do pamięci
-void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, int &numerInstancjiProblemu, string nameParam) {
+void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, int &numerInstancjiProblemu, string &nameParam) {
 	FILE *file;
 	string fileName = "instancje_" + nameParam + ".txt";
 	file = fopen(fileName.c_str(), "r");
@@ -328,7 +334,9 @@ void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrz
 				// Zmienna pomocnicza do eliminacji zapętleń przy odczycie
 					oldNumber = numer;
 			}
+			fclose(file);
 	}
+
 }
 
 // Odczyt przerwań na maszynach na ekran
@@ -660,9 +668,9 @@ vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenance*> &l
 		}
 
 		// Czyszczenie pamięci - zwalnianie niepotrzebnych zasobów
-			delete firstPart;
-			delete secondPart;
-			delete licznikOdwiedzonych;
+			delete[] firstPart;
+			delete[] secondPart;
+			delete[] licznikOdwiedzonych;
 
 	return zadaniaLokalne;
 }
@@ -682,7 +690,7 @@ void OdczytDanychZadan(vector<Task*> &listaZadan) {
 }
 
 // Tworzenie timeline dla obserwacji wyników pracy
-void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, long int wynik, string nameParam) {
+void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, long int wynik, string &nameParam) {
 	int iloscZadan = listaZadan.size(); // Ilość zadań w systemie
 	int iloscPrzerwan = listaPrzerwan.size(); // Ilość okresów przestojów na maszynach
 
@@ -764,7 +772,7 @@ long int ObliczDlugoscOperacji(vector<T*> &lista) {
 }
 
 // Zapis wyników do pliku tekstowego
-void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, long int firstSolutionValue, int numerInstancjiProblemu, string nameParam) {
+void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, long int firstSolutionValue, int numerInstancjiProblemu, string &nameParam) {
 	ofstream file;
 
 	string fileName;
@@ -1341,9 +1349,11 @@ vector<Task*> Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrze
 		}
 
 	// Czyszczenie pamięci
-		delete firstPart;
-		delete secondPart;
-		delete licznikOdwiedzonych;
+		delete[] firstPart;
+		delete[] secondPart;
+		delete[] licznikOdwiedzonych;
+		delete[] taskOrderFirstProcessor;
+		delete[] taskOrderSecondProcessor;
 
 	return taskListFirstProcessor;
 }
@@ -1396,8 +1406,8 @@ void Turniej(vector< vector<Task*> > &solutionsList) {
 		}
 
 	// Czyszczenie pamięci operacyjnej
-		delete looserSolution;
-		delete solutionsValue;
+		delete[] looserSolution;
+		delete[] solutionsValue;
 }
 
 void KopiujDaneOperacji(vector<Task*> &listaWejsciowa, vector<Task*> &listaWyjsciowa) {
@@ -1540,6 +1550,8 @@ void wypiszMacierzFeromonowa(){
     }
     cout<<endl;
 }
+
+// tworzy tablica wartosci funkcji celu dal calej listy rozwiazan
 void utworzTabliceFunkcjiCelu(vector< vector <Task*> > &listarozwiazan, int tablica[]){
     int sizeListyRozwiazan = listarozwiazan.size();
     for(int i=0;i<sizeListyRozwiazan;i++){
@@ -1555,20 +1567,27 @@ void FunkcjaSplaszczajaca(int wiersz){
 }
 // Główna pętla metaheurestyki
 void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, int numerInstancjiProblemu){
+    cout<<"META: "<<numerInstancjiProblemu<<endl;
     clock_t czasStart = clock(); // czas startu mety
     int numerIteracji = 0;
-    int aktualnyWiersz =0; // dla funckji splaszczajacej
+    int aktualnyWiersz = 0; // dla funckji splaszczajacej
+    int liczbaRozwiazanZGorszymWynikiem = 0; // to bedzie inkrementowane az do ROZMIARU_HISTORII
+    int wartoscFCeluAktualnegoRozwiazania = INT_MAX; // aktualnie najlepsze rozwiazanie w iteracji
+    int wartoscFunkcjiCeluNajlepszegoRozwiazania = INT_MAX; // 'nazwa' i na poczatku INT_MAX
+    int wartoscFCeluPoprzedniego = INT_MAX; // poprzedniego najlepszego - potrzebne do zbadania historii o ile sie poprawil wynik
+//    fill(historiaRozwiazan,historiaRozwiazan+sizeof(historiaRozwiazan),INT_MAX); // uzupelniami INT_MAX'em
     vector <Task*> najlepszeRozwiazanie;
     vector < vector <Task*> > listaRozwiazan; // vector ze wszystkimi aktualnymi rozwiazaniami
      vector <Task*> tempTask;
     while ((clock()-czasStart)<MAX_DURATION_PROGRAM_TIME*CLOCKS_PER_SEC){ // warunek by meta nie działała dłużej niz MAX_DURATION_PROGRAM_TIME
         numerIteracji++;
-
+       // printf("ITER %d\n",numerIteracji);
         for(int i=0;i<MAX_SOLUTIONS;){
             if((rand()+1.0)<RAND_MAX*PROBABILTY_OF_RANDOM_GENERATION/100){ // tworzy totalnie losowe z prawdopodobienstwem
             tempTask=GeneratorLosowy(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
             if(numerIteracji==1 && i==0) {// pierwsze napotkane rozwiazanie jest najlepszym
                     KopiujDaneOperacji(tempTask,najlepszeRozwiazanie);
+                    wartoscFunkcjiCeluNajlepszegoRozwiazania=ObliczFunkcjeCelu(najlepszeRozwiazanie);
             }
             listaRozwiazan.push_back(tempTask);
             i++; // dodanie rozwiazania do puli
@@ -1618,49 +1637,76 @@ void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &listaPrze
         }
 
         // zapis do pliku rozwiazan ktore przeszly turniej (po to by sprawdzic czy najlepsze rozwiazanie aktualnie to jest najlepsze
+        /*
         for(int i=0;i<listaRozwiazan.size();i++){
             string nazwa = "ITER_" + to_string(numerIteracji) + "_TUR_" + to_string(i);
             ZapiszWynikiDoPliku(listaRozwiazan[i],listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor, firstSolutionValue,numerInstancjiProblemu,nazwa);
         }
+        */
 
         // zapamietywanie najlepszego rozwiazania
-        tempTask = ZnajdzNajlepszeRozwiazanie(listaRozwiazan); // najlepsze z tej iteracji
-       if(ObliczFunkcjeCelu(tempTask)<ObliczFunkcjeCelu(najlepszeRozwiazanie)) { // porownanie z najlepszym globalnie
+        tempTask = ZnajdzNajlepszeRozwiazanie(listaRozwiazan);// najlepsze z tej iteracji
+        wartoscFCeluAktualnegoRozwiazania=ObliczFunkcjeCelu(tempTask);
+       if(wartoscFCeluAktualnegoRozwiazania<wartoscFunkcjiCeluNajlepszegoRozwiazania) { // porownanie z najlepszym globalnie
+            wartoscFCeluPoprzedniego = ObliczFunkcjeCelu(najlepszeRozwiazanie); // zapamietanie poprzedniego najlepszego wyniku
             najlepszeRozwiazanie.clear(); // czyszcze dla pewnosci
             KopiujDaneOperacji(tempTask,najlepszeRozwiazanie); // kopia do najlepszego
+            wartoscFunkcjiCeluNajlepszegoRozwiazania=wartoscFCeluAktualnegoRozwiazania; // aktualizacja wartosci ; )
        }
-       tempTask.clear();
+
+        // sprawdzenie czy ostatnie X rozwiazan miesci sie w EPSILON - DODATKOWY WARUNEK STOPU
+       if(wartoscFCeluAktualnegoRozwiazania>= wartoscFCeluPoprzedniego){ // jezeli aktualny jest gorszy niz najlepszy
+            liczbaRozwiazanZGorszymWynikiem++;  // dodajemy jeden, bo ten wynik nie poprawil
+            if(liczbaRozwiazanZGorszymWynikiem >= ROZMIAR_HISTORII_ROZWIAZAN) break; // jezeli przekroczy narzucona wartosc to zatrzyujemy metaheurestyke
+       }
+        else{ // przeciwny wypadek, wiec teraz mamy lepsze rozwiazanie
+            if((wartoscFCeluPoprzedniego-wartoscFCeluAktualnegoRozwiazania)>EPSILON_WYNIKU){ // czy to rozwiazanie miesci sie w naszym epsilon
+                liczbaRozwiazanZGorszymWynikiem=0; // jezeli nie to zerujemy bo mamy postep wiekszy niz zakladalismy
+            }
+            else liczbaRozwiazanZGorszymWynikiem++; // jezeli tak to zaznaczamy ze to rozwiazanie nie poprawilo wyniku o wiecej niz EPSILON
+        }
+
+              tempTask.clear();
+
     }
     // zapisz najlepszego rozwiazania do pliku
-    string nazwa = "NAJLEPSZE";
+    string nazwa = "INSTAMCJA_"+to_string(numerInstancjiProblemu);
     ZapiszWynikiDoPliku(najlepszeRozwiazanie,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor, firstSolutionValue,numerInstancjiProblemu,nazwa);
 
 }
+// main
 int main() {
 	srand(time(NULL)); // Ino roz reset
 
 	debugFile.open("debug.txt");
-	int rozmiarInstancji = INSTANCE_SIZE;
-	int numerInstancjiProblemu = INSTANCE_NUMBER;
+	int numerInstancjiProblemu = 0;
 
-	// Utworzenie wektora na n zadań
+
+    // petla aby sprawdzic wiele instancji i porownac wyniki
+    for (int numerInstancjiProblemu = 0;numerInstancjiProblemu<NUMBER_OF_INSTANCES;){
+            numerInstancjiProblemu++;
+            	// Utworzenie wektora na n zadań
 		vector<Task*> zadania;
 
 	// Wektor przerwań pracy na maszynach
 		vector<Maintenance*> listaPrzerwan;
-
+            cout<<"TERAZ INSTANCJA NR "<<numerInstancjiProblemu<<endl;
 	// Wygenerowanie zadań
-		GeneratorInstancji(zadania, rozmiarInstancji, LOWER_TIME_TASK_LIMIT, UPPER_TIME_TASK_LIMIT);
-
+		GeneratorInstancji(zadania, INSTANCE_SIZE, LOWER_TIME_TASK_LIMIT, UPPER_TIME_TASK_LIMIT);
+cout<<"DEBUG"<<endl;
 	// Wygenerowanie przerwań
 		GeneratorPrzestojow(listaPrzerwan, MAINTENANCE_FIRST_PROCESSOR, MAINTENANCE_SECOND_PROCESSOR, LOWER_TIME_MAINTENANCE_LIMIT, UPPER_TIME_MAINTENANCE_LIMIT, LOWER_READY_TIME_MAINTENANCE_LIMIT, UPPER_READY_TIME_MAINTENANCE_LIMIT);
-//		OdczytPrzerwan(listaPrzerwan);
+
+    //OdczytPrzerwan(listaPrzerwan); ??
 
 	// Zapis danych do pliku
-		string nameParam;
+		/*string nameParam;
 		stringstream ss;
+		// jezeli dziala to_string moze warto przerobic?
     	ss << numerInstancjiProblemu;
     	ss >> nameParam; // Parametr przez stringstream, funkcja to_string odmówiła posłuszeństwa
+		*/
+		string nameParam = to_string(numerInstancjiProblemu);
 		ZapiszInstancjeDoPliku(zadania, listaPrzerwan, numerInstancjiProblemu, nameParam);
 
 	// Wczytanie danych z pliku
@@ -1675,33 +1721,33 @@ int main() {
 		listaZadan = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 //		OdczytDanychZadan(listaZadan);
 
-		ZapiszWynikiDoPliku(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, firstSolutionValue, numerInstancjiProblemu, nameParam);
+		//ZapiszWynikiDoPliku(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, firstSolutionValue, numerInstancjiProblemu, nameParam);
 
-		long int wynik = ObliczFunkcjeCelu(listaZadan);
+		//long int wynik = ObliczFunkcjeCelu(listaZadan);
 //		OdczytPrzerwan(listaPrzerwan);
 //		OdczytDanychZadan(listaZadan);
-		UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
-		nameParam += "w";
+		//UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
+		//nameParam += "w";
 
-		vector<Task*> nowe = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
-		nowe = Mutacja(nowe, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
+		//vector<Task*> nowe = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
+		//nowe = Mutacja(nowe, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
 //		OdczytDanychZadan(listaZadan);
-		vector< vector<Task*> > solution;
+		//vector< vector<Task*> > solution;
 
 
-		solution.push_back(nowe);
-		solution.push_back(listaZadan);
-		cout << "S1 " << ObliczFunkcjeCelu(nowe) << endl;
-		OdczytDanychZadan(nowe);
-		cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
-		OdczytDanychZadan(listaZadan);
-		UtworzGraf(nowe, listaPrzerwan, wynik, nameParam);
+		//solution.push_back(nowe);
+		//solution.push_back(listaZadan);
+		//cout << "S1 " << ObliczFunkcjeCelu(nowe) << endl;
+		//OdczytDanychZadan(nowe);
+		//cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
+		//OdczytDanychZadan(listaZadan);
+//		UtworzGraf(nowe, listaPrzerwan, wynik, nameParam);
 
         //GlownaPetlaMety
         GlownaPetlaMety(zadania,przerwaniaFirstProcessor,przerwaniaSecondProcessor,numerInstancjiProblemu);
-		Turniej(solution);
+		//Turniej(solution);
 
-		for(int i = 0; i < solution.size(); i++) {
+		/*for(int i = 0; i < solution.size(); i++) {
 			cout << "Zapis dla i = " << i << endl;
 			long int wyn = ObliczFunkcjeCelu(solution[i]);
 			string newNameParam;
@@ -1710,12 +1756,12 @@ int main() {
 			ss >> newNameParam;
 			UtworzGraf(solution[i], listaPrzerwan, wyn, newNameParam);
 		}
-
+*/
 	// Czyszczenie pamięci - zwalnianie niepotrzebnych zasobów
 		przerwaniaFirstProcessor.clear();
 		przerwaniaSecondProcessor.clear();
 		listaPrzerwan.clear();
 		listaZadan.clear();
-
+    }
 	return 0;
 }
