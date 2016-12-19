@@ -36,15 +36,20 @@ using namespace std;
 
 #define INSTANCE_SIZE 5 // Rozmiar instancji problemu
 #define INSTANCE_NUMBER 1 // Numer instancji problemu (może być zmieniana przy odczycie danych z pliku)
-#define MAX_SOLUTIONS 1 // Ilość rozwiązań jakie chcemy wygenerować
-#define MAX_SOLUTION_AFTER_MUTATION 5 // Ilość rozwiązań po mutacji (ile ta mutacja ma stworzyc rozwiazan w sumie)
+#define MAX_SOLUTIONS 3 // Ilość rozwiązań jakie chcemy wygenerować
+#define MAX_SOLUTION_AFTER_MUTATION 9 // Ilość rozwiązań po mutacji (ile ta mutacja ma stworzyc rozwiazan w sumie)
 
 #define MAX_DURATION_PROGRAM_TIME 0.3 // Maksymalna długość trwania programu w SEKUNDACH
 #define PROBABILTY_OF_RANDOM_GENERATION 30 // prawdopodobieństwo stworzenia rozwiązań przez los (dopełnienie to przez macierz fermonową
 
+#define PROCENT_ZANIKANIA 5 // ile procent sladu fermonowego ma zanikac co iteracje
+#define WYKLADNIK_POTEGI 3.5 // potrzebny do funkcji splaszczajacej
+#define CO_ILE_ITERACJI_WIERSZ 2 // co ile itarcji przeskakujemy do kolejnego wiersza >=1 (gdy 1 to cyklicznie przechodzimy, czesciej sie nie da;p)
+
 ofstream debugFile; // Zmienna globalna używana przy DEBUG mode
 long int firstSolutionValue; // Zmienna globalna najlepszego rozwiązania wygenerowanego przez generator losowy
 
+double macierzFermonowa[INSTANCE_SIZE][INSTANCE_SIZE];
 // Struktura danych w pamięci
 struct Task{
 	int ID; // ID zadania
@@ -159,6 +164,12 @@ void SortujZadaniaPoEndTime(vector<Task*> &listaZadan) {
 	sort(listaZadan.begin(), listaZadan.end(), sortTask);
 }
 
+void SortujListeZadanPoEndTime(vector< vector<Task*> > &listaRozwiazan){
+    int sizeListaRozwiazan = listaRozwiazan.size();
+    for(int i=0;i<sizeListaRozwiazan;i++){
+        SortujZadaniaPoEndTime(listaRozwiazan[i]);
+    }
+}
 // Generator instancji problemu
 void GeneratorInstancji(vector<Task*> &lista, int maxTask, int lowerTimeLimit, int upperTimeLimit) {
 	int assigment = 0;
@@ -1430,11 +1441,65 @@ vector <Task*> ZnajdzNajlepszeRozwiazanie (vector< vector < Task*> > &listaRozwi
     return najlepszeRozwiazanie;
 }
 
+// dodaje do macierzy fermonow wartosci procentowo po turnieju
+void DodajDoMacierzyFermonow(vector< vector<Task*> > &listaRozwiazan, int tablicaWartosciFunkcjiCelu[]){
+    int sizeListyRozwiazan = listaRozwiazan.size(); //optymalizacja
+    double prawdFunkcjiCelu[sizeListyRozwiazan]; // tablica wartosci funkcji celu (prawdopodobienstw)
+    double sumaFunkcjiCelu=0.0; // suma wartosci funkcji celu - do wyznaczenia prawdopodobienstw
+    for(int i=0;i<sizeListyRozwiazan;i++){
+        prawdFunkcjiCelu[i]=(double)tablicaWartosciFunkcjiCelu[i]; // uzupelniamy tablice wartosciami f celu
+        sumaFunkcjiCelu+=prawdFunkcjiCelu[i]; // liczymy sume
+    }
 
+    for(int i=0;i<sizeListyRozwiazan;i++){
+        prawdFunkcjiCelu[i]=sumaFunkcjiCelu/prawdFunkcjiCelu[i]; // przeksztalcamy w prawdopodobienstwo
+    }
+    for(int i=0;i<sizeListyRozwiazan;i++){ // dla kazdego rozwiazania
+        int sizeRozwiazania=listaRozwiazan[i].size(); // optymalizacja
+        for(int j=1;j<sizeRozwiazania;j++){ // dla kazdego zadania (operacji)
+            macierzFermonowa[listaRozwiazan[i][j-1]->ID-1][listaRozwiazan[i][j]->ID-1]+=prawdFunkcjiCelu[i];
+        }
+    }
+}
+// zanika slady fermonowe co iteracje
+void zanikMacierzFermonowa(){
+    for(int i=0;i<INSTANCE_SIZE;i++){
+        for(int j=0;j<INSTANCE_SIZE;j++){
+            macierzFermonowa[i][j]*=(double)(100-PROCENT_ZANIKANIA)/100;
+        }
+    }
+}
+
+// wypisuje macierz fermonowa
+void wypiszMacierzFermonowa(){
+    for(int i=0;i<INSTANCE_SIZE;i++){
+        for(int j=0;j<INSTANCE_SIZE;j++){
+            cout<<" ";
+            cout.width(7);
+            cout<<macierzFermonowa[i][j];
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+}
+void utworzTabliceFunkcjiCelu(vector< vector <Task*> > &listarozwiazan, int tablica[]){
+    int sizeListyRozwiazan = listarozwiazan.size();
+    for(int i=0;i<sizeListyRozwiazan;i++){
+        tablica[i]=ObliczFunkcjeCelu(listarozwiazan[i]);
+    }
+}
+
+// funckja do splaszczania wiersza w macierzy fermonow (moze ten pow() to nie najlepsza funckja ale innej nie wymyslilem
+void FunckjaSplaszczajace(int wiersz){
+    for(int i=0;i<INSTANCE_SIZE;i++){
+        macierzFermonowa[wiersz][i]=pow(macierzFermonowa[wiersz][i]*INSTANCE_SIZE,1/WYKLADNIK_POTEGI);
+    }
+}
 // Główna pętla metaheurestyki
 void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, int numerInstancjiProblemu){
     clockid_t czasStart = clock(); // czas startu mety
     int numerIteracji = 0;
+    int aktualnyWiersz =0; // dla funckji splaszczajacej
     vector <Task*> najlepszeRozwiazanie;
     vector < vector <Task*> > listaRozwiazan; // vector ze wszystkimi aktualnymi rozwiazaniami
      vector <Task*> tempTask;
@@ -1442,16 +1507,19 @@ void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &listaPrze
         numerIteracji++;
 
         for(int i=0;i<MAX_SOLUTIONS;){
-            if((rand()+1.0)<RAND_MAX*PROBABILTY_OF_RANDOM_GENERATION/100){ // tworzy totalnie losowe
+            if((rand()+1.0)<RAND_MAX*PROBABILTY_OF_RANDOM_GENERATION/100){ // tworzy totalnie losowe z prawdopodobienstwem
             tempTask=GeneratorLosowy(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
             if(numerIteracji==1 && i==0) {// pierwsze napotkane rozwiazanie jest najlepszym
-                    najlepszeRozwiazanie=tempTask;
+                    KopiujDaneOperacji(tempTask,najlepszeRozwiazanie);
             }
             listaRozwiazan.push_back(tempTask);
-            i++;
+            i++; // dodanie rozwiazania do puli
+            // zapis do pliku wszystkich wygenerowanch losowa rozwizan dla sprawdzenia czy sie robia
+            /*
             string nazwa = "ITER_" + to_string(numerIteracji) + "_LOS_" + to_string(i);
             ZapiszWynikiDoPliku(tempTask,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor, firstSolutionValue,numerInstancjiProblemu,nazwa);
-            tempTask.clear();
+            */
+            tempTask.clear(); // czyszczenie vectora by nie bylo problemow
             }
             else { // tworzy za pomoca tablicy fermonow
                 ///TODO
@@ -1461,24 +1529,47 @@ void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &listaPrze
 
         for(int i=0;i<MAX_SOLUTION_AFTER_MUTATION-MAX_SOLUTIONS;i++){ // musimy dodac roznice tych wartosci
             tempTask = Mutacja(listaRozwiazan[i%MAX_SOLUTIONS],listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
+            // zapis do pliku wszystkich mutacji dla sprawdzenia czy sie robia
+            /*
             string nazwa = "ITER_" + to_string(numerIteracji) + "_MUT_" + to_string(i);
             ZapiszWynikiDoPliku(tempTask,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor, firstSolutionValue,numerInstancjiProblemu,nazwa);
+            */
             listaRozwiazan.push_back(tempTask);
             tempTask.clear();
         }
         // turniej
         Turniej(listaRozwiazan);
 
+        // sortowanie po czasie zakonczenia aby bylo bez problemu w macierzy fermonow i tabeli wartosci funkcji celu
+        SortujListeZadanPoEndTime(listaRozwiazan);
+
+        // tworzy tablice funkcji celu
+        int tablicaWartosciFunkcjiCelu[listaRozwiazan.size()];
+        utworzTabliceFunkcjiCelu(listaRozwiazan,tablicaWartosciFunkcjiCelu);
+
+        // uzupelnia macierz fermonowa
+        DodajDoMacierzyFermonow(listaRozwiazan,tablicaWartosciFunkcjiCelu);
+
+        // zanika slad fermonowy
+        zanikMacierzFermonowa();
+
+        //funkcja splaszczajaca
+        if(!(numerIteracji%CO_ILE_ITERACJI_WIERSZ)){
+                FunckjaSplaszczajace(aktualnyWiersz);
+                aktualnyWiersz=(aktualnyWiersz+1)%INSTANCE_SIZE; //wylicza aktualny wiersz do funkcji
+        }
+
+        // zapis do pliku rozwiazan ktore przeszly turniej (po to by sprawdzic czy najlepsze rozwiazanie aktualnie to jest najlepsze
         for(int i=0;i<listaRozwiazan.size();i++){
             string nazwa = "ITER_" + to_string(numerIteracji) + "_TUR_" + to_string(i);
             ZapiszWynikiDoPliku(listaRozwiazan[i],listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor, firstSolutionValue,numerInstancjiProblemu,nazwa);
-            //cout<<"ZAPIS"<<endl;
         }
-        /// ma znalezc najlepsze rozwiazanie ale nie dzial i nie wiem czemu ;/
-        tempTask = ZnajdzNajlepszeRozwiazanie(listaRozwiazan);
-       if(ObliczFunkcjeCelu(tempTask)<ObliczFunkcjeCelu(najlepszeRozwiazanie)) {
-            najlepszeRozwiazanie.clear();
-            najlepszeRozwiazanie=tempTask;
+
+        // zapamietywanie najlepszego rozwiazania
+        tempTask = ZnajdzNajlepszeRozwiazanie(listaRozwiazan); // najlepsze z tej iteracji
+       if(ObliczFunkcjeCelu(tempTask)<ObliczFunkcjeCelu(najlepszeRozwiazanie)) { // porownanie z najlepszym globalnie
+            najlepszeRozwiazanie.clear(); // czyszcze dla pewnosci
+            KopiujDaneOperacji(tempTask,najlepszeRozwiazanie); // kopia do najlepszego
        }
        tempTask.clear();
     }
