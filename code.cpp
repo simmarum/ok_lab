@@ -40,16 +40,16 @@ using namespace std;
 #define MAX_SOLUTION_AFTER_MUTATION 9 // Ilość rozwiązań po mutacji (ile ta mutacja ma stworzyc rozwiazan w sumie)
 
 #define MAX_DURATION_PROGRAM_TIME 0.3 // Maksymalna długość trwania programu w SEKUNDACH
-#define PROBABILTY_OF_RANDOM_GENERATION 30 // prawdopodobieństwo stworzenia rozwiązań przez los (dopełnienie to przez macierz fermonową
+#define PROBABILTY_OF_RANDOM_GENERATION 30 // Prawdopodobieństwo stworzenia rozwiązań przez los (dopełnienie to przez macierz feromonową
 
-#define PROCENT_ZANIKANIA 5 // ile procent sladu fermonowego ma zanikac co iteracje
-#define WYKLADNIK_POTEGI 3.5 // potrzebny do funkcji splaszczajacej
-#define CO_ILE_ITERACJI_WIERSZ 2 // co ile itarcji przeskakujemy do kolejnego wiersza >=1 (gdy 1 to cyklicznie przechodzimy, czesciej sie nie da;p)
+#define PROCENT_ZANIKANIA 5 // Ile procennt śladu feromonowego ma znikać co iterację
+#define WYKLADNIK_POTEGI 3.5 // Potrzebne do funkcji spłaszczającej
+#define CO_ILE_ITERACJI_WIERSZ 2 // Co ile iteracji przeskakujemy do kolejnego wiersza [>=1 - gdy 1 to cyklicznie przechodzimy]
 
 ofstream debugFile; // Zmienna globalna używana przy DEBUG mode
 long int firstSolutionValue; // Zmienna globalna najlepszego rozwiązania wygenerowanego przez generator losowy
+double MacierzFeromonowa[INSTANCE_SIZE][INSTANCE_SIZE]; // Macierz feromonowa w programie
 
-double macierzFermonowa[INSTANCE_SIZE][INSTANCE_SIZE];
 // Struktura danych w pamięci
 struct Task{
 	int ID; // ID zadania
@@ -57,7 +57,7 @@ struct Task{
 	int assigment; // Przydział zadania do maszyny [0, 1]
 	int duration; // Długość zadania
 	int endTime; // Moment zakończenia
-	Task *anotherPart; // WskaĹşnik na komplementarne zadanie
+	Task *anotherPart; // Wskaźnik na komplementarne zadanie
 };
 
 struct Maintenance {
@@ -75,7 +75,7 @@ bool sortTaskByID(Task *i, Task *j) { return (i->ID < j->ID); } // Po wartości 
 
 void KopiujDaneOperacji(vector<Task*> &listaWejsciowa, vector<Task*> &listaWyjsciowa);
 
-// Generator przestojóww na maszynie
+// Generator przestojów na maszynie
 void GeneratorPrzestojow(vector<Maintenance*> &lista, int liczbaPrzerwanFirstProcessor, int liczbaPrzerwanSecondProcessor, int lowerTimeLimit, int upperTimeLimit, int lowerReadyTime, int upperReadyTime) {
 	int size = (upperReadyTime - lowerReadyTime) + (upperTimeLimit - lowerTimeLimit);
 	bool * maintenanceTimeTable = new bool[size]; // Jedna tablica bo przerwania na maszynach nie mogą się nakładać na siebie
@@ -166,7 +166,7 @@ void SortujZadaniaPoEndTime(vector<Task*> &listaZadan) {
 
 void SortujListeZadanPoEndTime(vector< vector<Task*> > &listaRozwiazan){
     int sizeListaRozwiazan = listaRozwiazan.size();
-    for(int i=0;i<sizeListaRozwiazan;i++){
+    for(int i = 0; i < sizeListaRozwiazan; i++) {
         SortujZadaniaPoEndTime(listaRozwiazan[i]);
     }
 }
@@ -1427,17 +1427,24 @@ void KopiujDaneOperacji(vector<Task*> &listaWejsciowa, vector<Task*> &listaWyjsc
 		}
 }
 
-// Główna pętla metaheurestyki
+// Poszukiwanie najlepszego rozwiązania z wektora rozwiązań
 vector <Task*> ZnajdzNajlepszeRozwiazanie (vector< vector < Task*> > &listaRozwiazan){
-    int sizeListyRozwiazan = listaRozwiazan.size(); // optymalizacja
-    int minFunkcjiCelu = INT_MAX; // poczatkowy warunek
-    vector <Task*> najlepszeRozwiazanie; // zmienna pomocnicza do zwrocenia
-    for(int i=0;i<sizeListyRozwiazan;i++){ // w petli oblicza minimum funkcji
-        if(ObliczFunkcjeCelu(listaRozwiazan[i]) < minFunkcjiCelu) {
-                najlepszeRozwiazanie = listaRozwiazan[i];
-                minFunkcjiCelu = ObliczFunkcjeCelu(najlepszeRozwiazanie);
-        }
-    }
+	// Zmienne operacyjne
+		int sizeListyRozwiazan = listaRozwiazan.size(); // Rozmiar listy rozwiązań
+		int minFunkcjiCelu = INT_MAX; // Zmienna z minimalną wartością funkcji celu
+		vector <Task*> najlepszeRozwiazanie; // Najlepsze znalezione rozwiązanie
+		int temp = 0; // Zmienna pomocnicza aby nie liczyć dwa razy wartości funkcji celu
+
+	// Obliczanie wartości rozwiązania
+		for(int i = 0; i < sizeListyRozwiazan; i++) {
+			temp = ObliczFunkcjeCelu(listaRozwiazan[i]);
+
+			if(temp < minFunkcjiCelu) { // Obliczona wartość jest lepsza niż dotychczasowe rozwiązanie
+					najlepszeRozwiazanie = listaRozwiazan[i];
+					minFunkcjiCelu = temp;
+			}
+		}
+
     return najlepszeRozwiazanie;
 }
 
