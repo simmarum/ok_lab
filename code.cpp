@@ -46,6 +46,7 @@ using namespace std;
 #define PROCENT_ZANIKANIA 5 // Ile procennt śladu feromonowego ma znikać co iterację
 #define WYKLADNIK_POTEGI 3.5 // Potrzebne do funkcji spłaszczającej
 #define CO_ILE_ITERACJI_WIERSZ 2 // Co ile iteracji przeskakujemy do kolejnego wiersza [>=1 - gdy 1 to cyklicznie przechodzimy]
+#define WSPOLCZYNNIK_WYGLADZANIA_MACIERZY 5 // Współczynnik wygładzania macierzy feromonowej
 
 ofstream debugFile; // Zmienna globalna używana przy DEBUG mode
 long int firstSolutionValue; // Zmienna globalna najlepszego rozwiązania wygenerowanego przez generator losowy
@@ -1449,6 +1450,38 @@ vector <Task*> ZnajdzNajlepszeRozwiazanie (vector< vector < Task*> > &listaRozwi
     return najlepszeRozwiazanie;
 }
 
+// Funkcja zmniejszająca różnice w macierzy feromonowej
+void WygladzanieMacierzyFeromonowej(int wiersz) {
+	double maxValue = 0.0; // Wartość największa w macierzy feromonowej
+	double sum = 0.0; // Suma wartości w wierszu
+	double value; // Pomocnicza wartość aby przyspieszyć pracę
+
+	// Sumujemy wartości w wierszu i szukamy wartości maksymalnej
+		for(int i = 0; i < INSTANCE_SIZE; i++) {
+			value = MacierzFeromonowa[wiersz][i];
+			sum += value;
+
+			if(value > maxValue)
+				maxValue = value;
+		}
+
+	// Obliczamy współczynniki funkcji wygładzającej
+		double center = maxValue / 2;
+		double paramA = WSPOLCZYNNIK_WYGLADZANIA_MACIERZY / (center*center);
+
+	// Przegląd wartości w macierzy feromonów
+		for(int i = 0; i < INSTANCE_SIZE; i++) {
+            if(MacierzFeromonowa[wiersz][i] > 0) {
+				if(MacierzFeromonowa[wiersz][i] < center) {
+					// Zwiększamy wartości
+				} else {MacierzFeromonowa[wiersz][i] = sum * ((MacierzFeromonowa[wiersz][i]/sum) + ((paramA * pow(MacierzFeromonowa[wiersz][i] - center, 2)) / 100));
+					// Zmniejszamy wartości
+						MacierzFeromonowa[wiersz][i] = sum * ((MacierzFeromonowa[wiersz][i]/sum) - ((paramA * pow(MacierzFeromonowa[wiersz][i] - center, 2)) / 100));
+				}
+            }
+		}
+}
+
 // Dodanie do macierzy feromonowej rozwiązań które przeżyły turniej
 void DodajDoMacierzyFeromonowej(vector< vector<Task*> > &listaRozwiazan, int tablicaWartosciFunkcjiCelu[]){
     int sizeListyRozwiazan = listaRozwiazan.size(); // Rozmiar listy rozwiązań
@@ -1470,6 +1503,7 @@ void DodajDoMacierzyFeromonowej(vector< vector<Task*> > &listaRozwiazan, int tab
         }
     }
 }
+
 // zanika slady fermonowe co iteracje
 void zanikMacierzFeromonowa(){
     for(int i=0;i<INSTANCE_SIZE;i++){
