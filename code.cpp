@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
+#include <math.h>
 #include <fstream>
 #include <climits> // INT_MAX do generatora losowego
 #include <algorithm> // Sortowanie przerwań
@@ -1448,9 +1449,9 @@ vector <Task*> ZnajdzNajlepszeRozwiazanie (vector< vector < Task*> > &listaRozwi
     return najlepszeRozwiazanie;
 }
 
-// dodaje do macierzy fermonow wartosci procentowo po turnieju
-void DodajDoMacierzyFermonow(vector< vector<Task*> > &listaRozwiazan, int tablicaWartosciFunkcjiCelu[]){
-    int sizeListyRozwiazan = listaRozwiazan.size(); //optymalizacja
+// Dodanie do macierzy feromonowej rozwiązań które przeżyły turniej
+void DodajDoMacierzyFeromonowej(vector< vector<Task*> > &listaRozwiazan, int tablicaWartosciFunkcjiCelu[]){
+    int sizeListyRozwiazan = listaRozwiazan.size(); // Rozmiar listy rozwiązań
     double prawdFunkcjiCelu[sizeListyRozwiazan]; // tablica wartosci funkcji celu (prawdopodobienstw)
     double sumaFunkcjiCelu=0.0; // suma wartosci funkcji celu - do wyznaczenia prawdopodobienstw
     for(int i=0;i<sizeListyRozwiazan;i++){
@@ -1461,29 +1462,30 @@ void DodajDoMacierzyFermonow(vector< vector<Task*> > &listaRozwiazan, int tablic
     for(int i=0;i<sizeListyRozwiazan;i++){
         prawdFunkcjiCelu[i]=sumaFunkcjiCelu/prawdFunkcjiCelu[i]; // przeksztalcamy w prawdopodobienstwo
     }
+
     for(int i=0;i<sizeListyRozwiazan;i++){ // dla kazdego rozwiazania
         int sizeRozwiazania=listaRozwiazan[i].size(); // optymalizacja
         for(int j=1;j<sizeRozwiazania;j++){ // dla kazdego zadania (operacji)
-            macierzFermonowa[listaRozwiazan[i][j-1]->ID-1][listaRozwiazan[i][j]->ID-1]+=prawdFunkcjiCelu[i];
+            MacierzFeromonowa[listaRozwiazan[i][j-1]->ID-1][listaRozwiazan[i][j]->ID-1]+=prawdFunkcjiCelu[i];
         }
     }
 }
 // zanika slady fermonowe co iteracje
-void zanikMacierzFermonowa(){
+void zanikMacierzFeromonowa(){
     for(int i=0;i<INSTANCE_SIZE;i++){
         for(int j=0;j<INSTANCE_SIZE;j++){
-            macierzFermonowa[i][j]*=(double)(100-PROCENT_ZANIKANIA)/100;
+            MacierzFeromonowa[i][j]*=(double)(100-PROCENT_ZANIKANIA)/100;
         }
     }
 }
 
 // wypisuje macierz fermonowa
-void wypiszMacierzFermonowa(){
+void wypiszMacierzFeromonowa(){
     for(int i=0;i<INSTANCE_SIZE;i++){
         for(int j=0;j<INSTANCE_SIZE;j++){
             cout<<" ";
             cout.width(7);
-            cout<<macierzFermonowa[i][j];
+            cout<<MacierzFeromonowa[i][j];
         }
         cout<<endl;
     }
@@ -1496,15 +1498,15 @@ void utworzTabliceFunkcjiCelu(vector< vector <Task*> > &listarozwiazan, int tabl
     }
 }
 
-// funckja do splaszczania wiersza w macierzy fermonow (moze ten pow() to nie najlepsza funckja ale innej nie wymyslilem
-void FunckjaSplaszczajace(int wiersz){
+// Funkcja do splaszczania wiersza w macierzy feromonowej (moze ten pow() to nie najlepsza funckja ale innej nie wymyslilem
+void FunkcjaSplaszczajaca(int wiersz){
     for(int i=0;i<INSTANCE_SIZE;i++){
-        macierzFermonowa[wiersz][i]=pow(macierzFermonowa[wiersz][i]*INSTANCE_SIZE,1/WYKLADNIK_POTEGI);
+        MacierzFeromonowa[wiersz][i]=pow(MacierzFeromonowa[wiersz][i]*INSTANCE_SIZE,1/WYKLADNIK_POTEGI);
     }
 }
 // Główna pętla metaheurestyki
 void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, int numerInstancjiProblemu){
-    clockid_t czasStart = clock(); // czas startu mety
+    clock_t czasStart = clock(); // czas startu mety
     int numerIteracji = 0;
     int aktualnyWiersz =0; // dla funckji splaszczajacej
     vector <Task*> najlepszeRozwiazanie;
@@ -1555,14 +1557,14 @@ void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &listaPrze
         utworzTabliceFunkcjiCelu(listaRozwiazan,tablicaWartosciFunkcjiCelu);
 
         // uzupelnia macierz fermonowa
-        DodajDoMacierzyFermonow(listaRozwiazan,tablicaWartosciFunkcjiCelu);
+        DodajDoMacierzyFeromonowej(listaRozwiazan,tablicaWartosciFunkcjiCelu);
 
         // zanika slad fermonowy
-        zanikMacierzFermonowa();
+        zanikMacierzFeromonowa();
 
         //funkcja splaszczajaca
         if(!(numerIteracji%CO_ILE_ITERACJI_WIERSZ)){
-                FunckjaSplaszczajace(aktualnyWiersz);
+                FunkcjaSplaszczajaca(aktualnyWiersz);
                 aktualnyWiersz=(aktualnyWiersz+1)%INSTANCE_SIZE; //wylicza aktualny wiersz do funkcji
         }
 
