@@ -1491,6 +1491,21 @@ void DodajDoMacierzyFeromonowej(vector< vector<Task*> > &listaRozwiazan, int tab
         prawdFunkcjiCelu[i]=(double)tablicaWartosciFunkcjiCelu[i]; // uzupelniamy tablice wartosciami f celu
         sumaFunkcjiCelu+=prawdFunkcjiCelu[i]; // liczymy sume
     }
+//	 INFO - można by zrobić dodanie wartości na zasadzie różnicy:
+//	 Szukamy najmniejszej wartości rozwiązania (najlepszego rozwiązania)
+//		double minValue = INT_MAX;
+//		for(int i = 0; i < sizeListyRozwiazan; i++) {
+//			if(tablicaWartosciFunkcjiCelu[i] < minValue)
+//				minValue = tablicaWartosciFunkcjiCelu[i];
+//		}
+//
+//	 W kodzie poniżej powinniśmy założyć że dane w listach rozwiązań są podzielone na maszyny i posortowanie według końca czasu!
+//	 TZN. najpierw zadania na M1 od najmniejszej wartości endTime, potem zadania na M2
+//
+//		value = minValue / tablicaWartosciFunkcjiCelu[i]; // Najgorsze zadanie doda najmniej, im bliżej najlepszego tym więcej dodaje
+//		Wartości z zakresu [0, 1]
+//		Przy dodawaniu do wartości można zapisać to jako += value;
+
 
     for(int i=0;i<sizeListyRozwiazan;i++){
         prawdFunkcjiCelu[i]=sumaFunkcjiCelu/prawdFunkcjiCelu[i]; // przeksztalcamy w prawdopodobienstwo
