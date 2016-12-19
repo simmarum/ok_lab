@@ -784,10 +784,10 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 			int count = 0; // Ilość operacji które zostały już umieszczone w pliku wynikowym
 			int maxCount; // Ilość operacji które trzeba umieścić (liczba operacji + przerwania)
 			int taskPoint = 0; // Zmienna wskazująca aktualnie rozpatrywane zadanie z listy operacji
-			int countIldeFirstProcessor = 0; // Licznik okresów bezczynności dla maszyny pierwszej
-			int countIldeSecondProcessor = 0; // Licznik okresów bezczynności dla maszyny drugiej
-			int ildeTimeFirstProcessor = 0; // Ogólny czas bezczynności na maszynie pierwszej
-			int ildeTimeSecondProcessor = 0; // Ogólny czas bezczynności na maszynie drugiej
+			int countIdleFirstProcessor = 0; // Licznik okresów bezczynności dla maszyny pierwszej
+			int countIdleSecondProcessor = 0; // Licznik okresów bezczynności dla maszyny drugiej
+			int idleTimeFirstProcessor = 0; // Ogólny czas bezczynności na maszynie pierwszej
+			int idleTimeSecondProcessor = 0; // Ogólny czas bezczynności na maszynie drugiej
 
 		// Podzielenie listy zadań na maszyny i przypisanie ilości do zmiennych pomocniczych
 			PodzielStrukturyNaMaszyny<Task>(listaZadan, taskFirstProcessor, taskSecondProcessor);
@@ -862,11 +862,11 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 						}
 
 					// Zapis do pliku danych o bezczynności
-						file << "idle" << countIldeFirstProcessor + 1 << "_M1, " << processorTime << ", " << minTime << "; ";
-						countIldeFirstProcessor++;
+						file << "idle" << countIdleFirstProcessor + 1 << "_M1, " << processorTime << ", " << minTime << "; ";
+						countIdleFirstProcessor++;
 
 					// Dodanie do ogólnego licznika bezczynności zapisanego czasu
-						ildeTimeFirstProcessor += minTime;
+						idleTimeFirstProcessor += minTime;
 
 					// Przestawienie czasu maszyny
 						processorTime += minTime;
@@ -935,13 +935,13 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 						}
 
 					// Zapis do pliku danych o bezczynności
-						file << "ilde" << countIldeSecondProcessor + 1 << "_M2, " << processorTime << ", " << minTime << "; ";
+						file << "idle" << countIdleSecondProcessor + 1 << "_M2, " << processorTime << ", " << minTime << "; ";
 
 					// Inkrementacja numeru przerwania
-						countIldeSecondProcessor++;
+						countIdleSecondProcessor++;
 
 					// Dodanie do ogólnego licznika bezczynności zapisanego czasu
-						ildeTimeSecondProcessor += minTime;
+						idleTimeSecondProcessor += minTime;
 
 					// Przestawienie czasu maszyny
 						processorTime += minTime;
@@ -951,8 +951,8 @@ void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaP
 			// Dopisanie wartości sum
 				file << endl << listaPrzerwanFirstProcessor.size() << ", " << ObliczDlugoscOperacji<Maintenance>(listaPrzerwanFirstProcessor) << endl
 					 << listaPrzerwanSecondProcessor.size() << ", " << ObliczDlugoscOperacji<Maintenance>(listaPrzerwanSecondProcessor) << endl
-					 << countIldeFirstProcessor << ", " << ildeTimeFirstProcessor << endl
-					 << countIldeSecondProcessor << ", " << ildeTimeSecondProcessor << endl << "*** EOF ***";
+					 << countIdleFirstProcessor << ", " << idleTimeFirstProcessor << endl
+					 << countIdleSecondProcessor << ", " << idleTimeSecondProcessor << endl << "*** EOF ***";
 
 			// Czyszczenie pamięci operacyjnej
 				taskFirstProcessor.clear();
