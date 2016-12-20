@@ -694,45 +694,6 @@ inline void OdczytDanychZadan(vector<Task*> &listaZadan) {
     }
 }
 
-// Tworzenie timeline dla obserwacji wyników pracy
-inline void UtworzGraf(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwan, long int wynik, string &nameParam) {
-    int iloscZadan = listaZadan.size(); // Ilość zadań w systemie
-    int iloscPrzerwan = listaPrzerwan.size(); // Ilość okresów przestojów na maszynach
-
-    ofstream file;
-    string fileName = "index_" + nameParam + ".html";
-    file.open(fileName.c_str());
-    file << "<!DOCTYPE html><html lang=\"en\"><head><meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" /><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
-    file << "<title>OK - Wyniki pracy generatora</title></head><body><script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>";
-    file << "<script type=\"text/javascript\">google.charts.load(\"current\", {packages:[\"timeline\"]});google.charts.setOnLoadCallback(drawChart);function drawChart() {";
-    file << "var container = document.getElementById('example4.2');var chart = new google.visualization.Timeline(container);var dataTable = new google.visualization.DataTable();";
-    file << "dataTable.addColumn({ type: 'string', id: 'Role' });dataTable.addColumn({ type: 'string', id: 'Name' });dataTable.addColumn({ type: 'number', id: 'Start' });dataTable.addColumn({ type: 'number', id: 'End' });dataTable.addRows([";
-
-    int timeStart = 0;
-    int timeStop = 0;
-
-    // Zapisujemy do pliku nasze zadania
-    for(int i = 0; i < iloscZadan; i++) {
-        timeStop = listaZadan[i]->endTime;
-        timeStart = timeStop - listaZadan[i]->duration;
-
-        file << "[ 'M" << listaZadan[i]->assigment + 1 << "', 'Zadanie " << listaZadan[i]->ID << "', " << timeStart << ", " << timeStop << " ]," << endl;
-    }
-
-    // Zapis przerwań
-    for(int i = 0; i < iloscPrzerwan; i++) {
-        timeStart = listaPrzerwan[i]->readyTime;
-        timeStop = timeStart + listaPrzerwan[i]->duration;
-
-        if(i + 1 == iloscPrzerwan) { // Ostatnia iteracja
-            file << "[ 'M" << listaPrzerwan[i]->assigment + 1 << "', 'PRZERWANIE " << i + 1 << "', " << timeStart << ", " << timeStop << " ]]);" << endl;
-            file << "var options = {timeline: { groupByRowLabel: true }};chart.draw(dataTable, options);}</script><div id=\"example4.2\" style=\"height: 200px;\"></div><br><div><span>Wartosc funkcji celu: " << wynik << "</span></div></body></html>" << endl;
-        } else {
-            file << "[ 'M" << listaPrzerwan[i]->assigment + 1 << "', 'PRZERWANIE " << i + 1 << "', " << timeStart << ", " << timeStop << " ]," << endl;
-        }
-    }
-}
-
 // Obliczanie wartości funkcji celu
 inline long int ObliczFunkcjeCelu(vector<Task*> &lista) {
     int size = lista.size();
