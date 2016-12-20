@@ -362,7 +362,6 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
     KopiujDaneOperacji(listaZadan, zadaniaLokalne);
 
     // Zmienne używane w przebiegu pracy Generatora Losowego
-    int iloscZadan = listaZadan.size() / 2;	// Ilość zadań (ilość operacji / 2)
     Task * currentTask = NULL; // Zmmienna operacyjna aby uprościć zapis
     int numerPrzerwaniaFirstProcessor = 0; // Numer aktualnego przerwania na procesorze pierwszym
     int numerPrzerwaniaSecondProcessor = 0; // Numer aktualnego przerwania na procesorze drugim
@@ -372,20 +371,18 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
     int timeFirstProcessor = 0; // Zmienna czasowa - procesor pierwszy
     int timeSecondProcessor = 0; // Zmienna czasowa - procesor drugi
     int maxCount = 2 * INSTANCE_SIZE; // Ilość koniecznych edycji w zadaniach (part I + part II w każdym zadaniu)
-    int listaPrzerwanFirstProcessorSize = listaPrzerwanFirstProcessor.size(); // Ilość przerwań dla pierwszego procesora - aby nie liczyć za każdym razem tej wartości
-    int listaPrzerwanSecondProcessorSize = listaPrzerwanSecondProcessor.size(); // Ilość przerwań dla drugiej maszyny - podobnie jak wyżej, unikamy niepotrzebnego, wielokrotnego liczenia tej wartości
     int taskID = 0; // Numer zadania
     int pozycja = 0; // Numer aktualnie rozpatrywanego zadania (losowa wartość z z przedziału 0 - ilosc zadan*2)
 
     // Tworzymy dwie tablice pomocnicze do sprawdzania czy zadanie było już uwzględnione
-    bool * firstPart = new bool[iloscZadan]; // Część I zadania - czy była uwzględniona (jeśli tak to true)
-    bool * secondPart = new bool[iloscZadan]; // Część II zadania - czy była uwzględniona (jeśli tak to true)
+    bool * firstPart = new bool[INSTANCE_SIZE]; // Część I zadania - czy była uwzględniona (jeśli tak to true)
+    bool * secondPart = new bool[INSTANCE_SIZE]; // Część II zadania - czy była uwzględniona (jeśli tak to true)
 
     // Licznik odwiedzin w każdym z zadań
-    int * licznikOdwiedzonych = new int[iloscZadan]; // Licznik odwiedzeń w danym zadaniu aby unikać pętli
+    int * licznikOdwiedzonych = new int[INSTANCE_SIZE]; // Licznik odwiedzeń w danym zadaniu aby unikać pętli
 
     // Pętla startowa zerująca tablice
-    for(int i = 0; i < iloscZadan; i++) {
+    for(int i = 0; i < INSTANCE_SIZE; i++) {
         firstPart[i] = false;
         secondPart[i] = false;
         licznikOdwiedzonych[i] = 0;
@@ -439,7 +436,7 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
 
                         // Ustawiamy czas następnego przerwania
                         numerPrzerwaniaFirstProcessor++;
-                        if(numerPrzerwaniaFirstProcessor < listaPrzerwanFirstProcessorSize)
+                        if(numerPrzerwaniaFirstProcessor < MAINTENANCE_FIRST_PROCESSOR)
                             najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
                         else
                             najblizszyMaintenanceFirstProcessor = -1;
@@ -487,7 +484,7 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
 
                         // Ustawiamy czas następnego przerwania
                         numerPrzerwaniaSecondProcessor++;
-                        if(numerPrzerwaniaSecondProcessor < listaPrzerwanSecondProcessorSize)
+                        if(numerPrzerwaniaSecondProcessor < MAINTENANCE_SECOND_PROCESSOR)
                             najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime;
                         else
                             najblizszyMaintenanceSecondProcessor = -1;
@@ -517,7 +514,7 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
                 count++;
             }
         } else {
-            // PRZYDZIELAMY DRUGÄ„ CZÄĹšÄ† ZADANIA
+            // PRZYDZIELAMY DRUGĄ CZĘŚĆ ZADANIA
 
             // Mogą wystąpić problemy z zapętleniami = dlatego jest dodatkowe zabezpieczenie w postaci liczenia ile razy odwiedzamy wartość
             licznikOdwiedzonych[taskID]++;
@@ -542,7 +539,7 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
                         int tempTime = 0;
 
                         // Resetujemy liczniki i patrzymy na odległości
-                        for(int i = 0; i < iloscZadan; i++) {
+                        for(int i = 0; i < INSTANCE_SIZE; i++) {
                             licznikOdwiedzonych[i] = 0;
 
                             if(!secondPart[i]) {
@@ -578,7 +575,7 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
 
                         // Ustawiamy czas następnego przerwania
                         numerPrzerwaniaSecondProcessor++;
-                        if(numerPrzerwaniaSecondProcessor < listaPrzerwanSecondProcessorSize)
+                        if(numerPrzerwaniaSecondProcessor < MAINTENANCE_SECOND_PROCESSOR)
                             najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime;
                         else
                             najblizszyMaintenanceSecondProcessor = -1;
@@ -613,7 +610,7 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
                         int tempTime = 0;
 
                         // Resetujemy liczniki i patrzymy na odległości
-                        for(int i = 0; i < iloscZadan; i++) {
+                        for(int i = 0; i < INSTANCE_SIZE; i++) {
                             licznikOdwiedzonych[i] = 0;
 
                             if(!secondPart[i]) {
@@ -649,7 +646,7 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
 
                         // Ustawiamy czas następnego przerwania
                         numerPrzerwaniaFirstProcessor++;
-                        if(numerPrzerwaniaFirstProcessor < listaPrzerwanFirstProcessorSize)
+                        if(numerPrzerwaniaFirstProcessor < MAINTENANCE_FIRST_PROCESSOR)
                             najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
                         else
                             najblizszyMaintenanceFirstProcessor = -1;
