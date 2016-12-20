@@ -14,6 +14,7 @@
 #include <sstream>
 #include <math.h>
 #include <fstream>
+#include <windows.h> // CreateDirectory przy zapisie plików
 #include <climits> // INT_MAX do generatora losowego
 #include <algorithm> // Sortowanie przerwań
 
@@ -369,7 +370,7 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
     int najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime; // Czas momentu ROZPOCZÄCIA przerwania na procesorze drugim
     int timeFirstProcessor = 0; // Zmienna czasowa - procesor pierwszy
     int timeSecondProcessor = 0; // Zmienna czasowa - procesor drugi
-    int maxCount = 2 * iloscZadan; // Ilość koniecznych edycji w zadaniach (part I + part II w każdym zadaniu)
+    int maxCount = 2 * INSTANCE_SIZE; // Ilość koniecznych edycji w zadaniach (part I + part II w każdym zadaniu)
     int listaPrzerwanFirstProcessorSize = listaPrzerwanFirstProcessor.size(); // Ilość przerwań dla pierwszego procesora - aby nie liczyć za każdym razem tej wartości
     int listaPrzerwanSecondProcessorSize = listaPrzerwanSecondProcessor.size(); // Ilość przerwań dla drugiej maszyny - podobnie jak wyżej, unikamy niepotrzebnego, wielokrotnego liczenia tej wartości
     int taskID = 0; // Numer zadania
@@ -544,7 +545,7 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
                             licznikOdwiedzonych[i] = 0;
 
                             if(!secondPart[i]) {
-                                int tempTime = currentTask->anotherPart->endTime - timeSecondProcessor;
+                                tempTime = currentTask->anotherPart->endTime - timeSecondProcessor;
                                 if(tempTime < minTime)
                                     minTime = tempTime;
                             }
@@ -780,6 +781,7 @@ inline long int ObliczDlugoscOperacji(vector<T*> &lista) {
 // Zapis wyników do pliku tekstowego
 inline void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, long int firstSolutionValue, int numerInstancjiProblemu, string &nameParam) {
     ofstream file;
+    CreateDirectory("wyniki", NULL); // Tworzenie katalogu wynikowego
 
     string fileName;
     stringstream ss;
@@ -1701,7 +1703,6 @@ int main() {
     srand(time(NULL)); // Ino roz reset
 
     debugFile.open("debug.txt");
-    int numerInstancjiProblemu = 0;
 
 
     // petla aby sprawdzic wiele instancji i porownac wyniki
