@@ -794,7 +794,7 @@ inline void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> 
         vector<Task*> taskFirstProcessor, taskSecondProcessor; // Wektory dla podziału zadań na maszyny
         int taskFirstProcessorSize; // Ilość zadań na pierwszym procesorze
         int taskSecondProcessorSize; // Ilość zadań na drugim procesorze
-        int numerPrzerwania = 0; // Numer aktualnie rozpatrywanego przerwania
+        unsigned int numerPrzerwania = 0; // Numer aktualnie rozpatrywanego przerwania
         int najblizszyMaintenance = -1; // Czas momentu ROZPOCZĘCIA przerwania
         int processorTime = 0; // Czas procesora
         int count = 0; // Ilość operacji które zostały już umieszczone w pliku wynikowym
