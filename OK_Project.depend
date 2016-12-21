@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1482345708 source:d:\studia\ok_repozytorium\ok_lab\code.cpp
+	<iostream>
+	<vector>
+	<time.h>
+	<stdio.h>
+	<stdlib.h>
+	<string>
+	<sstream>
+	<math.h>
+	<fstream>
+	<windows.h>
+	<climits>
+	<algorithm>
+

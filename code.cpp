@@ -99,8 +99,8 @@ void GeneratorPrzestojow(vector<Maintenance*> &lista) {
         maintenanceTimeTable[i] = false;
     }
 
-	int liczbaPrzerwanFirstProcessor = MAINTENANCE_FIRST_PROCESSOR;
-	int liczbaPrzerwanSecondProcessor = MAINTENANCE_SECOND_PROCESSOR;
+    int liczbaPrzerwanFirstProcessor = MAINTENANCE_FIRST_PROCESSOR;
+    int liczbaPrzerwanSecondProcessor = MAINTENANCE_SECOND_PROCESSOR;
     int liczbaPrzerwan = liczbaPrzerwanFirstProcessor + liczbaPrzerwanSecondProcessor;
 
     for(int i = 0; i < liczbaPrzerwan; i++) {
@@ -680,6 +680,363 @@ inline vector<Task*> GeneratorLosowy(vector<Task*> &listaZadan, vector<Maintenan
     return zadaniaLokalne;
 }
 
+inline vector <Task*> GeneratorZMacierzaFeromonowa(vector <Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor) {
+    vector<Task*> zadaniaLokalne; // Wektor pomocniczy na podstawy operacji generatora
+    KopiujDaneOperacji(listaZadan, zadaniaLokalne); // Kopia danych
+    // Sortujemy dane w kolejności ID aby móc łatwiej sprawdzać to w generatorze
+    SortujZadaniaPoID(zadaniaLokalne);
+
+    // Zmienne używane w przebiegu pracy Generatora korzystającego z Macierzy Feromonowej
+    Task * currentTask = NULL; // Zmmienna operacyjna aby uprościć zapis
+    int numerPrzerwaniaFirstProcessor = 0; // Numer aktualnego przerwania na procesorze pierwszym
+    int numerPrzerwaniaSecondProcessor = 0; // Numer aktualnego przerwania na procesorze drugim
+    int count = 0; // Licznik przeliczonych już zadań
+    int najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime; // Czas momentu ROZPOCZĘCIA przerwania na procesorze pierwszym
+    int najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime; // Czas momentu ROZPOCZĘCIA przerwania na procesorze drugim
+    int timeFirstProcessor = 0; // Zmienna czasowa - procesor pierwszy
+    int timeSecondProcessor = 0; // Zmienna czasowa - procesor drugi
+    int maxCount = 2 * INSTANCE_SIZE; // Ilość koniecznych edycji w zadaniach (part I + part II w każdym zadaniu)
+    int taskID = 0; // Numer zadania
+    int lastTask; // ID poprzednio analizowanego zadania
+    bool start = true; // Zmienna wskazująca czy wchodzimy do generatora po raz pierwszy czy jesteśmy po raz kolejny w iteracji
+	int pozycja = 0; // Zmienna wskazująca na pozycję w wektorze zadań (używane kilka razy, lepiej raz obliczyć niż za każdym razem ustawiać taskID * 2
+
+    // Tworzymy dwie tablice pomocnicze do sprawdzania czy zadanie było już uwzględnione
+    bool * firstPart = new bool[INSTANCE_SIZE]; // Część I zadania - czy była uwzględniona (jeśli tak to true)
+    bool * secondPart = new bool[INSTANCE_SIZE]; // Część II zadania - czy była uwzględniona (jeśli tak to true)
+
+    // Licznik odwiedzin w każdym z zadań
+    int * licznikOdwiedzonych = new int[INSTANCE_SIZE]; // Licznik odwiedzeń w danym zadaniu aby unikać pętli
+
+    // Pętla startowa zerująca tablice
+    for(int i = 0; i < INSTANCE_SIZE; i++) {
+        firstPart[i] = false;
+        secondPart[i] = false;
+        licznikOdwiedzonych[i] = 0;
+    }
+
+    while(count < maxCount) {
+        // Jeżeli jest to pierwsze działanie, trzeba wylosować zadanie
+        if(start) { // Teoretycznie można by dać count == 0
+            start = false; // Ustawiamy że już raz operowaliśmy
+            lastTask = (int)(rand() / (RAND_MAX + 1.0) * count); // Losujemy zadanie
+            taskID = lastTask;
+        } else { // Już jesteśmy po raz x w pętli
+            // Losujemy wartość zadania w oparciu o macierz feromonową
+            double *zakresLosowania = new double[INSTANCE_SIZE]; // Pomocnicza tabela z wartościami granicznymi sum
+			double sum = 0.0;
+
+            // Liczymy sumę z wiersza Macierzy
+            for(int i = 0; i < INSTANCE_SIZE; i++) {
+                sum += MacierzFeromonowa[lastTask][i] * 10 + 1; // Sumujemy wartości z macierzy (*10 aby mieć większy zakres losowania)
+                zakresLosowania[i] = sum; // Przypisujemy do jakiej wartości sumy dane zadanie obowiązuje
+            }
+
+            // Losujemy wartość
+            int randomValue;
+            bool check = true; // Zmienna sprawdzająca czy konieczne jest kolejne zapętlenie (ustawiana gdy secondPart[taskID] już było analizowane)
+            while(check) {
+				randomValue = (int)(rand() / (RAND_MAX + 1.0) * sum); // Losujemy wartość
+
+                // Sprawdzamy jakie to zadanie
+                for(int i = INSTANCE_SIZE - 1; i >= 0; i--) {
+					if(zakresLosowania[i] > randomValue) {
+						taskID = i; // Przypisujemy ID zadania
+					}
+					else
+						break; // Przerywamy przy wykryciu pierwszej wartości mniejszej od naszego randoma
+                }
+
+				// Sprawdzamy czy nie wystąpiła część II tego zadania
+				if(!secondPart[taskID])
+					check = false;
+			}
+
+			// Czyścimy po sobie pamięć
+				delete[] zakresLosowania;
+        }
+
+        // Zadanie nie było jeszcze używane
+        pozycja = taskID * 2; // Obliczamy pozycję w tablicy gdzie zadanie się znajduje (zadania w tablicy są posortowane według ID)
+        if(!firstPart[taskID]) {
+            // Sprawdzamy typ zadania - jeżeli jest zero to podstawiamy pod zmienną pomocniczą
+            if(zadaniaLokalne[pozycja]->part == 0) {
+                currentTask = zadaniaLokalne[pozycja];
+            } else { // Jeżeli nie - konieczne jest podstawienie części komplementarnej wylosowanego zadania
+                currentTask = zadaniaLokalne[pozycja]->anotherPart;
+            }
+
+            // Sprawdzamy czy zadanie powinno trafić na maszynę 0
+            if(currentTask->assigment == 0) {
+                // Sprawdzamy czy zadanie uda się ustawić przed najblizszym maintenance na maszynie
+                if((timeFirstProcessor + currentTask->duration) <= najblizszyMaintenanceFirstProcessor || (najblizszyMaintenanceFirstProcessor == -1)) {
+                    // Ustawiamy czas na maszynie pierwszej
+                    timeFirstProcessor += currentTask->duration;
+
+                    // Ustawiamy czas zakończenia Part I
+                    currentTask->endTime = timeFirstProcessor;
+
+                    // Ustawiamy że zadanie zostało użyte (Part I)
+                    firstPart[taskID] = true;
+
+                } else { // Nie udało się umieścić zadania przed przerwą
+                    while(true) {
+                        // Przesuwamy się na chwilę po przerwaniu
+                        timeFirstProcessor = najblizszyMaintenanceFirstProcessor + listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->duration;
+
+                        // Ustawiamy czas następnego przerwania
+                        numerPrzerwaniaFirstProcessor++;
+                        if(numerPrzerwaniaFirstProcessor < MAINTENANCE_FIRST_PROCESSOR)
+                            najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
+                        else
+                            najblizszyMaintenanceFirstProcessor = -1;
+
+                        // Musismy sprawdzić czy uda się nam wcisnąć nasze zadanie
+                        if((timeFirstProcessor + currentTask->duration) <= najblizszyMaintenanceFirstProcessor || (najblizszyMaintenanceFirstProcessor == -1))
+                            break;
+                    }
+
+                    // Po opuszczeniu pętli mamy poprawną wartość w zmiennej timeFirstProcessor (wystarczy zwiększyć ją o długość zadania)
+                    timeFirstProcessor += currentTask->duration;
+
+                    if(DEBUG)
+                        debugFile << "I Czas FM " << timeFirstProcessor << endl;
+
+                    // Ustawiamy zmienną czasową zakończenia zadania
+                    currentTask->endTime = timeFirstProcessor;
+
+                    // Zaznaczamy w tablicy pomocniczej że część pierwsza zadania była użyta
+                    firstPart[taskID] = true;
+                }
+
+                // Zwiększamy ilość zadań jakie przerobiliśmy
+                count++;
+
+                // Ustawialiśmy jakie zadanie było analizowane
+				lastTask = taskID;
+
+            } else { // Przydział zadania na maszynę nr 2
+                // Sprawdzamy czy zadanie można umieścić przed maintenance najbliższym (jeżeli jest  on -1 to już nie wystąpi)
+                if((timeSecondProcessor + currentTask->duration) <= najblizszyMaintenanceSecondProcessor || (najblizszyMaintenanceSecondProcessor == -1)) {
+                    // Ustawiamy czas na maszynie drugiej
+                    timeSecondProcessor += currentTask->duration;
+
+                    if(DEBUG)
+                        debugFile << "I Czas SM: " << timeSecondProcessor << endl;
+
+                    // Ustawiamy czas zakończenia zadania
+                    currentTask->endTime = timeSecondProcessor;
+
+                    // Ustawiamy że zadanie zostało użyte (part I)
+                    firstPart[taskID] = true;
+
+                } else { // Nie umieściliśmy zadania przed przerwą
+                    while(true) {
+                        // Przesuwamy się na chwilę po przerwaniu
+                        timeSecondProcessor = najblizszyMaintenanceSecondProcessor + listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->duration;
+
+                        // Ustawiamy czas następnego przerwania
+                        numerPrzerwaniaSecondProcessor++;
+                        if(numerPrzerwaniaSecondProcessor < MAINTENANCE_SECOND_PROCESSOR)
+                            najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime;
+                        else
+                            najblizszyMaintenanceSecondProcessor = -1;
+
+                        if(DEBUG)
+                            debugFile << "Druga = " << timeSecondProcessor << " oraz " << najblizszyMaintenanceSecondProcessor << endl;
+
+                        // Musismy sprawdzić czy uda się nam wcisnąć nasze zadanie
+                        if((timeSecondProcessor + currentTask->duration) <= najblizszyMaintenanceSecondProcessor || (najblizszyMaintenanceSecondProcessor == -1))
+                            break;
+                    }
+
+                    // Po opuszczeniu pętli mamy poprawną wartość w zmiennej timeSecondProcessor(wystarczy zwiększyć ją o długość zadania)
+                    timeSecondProcessor += currentTask->duration;
+
+                    if(DEBUG)
+                        debugFile << "Czas SM " << timeSecondProcessor << endl;
+
+                    // Ustawiamy zmienną czasową zakończenia zadania
+                    currentTask->endTime = timeSecondProcessor;
+
+                    // Zaznaczamy w tablicy pomocniczej że część pierwsza zadania była użyta
+                    firstPart[taskID] = true;
+                }
+
+                // Zwiększamy ilość zadań jakie przerobiliśmy
+                count++;
+
+                // Ustawialiśmy jakie zadanie było analizowane
+				lastTask = taskID;
+            }
+        } else {
+            // PRZYDZIELAMY DRUGĄ CZĘŚĆ ZADANIA
+
+            // Mogą wystąpić problemy z zapętleniami = dlatego jest dodatkowe zabezpieczenie w postaci liczenia ile razy odwiedzamy wartość
+            licznikOdwiedzonych[taskID]++;
+
+            // Sprawdzamy typ zadania - jeżeli jest zero to podstawiamy pod zmienną pomocniczą
+            if(zadaniaLokalne[pozycja]->part == 1) {
+                currentTask = zadaniaLokalne[pozycja];
+            } else { // Jeżeli nie - konieczne jest podstawienie części komplementarnej wylosowanego zadania
+                currentTask = zadaniaLokalne[pozycja]->anotherPart;
+            }
+
+            // Sprawdzamy typ zadania
+            if(currentTask->assigment == 1) { // Przydział na drugą maszynę
+                // Sprawdzamy czy czas na maszynie nie jest mniejszy od zakończenia się pierwszej części
+                if(timeSecondProcessor < currentTask->anotherPart->endTime) {
+                    // Sprawdzamy czy nie jesteśmy po raz x w pętli
+                    if(licznikOdwiedzonych[taskID] >= MIN_TASK_COUNTER) {
+                        // Tworzymy pomocniczą zmienną odległości
+                        int minTime = INT_MAX;
+                        int tempTime = 0;
+
+                        // Resetujemy liczniki i patrzymy na odległości
+                        for(int i = 0; i < INSTANCE_SIZE; i++) {
+                            licznikOdwiedzonych[i] = 0;
+
+                            if(!secondPart[i]) {
+                                tempTime = currentTask->anotherPart->endTime - timeSecondProcessor;
+                                if(tempTime < minTime)
+                                    minTime = tempTime;
+                            }
+                        }
+
+                        // Przestawiamy czas na maszynie
+                        timeSecondProcessor += minTime;
+
+                    } else // Jeżeli nie mamy osiągniętej wartości to pomijamy iterację
+                        continue;
+                }
+
+                // Zadanie można umieścić
+                // Sprawdzamy czy zadanie można umieścić przed maintenance najbliższym (jeżeli jest  on -1 to już nie wystąpi)
+                if((timeSecondProcessor + currentTask->duration) <= najblizszyMaintenanceSecondProcessor || (najblizszyMaintenanceSecondProcessor == -1)) {
+                    // Ustawiamy czas na maszynie pierwszej
+                    timeSecondProcessor += currentTask->duration;
+
+                    // Ustawiamy czas zakończenia zadania
+                    currentTask->endTime = timeSecondProcessor;
+
+                    // Ustawiamy że zadanie zostało użyte (part II)
+                    secondPart[taskID] = true;
+
+                } else { // Nie umieściliśmy zadania przed przerwą
+                    while(true) {
+                        // Przesuwamy się na chwilę po przerwaniu
+                        timeSecondProcessor = najblizszyMaintenanceSecondProcessor + listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->duration;
+
+                        // Ustawiamy czas następnego przerwania
+                        numerPrzerwaniaSecondProcessor++;
+                        if(numerPrzerwaniaSecondProcessor < MAINTENANCE_SECOND_PROCESSOR)
+                            najblizszyMaintenanceSecondProcessor = listaPrzerwanSecondProcessor[numerPrzerwaniaSecondProcessor]->readyTime;
+                        else
+                            najblizszyMaintenanceSecondProcessor = -1;
+
+                        // Musismy sprawdzić czy uda się nam wcisnąć nasze zadanie
+                        if((timeSecondProcessor + currentTask->duration) <= najblizszyMaintenanceSecondProcessor || (najblizszyMaintenanceSecondProcessor == -1))
+                            break;
+                    }
+
+                    // Po opuszczeniu pętli mamy poprawną wartość w zmiennej timeSecondProcessor (wystarczy zwiększyć ją o długość zadania)
+                    timeSecondProcessor += currentTask->duration;
+
+                    // Ustawiamy zmienną czasową zakończenia zadania
+                    currentTask->endTime = timeSecondProcessor;
+
+                    // Zaznaczamy w tablicy pomocniczej że część pierwsza zadania była użyta
+                    secondPart[taskID] = true;
+                }
+
+                // Zwiększamy ilość zadań jakie przerobiliśmy
+                count++;
+
+                // Ustawialiśmy jakie zadanie było analizowane
+				lastTask = taskID;
+            } else {
+                // Sprawdzamy czy czas na maszynie nie jest mniejszy od zakończenia się pierwszej części
+                if(timeFirstProcessor < currentTask->anotherPart->endTime) {
+                    // Sprawdzamy czy nie jesteśmy po raz x w pętli
+                    if(licznikOdwiedzonych[taskID] >= MIN_TASK_COUNTER) {
+                        // Tworzymy pomocniczą zmienną odległości
+                        int minTime = INT_MAX;
+                        int tempTime = 0;
+
+                        // Resetujemy liczniki i patrzymy na odległości
+                        for(int i = 0; i < INSTANCE_SIZE; i++) {
+                            licznikOdwiedzonych[i] = 0;
+
+                            if(!secondPart[i]) {
+                                tempTime = currentTask->anotherPart->endTime - timeFirstProcessor;
+                                if(tempTime < minTime)
+                                    minTime = tempTime;
+                            }
+                        }
+
+                        // Przestawiamy czas na maszynie
+                        timeFirstProcessor += minTime;
+
+                    } else // Jeżeli nie mamy osiągniętej wartości to pomijamy iterację
+                        continue;
+                }
+
+                // Zadanie można umieścić
+                // Sprawdzamy czy zadanie można umieścić przed maintenance najbliższym (jeżeli jest  on -1 to już nie wystąpi)
+                if((timeFirstProcessor + currentTask->duration) <= najblizszyMaintenanceFirstProcessor || (najblizszyMaintenanceFirstProcessor == -1)) {
+                    // Ustawiamy czas na maszynie pierwszej
+                    timeFirstProcessor += currentTask->duration;
+
+                    // Ustawiamy czas zakończenia zadania
+                    currentTask->endTime = timeFirstProcessor;
+
+                    // Ustawiamy że zadanie zostało użyte (part II)
+                    secondPart[taskID] = true;
+
+                } else { // Nie umieściliśmy zadania przed przerwą
+                    while(true) {
+                        // Przesuwamy się na chwilę po przerwaniu
+                        timeFirstProcessor = najblizszyMaintenanceFirstProcessor + listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->duration;
+
+                        // Ustawiamy czas następnego przerwania
+                        numerPrzerwaniaFirstProcessor++;
+                        if(numerPrzerwaniaFirstProcessor < MAINTENANCE_FIRST_PROCESSOR)
+                            najblizszyMaintenanceFirstProcessor = listaPrzerwanFirstProcessor[numerPrzerwaniaFirstProcessor]->readyTime;
+                        else
+                            najblizszyMaintenanceFirstProcessor = -1;
+
+                        // Musismy sprawdzić czy uda się nam wcisnąć nasze zadanie
+                        if((timeFirstProcessor + currentTask->duration) <= najblizszyMaintenanceFirstProcessor || (najblizszyMaintenanceFirstProcessor == -1))
+                            break;
+                    }
+
+                    // Po opuszczeniu pętli mamy poprawną wartość w zmiennej timeSecondProcessor (wystarczy zwiększyć ją o długość zadania)
+                    timeFirstProcessor += currentTask->duration;
+
+                    // Ustawiamy zmienną czasową zakończenia zadania
+                    currentTask->endTime = timeFirstProcessor;
+
+                    // Zaznaczamy w tablicy pomocniczej że część pierwsza zadania była użyta
+                    secondPart[taskID] = true;
+                }
+
+                // Zwiększamy ilość zadań jakie przerobiliśmy
+                count++;
+
+                // Ustawialiśmy jakie zadanie było analizowane
+				lastTask = taskID;
+            }
+        }
+    }
+
+    // Czyszczenie pamięci - zwalnianie niepotrzebnych zasobów
+    delete[] firstPart;
+    delete[] secondPart;
+    delete[] licznikOdwiedzonych;
+
+    return zadaniaLokalne;
+}
+
 // Odczyt danych zadań na ekran
 inline void OdczytDanychZadan(vector<Task*> &listaZadan) {
     // Przeliczenie ilości operacji do zmienne pomocniczej aby nie liczyć operacji w każdej iteracji
@@ -706,7 +1063,7 @@ inline long int ObliczFunkcjeCelu(vector<Task*> &lista) {
     return sum;
 }
 
-// Podział struktury T na maszyny
+// Podział struktury Task / Maintenance na maszyny
 template <class T>
 inline void PodzielStrukturyNaMaszyny(vector<T*> &listaWejsciowa, vector<T*> &firstProcessor, vector<T*> &secondProcessor) {
     // Zmienna pomocnicza by skrócić czas pracy (nie trzeba x razy liczyć)
@@ -736,6 +1093,7 @@ inline long int ObliczDlugoscOperacji(vector<T*> &lista) {
 
     return sum;
 }
+
 
 // Zapis wyników do pliku tekstowego
 inline void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, long int firstSolutionValue, int numerInstancjiProblemu, string &nameParam) {
@@ -1009,19 +1367,19 @@ inline vector<Task*> Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &li
             // Sprawdzamy czy te zadania możemy mutować (założenie - przestawiamy tylko zadania z tym samym wskaĹşnikiem części Part)
             if(secondTaskPosition != firstTaskPosition && taskListFirstProcessor[firstTaskPosition]->part == taskListFirstProcessor[secondTaskPosition]->part) {
                 // Zamiana kolejności zadań w liście
-					int first = taskOrderFirstProcessor[firstTaskPosition];
-					int second = taskOrderFirstProcessor[secondTaskPosition];
-					taskOrderFirstProcessor[firstTaskPosition] = second;
-					taskOrderFirstProcessor[secondTaskPosition] = first;
+                int first = taskOrderFirstProcessor[firstTaskPosition];
+                int second = taskOrderFirstProcessor[secondTaskPosition];
+                taskOrderFirstProcessor[firstTaskPosition] = second;
+                taskOrderFirstProcessor[secondTaskPosition] = first;
 
                 // Szukamy zadań komplementarnych na drugiej maszynie
-					for(int i = 0; i < iloscZadan; i++) {
-						if(taskOrderSecondProcessor[i] == first) {
-							taskOrderSecondProcessor[i] = second;
-						} else if(taskOrderSecondProcessor[i] == second) {
-							taskOrderSecondProcessor[i] = first;
-						}
-					}
+                for(int i = 0; i < iloscZadan; i++) {
+                    if(taskOrderSecondProcessor[i] == first) {
+                        taskOrderSecondProcessor[i] = second;
+                    } else if(taskOrderSecondProcessor[i] == second) {
+                        taskOrderSecondProcessor[i] = first;
+                    }
+                }
 
                 break;
             } else {
@@ -1030,19 +1388,19 @@ inline vector<Task*> Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &li
         } else { // Zmiany kolejności dla maszynie nr 2
             if(secondTaskPosition != firstTaskPosition && taskListSecondProcessor[firstTaskPosition]->part == taskListSecondProcessor[secondTaskPosition]->part) {
                 // Zamiana kolejności zadań w liście
-					int first = taskOrderSecondProcessor[firstTaskPosition];
-					int second = taskOrderSecondProcessor[secondTaskPosition];
-					taskOrderSecondProcessor[firstTaskPosition] = second;
-					taskOrderSecondProcessor[secondTaskPosition] = first;
+                int first = taskOrderSecondProcessor[firstTaskPosition];
+                int second = taskOrderSecondProcessor[secondTaskPosition];
+                taskOrderSecondProcessor[firstTaskPosition] = second;
+                taskOrderSecondProcessor[secondTaskPosition] = first;
 
                 // Szukamy zadań komplementarnych na maszynie pierwszej
-					for(int i = 0; i < iloscZadan; i++) {
-						if(taskOrderFirstProcessor[i] == first) {
-							taskOrderFirstProcessor[i] = second;
-						} else if(taskOrderFirstProcessor[i] == second) {
-							taskOrderFirstProcessor[i] = first;
-						}
-					}
+                for(int i = 0; i < iloscZadan; i++) {
+                    if(taskOrderFirstProcessor[i] == first) {
+                        taskOrderFirstProcessor[i] = second;
+                    } else if(taskOrderFirstProcessor[i] == second) {
+                        taskOrderFirstProcessor[i] = first;
+                    }
+                }
 
                 break;
             } else {
@@ -1073,7 +1431,7 @@ inline vector<Task*> Mutacja(vector<Task*> &listaZadan, vector<Maintenance*> &li
 
             // Sprawdzamy part zadania - jeżeli jest to I to można wstawiać od razu, jeżeli II trzeba poczekać aż zostanie wstawiona część I na maszynie drugiej
             if(currentTaskFirstProcessor->part == 0) {
-				// Sprawdzamy czy zadanie uda się ustawić przed najblizszym maintenance na maszynie
+                // Sprawdzamy czy zadanie uda się ustawić przed najblizszym maintenance na maszynie
                 if(((timeFirstProcessor + currentTaskFirstProcessor->duration) <= najblizszyMaintenanceFirstProcessor) || (najblizszyMaintenanceFirstProcessor == -1)) {
                     // Ustawiamy czas na maszynie pierwszej
                     timeFirstProcessor += currentTaskFirstProcessor->duration;
@@ -1467,13 +1825,26 @@ inline void WygladzanieMacierzyFeromonowej(int wiersz) {
         if(MacierzFeromonowa[wiersz][i] > 0) {
             if(MacierzFeromonowa[wiersz][i] < center) {
                 // Zwiększamy wartości
-            } else {
                 MacierzFeromonowa[wiersz][i] = sum * ((MacierzFeromonowa[wiersz][i]/sum) + ((paramA * pow(MacierzFeromonowa[wiersz][i] - center, 2)) / 100));
+            } else {
                 // Zmniejszamy wartości
                 MacierzFeromonowa[wiersz][i] = sum * ((MacierzFeromonowa[wiersz][i]/sum) - ((paramA * pow(MacierzFeromonowa[wiersz][i] - center, 2)) / 100));
             }
         }
     }
+}
+
+// wypisuje macierz fermonowa
+inline void wypiszMacierzFeromonowa() {
+    for(int i=0; i<INSTANCE_SIZE; i++) {
+        for(int j=0; j<INSTANCE_SIZE; j++) {
+            cout<<" ";
+            cout.width(7);
+            cout<<MacierzFeromonowa[i][j];
+        }
+        cout<<endl;
+    }
+    cout<<endl;
 }
 
 // Dodanie do macierzy feromonowej rozwiązań które przeżyły turniej
@@ -1515,31 +1886,18 @@ inline void DodajDoMacierzyFeromonowej(vector< vector<Task*> > &listaRozwiazan, 
 
 // zanika slady fermonowe co iteracje
 inline void zanikMacierzFeromonowa() {
-    for(int i=0; i<INSTANCE_SIZE; i++) {
-        for(int j=0; j<INSTANCE_SIZE; j++) {
-            MacierzFeromonowa[i][j]*=(double)(100-PROCENT_ZANIKANIA)/100;
+    for(int i = 0; i < INSTANCE_SIZE; i++) {
+        for(int j = 0; j < INSTANCE_SIZE; j++) {
+            MacierzFeromonowa[i][j] *= (double)(100 - PROCENT_ZANIKANIA)/100;
         }
     }
 }
 
-// wypisuje macierz fermonowa
-inline void wypiszMacierzFeromonowa() {
-    for(int i=0; i<INSTANCE_SIZE; i++) {
-        for(int j=0; j<INSTANCE_SIZE; j++) {
-            cout<<" ";
-            cout.width(7);
-            cout<<MacierzFeromonowa[i][j];
-        }
-        cout<<endl;
-    }
-    cout<<endl;
-}
-
-// tworzy tablica wartosci funkcji celu dal calej listy rozwiazan
-inline void utworzTabliceFunkcjiCelu(vector< vector <Task*> > &listarozwiazan, int tablica[]) {
-    int sizeListyRozwiazan = listarozwiazan.size();
+// tworzy tablica wartosci funkcji celu dla calej listy rozwiazan
+inline void utworzTabliceFunkcjiCelu(vector< vector <Task*> > &listaRozwiazan, int tablica[]) {
+    int sizeListyRozwiazan = listaRozwiazan.size();
     for(int i=0; i<sizeListyRozwiazan; i++) {
-        tablica[i]=ObliczFunkcjeCelu(listarozwiazan[i]);
+        tablica[i]=ObliczFunkcjeCelu(listaRozwiazan[i]);
     }
 }
 
@@ -1566,27 +1924,36 @@ inline void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &li
     while ((clock()-czasStart)<MAX_DURATION_PROGRAM_TIME*CLOCKS_PER_SEC) { // warunek by meta nie działała dłużej niz MAX_DURATION_PROGRAM_TIME
         numerIteracji++;
         // printf("ITER %d\n",numerIteracji);
-        for(int i=0; i<MAX_SOLUTIONS;) {
+        for(int i = 0; i < MAX_SOLUTIONS; i++) {
             if((rand()+1.0)<RAND_MAX*PROBABILTY_OF_RANDOM_GENERATION/100) { // tworzy totalnie losowe z prawdopodobienstwem
-                tempTask=GeneratorLosowy(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
+                // Utworzenie rozwiązania
+                tempTask = GeneratorLosowy(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
+
+				// KONIECZNE DO WYZNACZENIA
+				// firstSolutionValue -> PIERWSZA WARTOŚĆ WYGENEROWANA PRZEZ GENERATOR ROZWIĄZAŃ LOSOWYCH
+
                 if(numerIteracji==1 && i==0) { // pierwsze napotkane rozwiazanie jest najlepszym
                     KopiujDaneOperacji(tempTask,najlepszeRozwiazanie);
-                    wartoscFunkcjiCeluNajlepszegoRozwiazania=ObliczFunkcjeCelu(najlepszeRozwiazanie);
+                    wartoscFunkcjiCeluNajlepszegoRozwiazania = ObliczFunkcjeCelu(najlepszeRozwiazanie);
                 }
-                listaRozwiazan.push_back(tempTask);
-                i++; // dodanie rozwiazania do puli
-                // zapis do pliku wszystkich wygenerowanch losowa rozwizan dla sprawdzenia czy sie robia
-                /*
-                string nazwa = "ITER_" + to_string(numerIteracji) + "_LOS_" + to_string(i);
-                ZapiszWynikiDoPliku(tempTask,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor, firstSolutionValue,numerInstancjiProblemu,nazwa);
-                */
-                tempTask.clear(); // czyszczenie vectora by nie bylo problemow
-            } else { // tworzy za pomoca tablicy fermonow
-                ///TODO
-            }
-        }
-        // zrobienie mutacji
 
+				if(DEBUG)
+					debugFile << "Generator losowy" << endl;
+
+            } else { // tworzy za pomoca tablicy fermonow
+            	// Utworzenie rozwiązania
+            	tempTask = GeneratorZMacierzaFeromonowa(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
+
+				if(DEBUG)
+					debugFile << "Generator z macierza feromonowa" << endl;
+            }
+
+            // Dodanie rozwiązania
+                listaRozwiazan.push_back(tempTask);
+                tempTask.clear(); // Czyszczenie wektora by wyelimonować możliwe problemy
+        }
+
+        // zrobienie mutacji
         for(int i=0; i<MAX_SOLUTION_AFTER_MUTATION-MAX_SOLUTIONS; i++) { // musimy dodac roznice tych wartosci
 
             tempTask = Mutacja(listaRozwiazan[i%MAX_SOLUTIONS],listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
@@ -1728,6 +2095,7 @@ int main() {
         //GlownaPetlaMety
         GlownaPetlaMety(zadania,przerwaniaFirstProcessor,przerwaniaSecondProcessor,numerInstancjiProblemu);
         //Turniej(solution);
+
 
         /*for(int i = 0; i < solution.size(); i++) {
         	cout << "Zapis dla i = " << i << endl;
