@@ -2011,34 +2011,28 @@ inline void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &li
 // main
 int main() {
     srand(time(NULL)); // Ino roz reset
-
-    debugFile.open("debug.txt");
-
+    debugFile.open("debug.txt"); // Plik pod debug
 
     // petla aby sprawdzic wiele instancji i porownac wyniki
-    for (int numerInstancjiProblemu = 0; numerInstancjiProblemu<NUMBER_OF_INSTANCES;) {
-        numerInstancjiProblemu++;
+    for (int numerInstancjiProblemu = 0; numerInstancjiProblemu < NUMBER_OF_INSTANCES; numerInstancjiProblemu++) {
         // Utworzenie wektora na n zadań
         vector<Task*> zadania;
 
         // Wektor przerwań pracy na maszynach
         vector<Maintenance*> listaPrzerwan;
-        cout<<"TERAZ INSTANCJA NR "<<numerInstancjiProblemu<<endl;
+
+        if(DEBUG)
+			cout<<"TERAZ INSTANCJA NR "<<numerInstancjiProblemu<<endl;
+
         // Wygenerowanie zadań
         GeneratorInstancji(zadania);
-        cout<<"DEBUG"<<endl;
+
+        if(DEBUG)
+			cout << "DEBUG"<<endl;
+
         // Wygenerowanie przerwań
         GeneratorPrzestojow(listaPrzerwan);
 
-        // OdczytPrzerwan(listaPrzerwan); - funkcja pomocnicza była używana do analizy poprawności tworzonych rozwiązań + przerw
-
-        // Zapis danych do pliku
-        /*string nameParam;
-        stringstream ss;
-        // jezeli dziala to_string moze warto przerobic?
-        ss << numerInstancjiProblemu;
-        ss >> nameParam; // Parametr przez stringstream, funkcja to_string odmówiła posłuszeństwa
-        */
         string nameParam = to_string(numerInstancjiProblemu);
         ZapiszInstancjeDoPliku(zadania, listaPrzerwan, numerInstancjiProblemu, nameParam);
 
@@ -2052,45 +2046,10 @@ int main() {
 
         vector<Task*> listaZadan;
         listaZadan = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
-//		OdczytDanychZadan(listaZadan);
 
-        //ZapiszWynikiDoPliku(listaZadan, przerwaniaFirstProcessor, przerwaniaSecondProcessor, firstSolutionValue, numerInstancjiProblemu, nameParam);
-
-        //long int wynik = ObliczFunkcjeCelu(listaZadan);
-//		OdczytPrzerwan(listaPrzerwan);
-//		OdczytDanychZadan(listaZadan);
-        //UtworzGraf(listaZadan, listaPrzerwan, wynik, nameParam);
-        //nameParam += "w";
-
-        //vector<Task*> nowe = GeneratorLosowy(zadania, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
-        //nowe = Mutacja(nowe, przerwaniaFirstProcessor, przerwaniaSecondProcessor);
-//		OdczytDanychZadan(listaZadan);
-        //vector< vector<Task*> > solution;
-
-
-        //solution.push_back(nowe);
-        //solution.push_back(listaZadan);
-        //cout << "S1 " << ObliczFunkcjeCelu(nowe) << endl;
-        //OdczytDanychZadan(nowe);
-        //cout << "S2 " << ObliczFunkcjeCelu(listaZadan) << endl;
-        //OdczytDanychZadan(listaZadan);
-//		UtworzGraf(nowe, listaPrzerwan, wynik, nameParam);
-
-        //GlownaPetlaMety
+        // Główna pętla metaheurystyki
         GlownaPetlaMety(zadania,przerwaniaFirstProcessor,przerwaniaSecondProcessor,numerInstancjiProblemu);
-        //Turniej(solution);
 
-
-        /*for(int i = 0; i < solution.size(); i++) {
-        	cout << "Zapis dla i = " << i << endl;
-        	long int wyn = ObliczFunkcjeCelu(solution[i]);
-        	string newNameParam;
-        	stringstream ss;
-        	ss << nameParam << "_" << i + 1;
-        	ss >> newNameParam;
-        	UtworzGraf(solution[i], listaPrzerwan, wyn, newNameParam);
-        }
-        */
         // Czyszczenie pamięci - zwalnianie niepotrzebnych zasobów
         przerwaniaFirstProcessor.clear();
         przerwaniaSecondProcessor.clear();
