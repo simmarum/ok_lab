@@ -1099,6 +1099,8 @@ inline void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> 
         int countIdleSecondProcessor = 0; // Licznik okresów bezczynności dla maszyny drugiej
         int idleTimeFirstProcessor = 0; // Ogólny czas bezczynności na maszynie pierwszej
         int idleTimeSecondProcessor = 0; // Ogólny czas bezczynności na maszynie drugiej
+        int listaPrzerwanFirstProcessorSize = listaPrzerwanFirstProcessor.size(); // Ilość przerwań na pierwszej maszynie
+        int listaPrzerwanSecondProcessorSize = listaPrzerwanSecondProcessor.size(); // Ilość przerwań na drugiej maszynie
 
         // Podzielenie listy zadań na maszyny i przypisanie ilości do zmiennych pomocniczych
         PodzielStrukturyNaMaszyny<Task>(listaZadan, taskFirstProcessor, taskSecondProcessor);
@@ -1118,9 +1120,9 @@ inline void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> 
         // Przypisanie do pliku utworzonej instancji
         file << "M1:";
 
-        if(listaPrzerwanFirstProcessor.size() > 0)
+        if(listaPrzerwanFirstProcessorSize > 0)
             najblizszyMaintenance = listaPrzerwanFirstProcessor[0]->readyTime;
-        maxCount = taskFirstProcessorSize + listaPrzerwanFirstProcessor.size(); // maxCount dla pierwszej maszyny
+        maxCount = taskFirstProcessorSize + listaPrzerwanFirstProcessorSize; // maxCount dla pierwszej maszyny
         while(count < maxCount) {
 
             if((taskPoint < taskFirstProcessorSize) && (taskPoint >= 0) && (processorTime == (taskFirstProcessor[taskPoint]->endTime - taskFirstProcessor[taskPoint]->duration))) {
@@ -1151,7 +1153,7 @@ inline void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> 
 
                 // Konieczne jest sprawdzenie czy nie wychodzimi poza zakres
                 numerPrzerwania++;
-                if(numerPrzerwania >= listaPrzerwanFirstProcessor.size()) {
+                if(numerPrzerwania >= listaPrzerwanFirstProcessorSize) {
                     najblizszyMaintenance = -1;
                 } else {
                     najblizszyMaintenance = listaPrzerwanFirstProcessor[numerPrzerwania]->readyTime;
@@ -1191,11 +1193,11 @@ inline void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> 
         count = 0;
         processorTime = 0;
         numerPrzerwania = 0;
-        if(listaPrzerwanSecondProcessor.size() > 0)
+        if(listaPrzerwanSecondProcessorSize > 0)
             najblizszyMaintenance = listaPrzerwanSecondProcessor[0]->readyTime;
         else
             najblizszyMaintenance = -1;
-        maxCount = taskSecondProcessorSize + listaPrzerwanSecondProcessor.size(); // maxCount dla drugiej maszyny
+        maxCount = taskSecondProcessorSize + listaPrzerwanSecondProcessorSize; // maxCount dla drugiej maszyny
         while(count < maxCount) {
             if((taskPoint < taskSecondProcessorSize) && (taskPoint >= 0) && (processorTime == (taskSecondProcessor[taskPoint]->endTime - taskSecondProcessor[taskPoint]->duration))) {
                 // Zapis do pliku
@@ -1225,7 +1227,7 @@ inline void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> 
 
                 // Konieczne jest sprawdzenie czy nie wychodzimi poza zakres
                 numerPrzerwania++;
-                if(numerPrzerwania >= listaPrzerwanSecondProcessor.size()) {
+                if(numerPrzerwania >= listaPrzerwanSecondProcessorSize) {
                     najblizszyMaintenance = -1;
                 } else {
                     najblizszyMaintenance = listaPrzerwanSecondProcessor[numerPrzerwania]->readyTime;
