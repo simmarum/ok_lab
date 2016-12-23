@@ -91,7 +91,7 @@ bool sortTaskByID(Task *i, Task *j) {
 inline void KopiujDaneOperacji(vector<Task*> &listaWejsciowa, vector<Task*> &listaWyjsciowa);
 
 // Generator przestojów na maszynie
-void GeneratorPrzestojow(vector<Maintenance*> &lista) {
+inline void GeneratorPrzestojow(vector<Maintenance*> &lista) {
     int size = (UPPER_READY_TIME_MAINTENANCE_LIMIT - LOWER_READY_TIME_MAINTENANCE_LIMIT) + (UPPER_TIME_MAINTENANCE_LIMIT - LOWER_READY_TIME_MAINTENANCE_LIMIT);
     bool * maintenanceTimeTable = new bool[size]; // Jedna tablica bo przerwania na maszynach nie mogą się nakładać na siebie
 
@@ -187,6 +187,7 @@ inline void SortujListeZadanPoEndTime(vector< vector<Task*> > &listaRozwiazan) {
         SortujZadaniaPoEndTime(listaRozwiazan[i]);
     }
 }
+
 // Generator instancji problemu
 inline void GeneratorInstancji(vector<Task*> &lista) {
     int assigment =0;
@@ -345,14 +346,6 @@ inline void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &l
         fclose(file); // Zamknięcie pliku
     }
 
-}
-
-// Odczyt przerwań na maszynach na ekran
-inline void OdczytPrzerwan(vector<Maintenance*> &listaPrzerwan) {
-    int size = listaPrzerwan.size();
-    for(int i = 0; i < size; i++) {
-        cout << "Maszyna = " << listaPrzerwan[i]->assigment << " | Start = " << listaPrzerwan[i]->readyTime << " | Czas trwania = " << listaPrzerwan[i]->duration << endl;
-    }
 }
 
 // Generator rozwiązań losowych
