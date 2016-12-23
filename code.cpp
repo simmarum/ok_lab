@@ -1030,20 +1030,6 @@ inline vector <Task*> GeneratorZMacierzaFeromonowa(vector <Task*> &listaZadan, v
     return zadaniaLokalne;
 }
 
-// Odczyt danych zadań na ekran
-inline void OdczytDanychZadan(vector<Task*> &listaZadan) {
-    // Przeliczenie ilości operacji do zmienne pomocniczej aby nie liczyć operacji w każdej iteracji
-    int size = listaZadan.size();
-
-    // Przesortowanie listy zadań aby mieć obok siebie zadania z tym samym ID
-    SortujZadaniaPoID(listaZadan);
-
-    // Pętla odczytu wartości zadań
-    for(int i = 0; i < size; i++) {
-        cout << "--- ID: " << listaZadan[i]->ID << " (Part " << listaZadan[i]->part << ") przydzial: M" << listaZadan[i]->assigment << " duration = " << listaZadan[i]->duration << " --- zakonczenie = " << listaZadan[i]->endTime << " --- " << endl;
-    }
-}
-
 // Obliczanie wartości funkcji celu
 inline long int ObliczFunkcjeCelu(vector<Task*> &lista) {
     int size = lista.size();
