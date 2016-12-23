@@ -1073,7 +1073,6 @@ inline long int ObliczDlugoscOperacji(vector<T*> &lista) {
     return sum;
 }
 
-
 // Zapis wyników do pliku tekstowego
 inline void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, long int firstSolutionValue, int numerInstancjiProblemu, string &nameParam) {
     ofstream file;
@@ -1886,6 +1885,7 @@ inline void FunkcjaSplaszczajaca(int wiersz) {
         MacierzFeromonowa[wiersz][i]=pow(MacierzFeromonowa[wiersz][i]*INSTANCE_SIZE,1/WYKLADNIK_POTEGI);
     }
 }
+
 // Główna pętla metaheurestyki
 inline void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, int numerInstancjiProblemu) {
     cout<<"META: "<<numerInstancjiProblemu<<endl;
@@ -1900,6 +1900,9 @@ inline void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &li
     vector <Task*> najlepszeRozwiazanie;
     vector < vector <Task*> > listaRozwiazan; // vector ze wszystkimi aktualnymi rozwiazaniami
     vector <Task*> tempTask;
+
+    bool firstRandomGenerate = false; // Zmienna czy użyto już generatora losowego
+
     while ((clock()-czasStart)<MAX_DURATION_PROGRAM_TIME*CLOCKS_PER_SEC) { // warunek by meta nie działała dłużej niz MAX_DURATION_PROGRAM_TIME
         numerIteracji++;
         // printf("ITER %d\n",numerIteracji);
@@ -1908,8 +1911,10 @@ inline void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &li
                 // Utworzenie rozwiązania
                 tempTask = GeneratorLosowy(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
 
-				// KONIECZNE DO WYZNACZENIA
-				// firstSolutionValue -> PIERWSZA WARTOŚĆ WYGENEROWANA PRZEZ GENERATOR ROZWIĄZAŃ LOSOWYCH
+				if(!firstRandomGenerate) { // Jeżeli jest to pierwsze użycie generatora
+					firstSolutionValue = ObliczFunkcjeCelu(tempTask);
+					firstRandomGenerate = true;
+				}
 
                 if(numerIteracji==1 && i==0) { // pierwsze napotkane rozwiazanie jest najlepszym
                     KopiujDaneOperacji(tempTask,najlepszeRozwiazanie);
