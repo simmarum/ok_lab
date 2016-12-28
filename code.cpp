@@ -25,7 +25,7 @@ using namespace std;
 #define TESTPARAM true // tryb testowania parametrow [true/false] (potrzebne aby odczytywac tylko jedna i ta sama instancje z pliku
 #define TEST_NAME_READ "instancja_testowa.txt"// nazwa instancji testowej do odczytu
 #define TEST_NAME_WRITE "instancja_testowa_wynik.txt"// nazwa instancji testowej do zapisu
-#define DEBUG true // TRYB DEBUGOWANIA [true / false]
+#define DEBUG false // TRYB DEBUGOWANIA [true / false]
 
 // PARAMETRY METAHEURESTYKI
 #define MIN_TASK_COUNTER 30 // PO ilu iteracjach sprawdzać zapętlenie [Wartość liczbowa > 0]
@@ -45,7 +45,7 @@ using namespace std;
 #define WSPOLCZYNNIK_WYGLADZANIA_MACIERZY 5 // Współczynnik wygładzania macierzy feromonowej
 
 #define ROZMIAR_HISTORII_ROZWIAZAN 15 // z ilu ostatnim wynikow porownywac bedziemy wyniki (do skonczenia przed czasem jak po 10 iteracjach nie bedzie lepszego rozwiazania niz EPSILON_WYNIKU
-#define EPSILON_WYNIKU 2
+#define EPSILON_WYNIKU 10
 
 // PARAMTERY PROBLEMU SZEREGOWANIA ZADAN
 
@@ -61,10 +61,11 @@ using namespace std;
 #define LOWER_READY_TIME_MAINTENANCE_LIMIT 0 // Dolne ograniczenie czasu gotowości przerwania [Wartość liczbowa >= 0]
 #define UPPER_READY_TIME_MAINTENANCE_LIMIT (UPPER_TIME_TASK_LIMIT*INSTANCE_SIZE/1.5) // Górne ograniczenie czasu gotowości przerwania [Wartość liczbowa > 0]
 
-#define NUMBER_OF_INSTANCES 1 // dla ilu roznych instancji bedzie dziala metaheurysttyka
+#define NUMBER_OF_INSTANCES 10 // dla ilu roznych instancji bedzie dziala metaheurysttyka
 
 #define INSTANCE_SIZE 50 // Rozmiar instancji problemu
 
+#define MAX_TASK_CHECK (3*INSTANCE_SIZE) // Dopuszczalna ilość iteracji aby wylosować numer kolejnego zadania w generatorze z macierzą
 
 
 ofstream debugFile; // Zmienna globalna używana przy DEBUG mode
@@ -288,6 +289,8 @@ inline void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &l
     FILE *file;
     string fileName = "instancje_" + nameParam + ".txt";
     if(TESTPARAM) fileName = TEST_NAME_READ;
+
+    cout<<"WCZYTUJE: "<<fileName<<endl;
     file = fopen(fileName.c_str(), "r");
 
     if(file != NULL) {
@@ -358,6 +361,7 @@ inline void WczytajDaneZPliku(vector<Task*> &listaZadan, vector<Maintenance*> &l
         }
 
         fclose(file); // Zamknięcie pliku
+        cout<<"WCZYTANO: "<<fileName<<endl;
     }
 
 }
@@ -706,7 +710,7 @@ inline vector <Task*> GeneratorZMacierzaFeromonowa(vector <Task*> &listaZadan, v
     int taskID = 0; // Numer zadania
     int lastTask; // ID poprzednio analizowanego zadania
     bool start = true; // Zmienna wskazująca czy wchodzimy do generatora po raz pierwszy czy jesteśmy po raz kolejny w iteracji
-	int pozycja = 0; // Zmienna wskazująca na pozycję w wektorze zadań (używane kilka razy, lepiej raz obliczyć niż za każdym razem ustawiać taskID * 2
+    int pozycja = 0; // Zmienna wskazująca na pozycję w wektorze zadań (używane kilka razy, lepiej raz obliczyć niż za każdym razem ustawiać taskID * 2
 
     // Tworzymy dwie tablice pomocnicze do sprawdzania czy zadanie było już uwzględnione
     bool * firstPart = new bool[INSTANCE_SIZE]; // Część I zadania - czy była uwzględniona (jeśli tak to true)
@@ -723,7 +727,7 @@ inline vector <Task*> GeneratorZMacierzaFeromonowa(vector <Task*> &listaZadan, v
     }
 
     while(count < maxCount) {
-        // Jeżeli jest to pierwsze działanie, trzeba wylosować zadanie
+		// Jeżeli jest to pierwsze działanie, trzeba wylosować zadanie
         if(start) { // Teoretycznie można by dać count == 0
             start = false; // Ustawiamy że już raz operowaliśmy
             lastTask = (int)(rand() / (RAND_MAX + 1.0) * count); // Losujemy zadanie
@@ -731,7 +735,7 @@ inline vector <Task*> GeneratorZMacierzaFeromonowa(vector <Task*> &listaZadan, v
         } else { // Już jesteśmy po raz x w pętli
             // Losujemy wartość zadania w oparciu o macierz feromonową
             double *zakresLosowania = new double[INSTANCE_SIZE]; // Pomocnicza tabela z wartościami granicznymi sum
-			double sum = 0.0;
+            double sum = 0.0;
 
             // Liczymy sumę z wiersza Macierzy
             for(int i = 0; i < INSTANCE_SIZE; i++) {
@@ -742,24 +746,36 @@ inline vector <Task*> GeneratorZMacierzaFeromonowa(vector <Task*> &listaZadan, v
             // Losujemy wartość
             int randomValue;
             bool check = true; // Zmienna sprawdzająca czy konieczne jest kolejne zapętlenie (ustawiana gdy secondPart[taskID] już było analizowane)
+            int iteracja = 0; // Numer iteracji pętli while
             while(check) {
+				iteracja++;
+				if(iteracja > MAX_TASK_CHECK) {
+					// Wybieramy pierwsze zadanie z listy nieużytych
+					for(int i = 0; i < INSTANCE_SIZE; i++) {
+						if(!secondPart[i]) {
+							taskID = i;
+							break;
+						}
+					}
+					break;
+				}
+
 				randomValue = (int)(rand() / (RAND_MAX + 1.0) * sum); // Losujemy wartość
 
-                // Sprawdzamy jakie to zadanie
+				// Sprawdzamy jakie to zadanie
                 for(int i = INSTANCE_SIZE - 1; i >= 0; i--) {
 					if(zakresLosowania[i] > randomValue) {
-						taskID = i; // Przypisujemy ID zadania
-					}
-					else
-						break; // Przerywamy przy wykryciu pierwszej wartości mniejszej od naszego randoma
+                        taskID = i; // Przypisujemy ID zadania
+                    } else
+                        break; // Przerywamy przy wykryciu pierwszej wartości mniejszej od naszego randoma
                 }
 
-				// Sprawdzamy czy nie wystąpiła część II tego zadania
-				if(!secondPart[taskID])
-					check = false;
-			}
+                // Sprawdzamy czy nie wystąpiła część II tego zadania
+                if(!secondPart[taskID])
+                    check = false;
+            }
 
-			// Czyścimy po sobie pamięć
+            // Czyścimy po sobie pamięć
 				delete[] zakresLosowania;
         }
 
@@ -820,7 +836,7 @@ inline vector <Task*> GeneratorZMacierzaFeromonowa(vector <Task*> &listaZadan, v
                 count++;
 
                 // Ustawialiśmy jakie zadanie było analizowane
-				lastTask = taskID;
+                lastTask = taskID;
 
             } else { // Przydział zadania na maszynę nr 2
                 // Sprawdzamy czy zadanie można umieścić przed maintenance najbliższym (jeżeli jest  on -1 to już nie wystąpi)
@@ -874,7 +890,7 @@ inline vector <Task*> GeneratorZMacierzaFeromonowa(vector <Task*> &listaZadan, v
                 count++;
 
                 // Ustawialiśmy jakie zadanie było analizowane
-				lastTask = taskID;
+                lastTask = taskID;
             }
         } else {
             // PRZYDZIELAMY DRUGĄ CZĘŚĆ ZADANIA
@@ -960,7 +976,7 @@ inline vector <Task*> GeneratorZMacierzaFeromonowa(vector <Task*> &listaZadan, v
                 count++;
 
                 // Ustawialiśmy jakie zadanie było analizowane
-				lastTask = taskID;
+                lastTask = taskID;
             } else {
                 // Sprawdzamy czy czas na maszynie nie jest mniejszy od zakończenia się pierwszej części
                 if(timeFirstProcessor < currentTask->anotherPart->endTime) {
@@ -1031,7 +1047,7 @@ inline vector <Task*> GeneratorZMacierzaFeromonowa(vector <Task*> &listaZadan, v
                 count++;
 
                 // Ustawialiśmy jakie zadanie było analizowane
-				lastTask = taskID;
+                lastTask = taskID;
             }
         }
     }
@@ -1096,7 +1112,13 @@ inline void ZapiszWynikiDoPliku(vector<Task*> &listaZadan, vector<Maintenance*> 
     stringstream ss;
     ss << "wyniki/wyniki_" << numerInstancjiProblemu << "_" << nameParam << ".txt";
     ss >> fileName;
-    if(TESTPARAM) fileName=TEST_NAME_WRITE;
+    if(TESTPARAM) {
+
+    ss <<  numerInstancjiProblemu << "_" << TEST_NAME_WRITE;
+    ss >> fileName;
+    cout<<"ZAPIS: "<<fileName<<endl;
+            //fileName=TEST_NAME_WRITE;
+    }
     file.open(fileName.c_str());
 
     if(file.is_open()) {
@@ -1833,13 +1855,13 @@ inline void WygladzanieMacierzyFeromonowej(int wiersz) {
 inline void wypiszMacierzFeromonowa() {
     for(int i=0; i<INSTANCE_SIZE; i++) {
         for(int j=0; j<INSTANCE_SIZE; j++) {
-            cout<<" ";
-            cout.width(7);
-            cout<<MacierzFeromonowa[i][j];
+            debugFile<<" ";
+            debugFile.width(7);
+            debugFile<<MacierzFeromonowa[i][j];
         }
-        cout<<endl;
+        debugFile<<endl;
     }
-    cout<<endl;
+    debugFile<<endl;
 }
 
 // Dodanie do macierzy feromonowej rozwiązań które przeżyły turniej
@@ -1913,7 +1935,7 @@ inline void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &li
     int wartoscFCeluAktualnegoRozwiazania = INT_MAX; // aktualnie najlepsze rozwiazanie w iteracji
     int wartoscFunkcjiCeluNajlepszegoRozwiazania = INT_MAX; // 'nazwa' i na poczatku INT_MAX
     int wartoscFCeluPoprzedniego = INT_MAX; // poprzedniego najlepszego - potrzebne do zbadania historii o ile sie poprawil wynik
-	int probabilityOfRandomGeneration = PROBABILTY_OF_RANDOM_GENERATION; // Prawdopodobieństwo rozwiązania losowego
+    int probabilityOfRandomGeneration = PROBABILTY_OF_RANDOM_GENERATION; // Prawdopodobieństwo rozwiązania losowego
 
     vector <Task*> najlepszeRozwiazanie;
     vector < vector <Task*> > listaRozwiazan; // vector ze wszystkimi aktualnymi rozwiazaniami
@@ -1921,112 +1943,112 @@ inline void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &li
 
     // 1. Tworzymy x rozwiązań całkowicie losowych
     for(int i = 0; i < MAX_RANDOM_SOLUTIONS; i++) {
-		// Tworzymy rozwiązanie losowe
-			tempTask = GeneratorLosowy(listaZadan, listaPrzerwanFirstProcessor, listaPrzerwanSecondProcessor);
-
+        // Tworzymy rozwiązanie losowe
+        tempTask = GeneratorLosowy(listaZadan, listaPrzerwanFirstProcessor, listaPrzerwanSecondProcessor);
 		// Dodajemy rozwiązanie do listy rozwiązań problemu
-			listaRozwiazan.push_back(tempTask);
-			tempTask.clear(); // Czyszczenie wektora
-			if(DEBUG) cout<<"STWORZONO: "<<i<<endl;
+        listaRozwiazan.push_back(tempTask);
+        tempTask.clear(); // Czyszczenie wektora
+        if(DEBUG) cout<<"STWORZONO: "<<i<<endl;
     }
 
     // Utworzone rozwiązania poddajemy turniejowi a także dokonujemy uzupełnienia macierzy feromonowej
-		Turniej(listaRozwiazan);
-		SortujListeZadanPoEndTime(listaRozwiazan);
+    Turniej(listaRozwiazan);
+    SortujListeZadanPoEndTime(listaRozwiazan);
+    int tablicaWartosciFunkcjiCelu[listaRozwiazan.size()];
+    utworzTabliceFunkcjiCelu(listaRozwiazan, tablicaWartosciFunkcjiCelu);
+    DodajDoMacierzyFeromonowej(listaRozwiazan,tablicaWartosciFunkcjiCelu);
+
+    // Szukamy rozwiązania najlepszego (jest pierwsze na liście) i zapisujemy jego wartość do zmiennej globalnej
+    tempTask = listaRozwiazan[0];
+    firstSolutionValue = ObliczFunkcjeCelu(tempTask);
+    KopiujDaneOperacji(tempTask, najlepszeRozwiazanie);
+    wartoscFunkcjiCeluNajlepszegoRozwiazania = firstSolutionValue;
+    tempTask.clear();
+
+    // 2. Metaheurystyka pracuje już samodzielnie
+    while ((clock()-czasStart)<MAX_DURATION_PROGRAM_TIME*CLOCKS_PER_SEC) { // warunek by meta nie działała dłużej niz MAX_DURATION_PROGRAM_TIME
+        numerIteracji++;
+        if(DEBUG) cout<<clock()-czasStart<<endl;
+        probabilityOfRandomGeneration -= STEP_PROBABILTY_OF_RANDOM_GENERATION;
+        if(probabilityOfRandomGeneration < 0) {
+            probabilityOfRandomGeneration = 0;
+        }
+        if(DEBUG) cout << "Prawdopod. = " << probabilityOfRandomGeneration << endl;
+
+        for(int i = 0; i < MAX_SOLUTIONS; i++) {
+            if((rand()+1.0) < RAND_MAX * probabilityOfRandomGeneration/100) { // tworzy totalnie losowe z prawdopodobienstwem
+                // Utworzenie rozwiązania
+                tempTask = GeneratorLosowy(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
+
+                if(DEBUG)
+                    debugFile << "Generator losowy" << endl;
+
+            } else { // tworzy za pomoca tablicy fermonow
+            	// Utworzenie rozwiązania
+                tempTask = GeneratorZMacierzaFeromonowa(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
+
+                if(DEBUG)
+                    debugFile << "Generator z macierza feromonowa" << endl;
+            }
+
+            // Dodanie rozwiązania
+            listaRozwiazan.push_back(tempTask);
+            tempTask.clear(); // Czyszczenie wektora by wyelimonować możliwe problemy
+        }
+
+        // Zrobienie mutacji
+        int maxMutants = MAX_SOLUTION_AFTER_MUTATION - MAX_SOLUTIONS;
+        for(int i=0; i < maxMutants; i++) {
+            tempTask = Mutacja(listaRozwiazan[i % MAX_SOLUTIONS],listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
+            listaRozwiazan.push_back(tempTask);
+            tempTask.clear();
+        }
+
+        // Turniej utworzonych zadań
+        Turniej(listaRozwiazan);
+
+        // Sortowanie po czasie zakończenia
+        SortujListeZadanPoEndTime(listaRozwiazan);
+
+        // Utworzenie tablicy funkcji celu
         int tablicaWartosciFunkcjiCelu[listaRozwiazan.size()];
-        utworzTabliceFunkcjiCelu(listaRozwiazan, tablicaWartosciFunkcjiCelu);
+        utworzTabliceFunkcjiCelu(listaRozwiazan,tablicaWartosciFunkcjiCelu);
+
+        // Uzupełnienie macierzy feromonowej
         DodajDoMacierzyFeromonowej(listaRozwiazan,tablicaWartosciFunkcjiCelu);
 
-	// Szukamy rozwiązania najlepszego (jest pierwsze na liście) i zapisujemy jego wartość do zmiennej globalnej
-		tempTask = listaRozwiazan[0];
-		firstSolutionValue = ObliczFunkcjeCelu(tempTask);
-		KopiujDaneOperacji(tempTask, najlepszeRozwiazanie);
-		wartoscFunkcjiCeluNajlepszegoRozwiazania = firstSolutionValue;
-		tempTask.clear();
+        // Zanik śladu feromonowego
+        zanikMacierzFeromonowa();
 
-	// 2. Metaheurystyka pracuje już samodzielnie
-		while ((clock()-czasStart)<MAX_DURATION_PROGRAM_TIME*CLOCKS_PER_SEC) { // warunek by meta nie działała dłużej niz MAX_DURATION_PROGRAM_TIME
-			numerIteracji++;
-            if(DEBUG) cout<<clock()-czasStart<<endl;
-			probabilityOfRandomGeneration -= STEP_PROBABILTY_OF_RANDOM_GENERATION;
-			if(probabilityOfRandomGeneration < 0) {
-				probabilityOfRandomGeneration = 0;
-			}
+        //funkcja splaszczajaca
+        if(!(numerIteracji % CO_ILE_ITERACJI_WIERSZ)) {
+            FunkcjaSplaszczajaca(aktualnyWiersz);
+            aktualnyWiersz = (aktualnyWiersz + 1) % INSTANCE_SIZE; //wylicza aktualny wiersz do funkcji
+        }
 
-			for(int i = 0; i < MAX_SOLUTIONS; i++) {
-				if((rand()+1.0) < RAND_MAX * probabilityOfRandomGeneration/100) { // tworzy totalnie losowe z prawdopodobienstwem
-					// Utworzenie rozwiązania
-					tempTask = GeneratorLosowy(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
+        // zapamietywanie najlepszego rozwiazania
+        tempTask = ZnajdzNajlepszeRozwiazanie(listaRozwiazan);// najlepsze z tej iteracji
+        wartoscFCeluAktualnegoRozwiazania = ObliczFunkcjeCelu(tempTask);
+        if(wartoscFCeluAktualnegoRozwiazania < wartoscFunkcjiCeluNajlepszegoRozwiazania) { // porownanie z najlepszym globalnie
+            wartoscFCeluPoprzedniego = ObliczFunkcjeCelu(najlepszeRozwiazanie); // zapamietanie poprzedniego najlepszego wyniku
+            najlepszeRozwiazanie.clear(); // czyszcze dla pewnosci
+            KopiujDaneOperacji(tempTask,najlepszeRozwiazanie); // kopia do najlepszego
+            wartoscFunkcjiCeluNajlepszegoRozwiazania = wartoscFCeluAktualnegoRozwiazania; // aktualizacja wartosci ; )
+        }
 
-					if(DEBUG)
-						debugFile << "Generator losowy" << endl;
+        // sprawdzenie czy ostatnie X rozwiazan miesci sie w EPSILON - DODATKOWY WARUNEK STOPU
+        if(wartoscFCeluAktualnegoRozwiazania>= wartoscFCeluPoprzedniego) { // jezeli aktualny jest gorszy niz najlepszy
+            liczbaRozwiazanZGorszymWynikiem++;  // dodajemy jeden, bo ten wynik nie poprawil
+            if(liczbaRozwiazanZGorszymWynikiem >= ROZMIAR_HISTORII_ROZWIAZAN) break; // jezeli przekroczy narzucona wartosc to zatrzyujemy metaheurestyke
+        } else { // przeciwny wypadek, wiec teraz mamy lepsze rozwiazanie
+            if((wartoscFCeluPoprzedniego-wartoscFCeluAktualnegoRozwiazania)>EPSILON_WYNIKU) { // czy to rozwiazanie miesci sie w naszym epsilon
+                liczbaRozwiazanZGorszymWynikiem=0; // jezeli nie to zerujemy bo mamy postep wiekszy niz zakladalismy
+            } else liczbaRozwiazanZGorszymWynikiem++; // jezeli tak to zaznaczamy ze to rozwiazanie nie poprawilo wyniku o wiecej niz EPSILON
+        }
 
-				} else { // tworzy za pomoca tablicy fermonow
-					// Utworzenie rozwiązania
-					tempTask = GeneratorZMacierzaFeromonowa(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
+        tempTask.clear();
 
-					if(DEBUG)
-						debugFile << "Generator z macierza feromonowa" << endl;
-				}
-
-				// Dodanie rozwiązania
-					listaRozwiazan.push_back(tempTask);
-					tempTask.clear(); // Czyszczenie wektora by wyelimonować możliwe problemy
-			}
-
-			// Zrobienie mutacji
-			int maxMutants = MAX_SOLUTION_AFTER_MUTATION - MAX_SOLUTIONS;
-			for(int i=0; i < maxMutants; i++) {
-				tempTask = Mutacja(listaRozwiazan[i % MAX_SOLUTIONS],listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
-				listaRozwiazan.push_back(tempTask);
-				tempTask.clear();
-			}
-
-			// Turniej utworzonych zadań
-			Turniej(listaRozwiazan);
-
-			// Sortowanie po czasie zakończenia
-			SortujListeZadanPoEndTime(listaRozwiazan);
-
-			// Utworzenie tablicy funkcji celu
-			int tablicaWartosciFunkcjiCelu[listaRozwiazan.size()];
-			utworzTabliceFunkcjiCelu(listaRozwiazan,tablicaWartosciFunkcjiCelu);
-
-			// Uzupełnienie macierzy feromonowej
-			DodajDoMacierzyFeromonowej(listaRozwiazan,tablicaWartosciFunkcjiCelu);
-
-			// Zanik śladu feromonowego
-			zanikMacierzFeromonowa();
-
-			//funkcja splaszczajaca
-			if(!(numerIteracji % CO_ILE_ITERACJI_WIERSZ)) {
-				FunkcjaSplaszczajaca(aktualnyWiersz);
-				aktualnyWiersz = (aktualnyWiersz + 1) % INSTANCE_SIZE; //wylicza aktualny wiersz do funkcji
-			}
-
-			// zapamietywanie najlepszego rozwiazania
-			tempTask = ZnajdzNajlepszeRozwiazanie(listaRozwiazan);// najlepsze z tej iteracji
-			wartoscFCeluAktualnegoRozwiazania = ObliczFunkcjeCelu(tempTask);
-			if(wartoscFCeluAktualnegoRozwiazania < wartoscFunkcjiCeluNajlepszegoRozwiazania) { // porownanie z najlepszym globalnie
-				wartoscFCeluPoprzedniego = ObliczFunkcjeCelu(najlepszeRozwiazanie); // zapamietanie poprzedniego najlepszego wyniku
-				najlepszeRozwiazanie.clear(); // czyszcze dla pewnosci
-				KopiujDaneOperacji(tempTask,najlepszeRozwiazanie); // kopia do najlepszego
-				wartoscFunkcjiCeluNajlepszegoRozwiazania = wartoscFCeluAktualnegoRozwiazania; // aktualizacja wartosci ; )
-			}
-
-			// sprawdzenie czy ostatnie X rozwiazan miesci sie w EPSILON - DODATKOWY WARUNEK STOPU
-			if(wartoscFCeluAktualnegoRozwiazania>= wartoscFCeluPoprzedniego) { // jezeli aktualny jest gorszy niz najlepszy
-				liczbaRozwiazanZGorszymWynikiem++;  // dodajemy jeden, bo ten wynik nie poprawil
-				if(liczbaRozwiazanZGorszymWynikiem >= ROZMIAR_HISTORII_ROZWIAZAN) break; // jezeli przekroczy narzucona wartosc to zatrzyujemy metaheurestyke
-			} else { // przeciwny wypadek, wiec teraz mamy lepsze rozwiazanie
-				if((wartoscFCeluPoprzedniego-wartoscFCeluAktualnegoRozwiazania)>EPSILON_WYNIKU) { // czy to rozwiazanie miesci sie w naszym epsilon
-					liczbaRozwiazanZGorszymWynikiem=0; // jezeli nie to zerujemy bo mamy postep wiekszy niz zakladalismy
-				} else liczbaRozwiazanZGorszymWynikiem++; // jezeli tak to zaznaczamy ze to rozwiazanie nie poprawilo wyniku o wiecej niz EPSILON
-			}
-
-			tempTask.clear();
-
-		}
+    }
     // zapisz najlepszego rozwiazania do pliku
     string nazwa = "INSTANCJA_" + to_string(numerInstancjiProblemu);
     ZapiszWynikiDoPliku(najlepszeRozwiazanie, listaPrzerwanFirstProcessor, listaPrzerwanSecondProcessor, firstSolutionValue,numerInstancjiProblemu,nazwa);
@@ -2044,28 +2066,33 @@ int main() {
 
         // Utworzenie wektora na n zadań
         vector<Task*> zadania;
+        zadania.clear();
 
         // Wektor przerwań pracy na maszynach
         vector<Maintenance*> listaPrzerwan;
 
         if(DEBUG)
-			cout<<"TERAZ INSTANCJA NR "<<numerInstancjiProblemu<<endl;
+            cout<<"TERAZ INSTANCJA NR "<<numerInstancjiProblemu<<endl;
 
         // Wygenerowanie zadań
         GeneratorInstancji(zadania);
 
         if(DEBUG)
-			cout << "DEBUG"<<endl;
+            cout << "DEBUG"<<endl;
 
         // Wygenerowanie przerwań
         GeneratorPrzestojow(listaPrzerwan);
 
         string nameParam = to_string(numerInstancjiProblemu);
-        ZapiszInstancjeDoPliku(zadania, listaPrzerwan, numerInstancjiProblemu, nameParam);
+        //if(INSTANCE_TEST && numerInstancjiProblemu==1) ZapiszInstancjeDoPliku(zadania, listaPrzerwan, numerInstancjiProblemu, nameParam);
+        int tempNumerInst = numerInstancjiProblemu;
 
         // Wczytanie danych z pliku
-//		WczytajDaneZPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu, nameParam);
-
+        if(INSTANCE_TEST) {
+                zadania.clear();
+                WczytajDaneZPliku(zadania, listaPrzerwan, numerInstancjiProblemu, nameParam);
+        };
+       numerInstancjiProblemu = tempNumerInst;
         vector<Maintenance*> przerwaniaFirstProcessor;
         vector<Maintenance*> przerwaniaSecondProcessor;
         SortujPrzerwania(listaPrzerwan);
