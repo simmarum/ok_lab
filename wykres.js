@@ -124,3 +124,14 @@ document.getElementById('buttonMin').addEventListener('click', function(e) {
 	//alert("Minimum ze Wszystkiego to: \n"+minimum);
 	document.getElementById('wartoscMin').innerHTML = minimum;
 });
+
+document.getElementById('buttonSrednia').addEventListener('click', function(e) {
+	var tab = [].slice.call(document.querySelectorAll('#results .result .wartoscFCelu')).map(x=>parseInt(x.innerHTML));
+	var sum=0;
+	for(var i=0;i<tab.length;i++){
+		sum+=tab[i];
+	}
+	var avg = sum/tab.length;
+	//alert("Minimum ze Wszystkiego to: \n"+minimum);
+	document.getElementById('wartoscSrednia').innerHTML = avg;
+});

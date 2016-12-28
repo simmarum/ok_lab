@@ -21,8 +21,8 @@
 using namespace std;
 
 // DEFINICJE GLOBALNE
-#define INSTANCE_TEST true // czy stworzyc nowa instancje testowa [true/false]
-#define TESTPARAM true // tryb testowania parametrow [true/false] (potrzebne aby odczytywac tylko jedna i ta sama instancje z pliku
+#define INSTANCE_TEST false // czy stworzyc nowa instancje testowa [true/false]
+#define TESTPARAM false // tryb testowania parametrow [true/false] (potrzebne aby odczytywac tylko jedna i ta sama instancje z pliku
 #define TEST_NAME_READ "instancja_testowa.txt"// nazwa instancji testowej do odczytu
 #define TEST_NAME_WRITE "instancja_testowa_wynik.txt"// nazwa instancji testowej do zapisu
 #define DEBUG false // TRYB DEBUGOWANIA [true / false]
@@ -31,20 +31,20 @@ using namespace std;
 #define MIN_TASK_COUNTER 30 // PO ilu iteracjach sprawdzać zapętlenie [Wartość liczbowa > 0]
 
 #define MAX_SOLUTIONS 50 // Ilość rozwiązań jakie chcemy wygenerować
-#define MAX_SOLUTION_AFTER_MUTATION 350 // Ilość rozwiązań po mutacji (ile ta mutacja ma stworzyc rozwiazan w sumie)
+#define MAX_SOLUTION_AFTER_MUTATION 500 // Ilość rozwiązań po mutacji (ile ta mutacja ma stworzyc rozwiazan w sumie)
 
 #define MAX_RANDOM_SOLUTIONS 50 // Ilość rozwiązań losowych na początku pracy (pierwsze rozwiązania metaheurystyki)
 
 #define MAX_DURATION_PROGRAM_TIME 5 // Maksymalna długość trwania programu w SEKUNDACH
 #define PROBABILTY_OF_RANDOM_GENERATION 100 // Prawdopodobieństwo stworzenia rozwiązań przez los (dopełnienie to przez macierz feromonową
-#define STEP_PROBABILTY_OF_RANDOM_GENERATION 2 // Skok w dół prawdopodobieństwa losowego rozwiązania
+#define STEP_PROBABILTY_OF_RANDOM_GENERATION 0.4 // Skok w dół prawdopodobieństwa losowego rozwiązania
 
 #define MAX_TASK_CHECK (3*INSTANCE_SIZE) // Dopuszczalna ilość iteracji aby wylosować numer kolejnego zadania w generatorze z macierzą
 
-#define PROCENT_ZANIKANIA 5 // Ile procennt śladu feromonowego ma znikać co iterację
-#define WYKLADNIK_POTEGI 3.5 // Potrzebne do funkcji spłaszczającej
+#define PROCENT_ZANIKANIA 10 // Ile procennt śladu feromonowego ma znikać co iterację
+
 #define CO_ILE_ITERACJI_WIERSZ 1 // Co ile iteracji przeskakujemy do kolejnego wiersza [>=1 - gdy 1 to cyklicznie przechodzimy]
-#define WSPOLCZYNNIK_WYGLADZANIA_MACIERZY 5 // Współczynnik wygładzania macierzy feromonowej
+#define WSPOLCZYNNIK_WYGLADZANIA_MACIERZY 3 // Współczynnik wygładzania macierzy feromonowej
 
 #define ROZMIAR_HISTORII_ROZWIAZAN 15 // z ilu ostatnim wynikow porownywac bedziemy wyniki (do skonczenia przed czasem jak po 10 iteracjach nie bedzie lepszego rozwiazania niz EPSILON_WYNIKU
 #define EPSILON_WYNIKU 1
@@ -52,16 +52,16 @@ using namespace std;
 // PARAMTERY PROBLEMU SZEREGOWANIA ZADAN
 
 #define LOWER_TIME_TASK_LIMIT 5 // Dolne ograniczenie długości zadania [Wartość liczbowa > 0]
-#define UPPER_TIME_TASK_LIMIT 60 // Górne ograniczenie długości zadania [Wartość liczbowa > 0]
+#define UPPER_TIME_TASK_LIMIT 150 // Górne ograniczenie długości zadania [Wartość liczbowa > 0]
 
-#define MAINTENANCE_FIRST_PROCESSOR 11 // Ilość przerwań na pierwszej maszynie [Wartość liczbowa >= INSTANCE_SIZE/5]
-#define MAINTENANCE_SECOND_PROCESSOR 11 // Ilość przerwań na drugiej maszynie [Wartość liczbowa >= INSTANCE_SIZE/5]
+#define MAINTENANCE_FIRST_PROCESSOR 15 // Ilość przerwań na pierwszej maszynie [Wartość liczbowa >= INSTANCE_SIZE/5]
+#define MAINTENANCE_SECOND_PROCESSOR 15 // Ilość przerwań na drugiej maszynie [Wartość liczbowa >= INSTANCE_SIZE/5]
 
 #define LOWER_TIME_MAINTENANCE_LIMIT 10 // Dolne ograniczenie długości przerwania [Wartość liczbowa >= 0]
-#define UPPER_TIME_MAINTENANCE_LIMIT 80 // Górne ograniczenie długości przerwania [Wartość liczbowa > 0]
+#define UPPER_TIME_MAINTENANCE_LIMIT 70 // Górne ograniczenie długości przerwania [Wartość liczbowa > 0]
 
 #define LOWER_READY_TIME_MAINTENANCE_LIMIT 0 // Dolne ograniczenie czasu gotowości przerwania [Wartość liczbowa >= 0]
-#define UPPER_READY_TIME_MAINTENANCE_LIMIT (UPPER_TIME_TASK_LIMIT*INSTANCE_SIZE/1.5) // Górne ograniczenie czasu gotowości przerwania [Wartość liczbowa > 0]
+#define UPPER_READY_TIME_MAINTENANCE_LIMIT (UPPER_TIME_TASK_LIMIT*INSTANCE_SIZE) // Górne ograniczenie czasu gotowości przerwania [Wartość liczbowa > 0]
 
 #define NUMBER_OF_INSTANCES 10 // dla ilu roznych instancji bedzie dziala metaheurysttyka
 
@@ -1923,12 +1923,6 @@ inline void utworzTabliceFunkcjiCelu(vector< vector <Task*> > &listaRozwiazan, i
     }
 }
 
-// Funkcja do splaszczania wiersza w macierzy feromonowej (moze ten pow() to nie najlepsza funckja ale innej nie wymyslilem
-inline void FunkcjaSplaszczajaca(int wiersz) {
-    for(int i=0; i<INSTANCE_SIZE; i++) {
-        MacierzFeromonowa[wiersz][i]=pow(MacierzFeromonowa[wiersz][i]*INSTANCE_SIZE,1/WYKLADNIK_POTEGI);
-    }
-}
 
 // Główna pętla metaheurestyki
 inline void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &listaPrzerwanFirstProcessor, vector<Maintenance*> &listaPrzerwanSecondProcessor, int numerInstancjiProblemu) {
@@ -2089,7 +2083,8 @@ int main() {
         GeneratorPrzestojow(listaPrzerwan);
 
         string nameParam = to_string(numerInstancjiProblemu);
-       // if(INSTANCE_TEST && numerInstancjiProblemu==1) ZapiszInstancjeDoPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu, nameParam);
+        if(INSTANCE_TEST && numerInstancjiProblemu==1) ZapiszInstancjeDoPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu, nameParam);
+        else ZapiszInstancjeDoPliku(listaZadan, listaPrzerwan, numerInstancjiProblemu, nameParam);
         int tempNumerInst = numerInstancjiProblemu;
 
 //		Wczytanie danych z pliku

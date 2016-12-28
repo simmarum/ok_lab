@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="OK_Project" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/OK_Project" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/OK_Project" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="code.cpp" />
+		<Unit filename="instancje_1.txt" />
+		<Unit filename="instancje_10.txt" />
+		<Unit filename="instancje_2.txt" />
+		<Unit filename="instancje_3.txt" />
+		<Unit filename="instancje_4.txt" />
+		<Unit filename="instancje_5.txt" />
+		<Unit filename="instancje_6.txt" />
+		<Unit filename="instancje_7.txt" />
+		<Unit filename="instancje_8.txt" />
+		<Unit filename="instancje_9.txt" />
+		<Unit filename="wyniki/wyniki_10_INSTANCJA_10.txt" />
+		<Unit filename="wyniki/wyniki_1_INSTANCJA_1.txt" />
+		<Unit filename="wyniki/wyniki_2_INSTANCJA_2.txt" />
+		<Unit filename="wyniki/wyniki_3_INSTANCJA_3.txt" />
+		<Unit filename="wyniki/wyniki_4_INSTANCJA_4.txt" />
+		<Unit filename="wyniki/wyniki_5_INSTANCJA_5.txt" />
+		<Unit filename="wyniki/wyniki_6_INSTANCJA_6.txt" />
+		<Unit filename="wyniki/wyniki_7_INSTANCJA_7.txt" />
+		<Unit filename="wyniki/wyniki_8_INSTANCJA_8.txt" />
+		<Unit filename="wyniki/wyniki_9_INSTANCJA_9.txt" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
