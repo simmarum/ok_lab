@@ -2045,9 +2045,72 @@ inline void GlownaPetlaMety (vector<Task*> &listaZadan, vector<Maintenance*> &li
             } else liczbaRozwiazanZGorszymWynikiem++; // jezeli tak to zaznaczamy ze to rozwiazanie nie poprawilo wyniku o wiecej niz EPSILON
         }
 
-        tempTask.clear();
+				} else { // tworzy za pomoca tablicy fermonow
+					// Utworzenie rozwiązania
+					tempTask = GeneratorZMacierzaFeromonowa(listaZadan,listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
 
-    }
+					if(DEBUG)
+						debugFile << "Generator z macierza feromonowa" << endl;
+				}
+
+				// Dodanie rozwiązania
+					listaRozwiazan.push_back(tempTask);
+					tempTask.clear(); // Czyszczenie wektora by wyelimonować możliwe problemy
+			}
+
+			// Zrobienie mutacji
+			int maxMutants = MAX_SOLUTION_AFTER_MUTATION - MAX_SOLUTIONS;
+			for(int i=0; i < maxMutants; i++) {
+				tempTask = Mutacja(listaRozwiazan[i % MAX_SOLUTIONS],listaPrzerwanFirstProcessor,listaPrzerwanSecondProcessor);
+				listaRozwiazan.push_back(tempTask);
+				tempTask.clear();
+			}
+
+			// Turniej utworzonych zadań
+			Turniej(listaRozwiazan);
+
+			// Sortowanie po czasie zakończenia
+			SortujListeZadanPoEndTime(listaRozwiazan);
+
+			// Utworzenie tablicy funkcji celu
+			int tablicaWartosciFunkcjiCelu[listaRozwiazan.size()];
+			utworzTabliceFunkcjiCelu(listaRozwiazan,tablicaWartosciFunkcjiCelu);
+
+			// Uzupełnienie macierzy feromonowej
+			DodajDoMacierzyFeromonowej(listaRozwiazan,tablicaWartosciFunkcjiCelu);
+
+			// Zanik śladu feromonowego
+			zanikMacierzFeromonowa();
+
+			//funkcja splaszczajaca
+			if(!(numerIteracji % CO_ILE_ITERACJI_WIERSZ)) {
+				FunkcjaSplaszczajaca(aktualnyWiersz);
+				aktualnyWiersz = (aktualnyWiersz + 1) % INSTANCE_SIZE; //wylicza aktualny wiersz do funkcji
+			}
+
+			// zapamietywanie najlepszego rozwiazania
+			tempTask = ZnajdzNajlepszeRozwiazanie(listaRozwiazan);// najlepsze z tej iteracji
+			wartoscFCeluAktualnegoRozwiazania = ObliczFunkcjeCelu(tempTask);
+			if(wartoscFCeluAktualnegoRozwiazania < wartoscFunkcjiCeluNajlepszegoRozwiazania) { // porownanie z najlepszym globalnie
+				wartoscFCeluPoprzedniego = ObliczFunkcjeCelu(najlepszeRozwiazanie); // zapamietanie poprzedniego najlepszego wyniku
+				najlepszeRozwiazanie.clear(); // czyszcze dla pewnosci
+				KopiujDaneOperacji(tempTask,najlepszeRozwiazanie); // kopia do najlepszego
+				wartoscFunkcjiCeluNajlepszegoRozwiazania = wartoscFCeluAktualnegoRozwiazania; // aktualizacja wartosci ; )
+			}
+
+			// sprawdzenie czy ostatnie X rozwiazan miesci sie w EPSILON - DODATKOWY WARUNEK STOPU
+			if(wartoscFCeluAktualnegoRozwiazania>= wartoscFCeluPoprzedniego) { // jezeli aktualny jest gorszy niz najlepszy
+				liczbaRozwiazanZGorszymWynikiem++;  // dodajemy jeden, bo ten wynik nie poprawil
+				if(liczbaRozwiazanZGorszymWynikiem >= ROZMIAR_HISTORII_ROZWIAZAN) break; // jezeli przekroczy narzucona wartosc to zatrzyujemy metaheurestyke
+			} else { // przeciwny wypadek, wiec teraz mamy lepsze rozwiazanie
+				if((wartoscFCeluPoprzedniego-wartoscFCeluAktualnegoRozwiazania)>EPSILON_WYNIKU) { // czy to rozwiazanie miesci sie w naszym epsilon
+					liczbaRozwiazanZGorszymWynikiem=0; // jezeli nie to zerujemy bo mamy postep wiekszy niz zakladalismy
+				} else liczbaRozwiazanZGorszymWynikiem++; // jezeli tak to zaznaczamy ze to rozwiazanie nie poprawilo wyniku o wiecej niz EPSILON
+			}
+
+			tempTask.clear();
+
+		}
     // zapisz najlepszego rozwiazania do pliku
     string nazwa = "INSTANCJA_" + to_string(numerInstancjiProblemu);
     ZapiszWynikiDoPliku(najlepszeRozwiazanie, listaPrzerwanFirstProcessor, listaPrzerwanSecondProcessor, firstSolutionValue,numerInstancjiProblemu,nazwa);
